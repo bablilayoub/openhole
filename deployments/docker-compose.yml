@@ -1,0 +1,66 @@
+services:
+  caddy:
+    build:
+      context: .
+      dockerfile: Dockerfile.caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file: .env
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - CADDY_ACME_EMAIL=${CADDY_ACME_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      openhole-server:
+        condition: service_healthy
+      website:
+        condition: service_started
+
+  openhole-server:
+    build:
+      context: ..
+      dockerfile: deployments/Dockerfile.server
+    restart: unless-stopped
+    expose:
+      - "8080"
+    env_file: .env
+    environment:
+      - PUBLIC_TUNNEL_DOMAIN=${PUBLIC_TUNNEL_DOMAIN}
+      - TUNNEL_ENDPOINT_HOST=${TUNNEL_ENDPOINT_HOST}
+      - SERVER_PORT=${SERVER_PORT}
+      - MAX_BODY_BYTES=${MAX_BODY_BYTES}
+      - REQUEST_TIMEOUT_SECONDS=${REQUEST_TIMEOUT_SECONDS}
+      - MAX_CONCURRENT_REQUESTS_PER_TUNNEL=${MAX_CONCURRENT_REQUESTS_PER_TUNNEL}
+      - MAX_TUNNELS_PER_IP=${MAX_TUNNELS_PER_IP}
+      - MAX_REGISTRATIONS_PER_IP_PER_MINUTE=${MAX_REGISTRATIONS_PER_IP_PER_MINUTE}
+      - MAX_PUBLIC_REQUESTS_PER_IP_PER_MINUTE=${MAX_PUBLIC_REQUESTS_PER_IP_PER_MINUTE}
+      - SUBDOMAIN_HOLD_SECONDS=${SUBDOMAIN_HOLD_SECONDS}
+      - PUBLIC_URL_SCHEME=${PUBLIC_URL_SCHEME}
+      - TRUST_PROXY_HEADERS=${TRUST_PROXY_HEADERS}
+      - BLOCKED_IPS=${BLOCKED_IPS}
+      - BLOCKED_SUBDOMAINS_EXTRA=${BLOCKED_SUBDOMAINS_EXTRA}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  website:
+    build:
+      context: ../website
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    expose:
+      - "3000"
+    env_file: .env
+    environment:
+      - NEXT_PUBLIC_TUNNEL_DOMAIN=${NEXT_PUBLIC_TUNNEL_DOMAIN}
+
+volumes:
+  caddy_data:
+  caddy_config:

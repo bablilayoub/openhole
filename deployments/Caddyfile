@@ -1,0 +1,18 @@
+{
+	email {$CADDY_ACME_EMAIL}
+}
+
+openhole.dev, www.openhole.dev {
+	reverse_proxy website:3000
+}
+
+tunnel.openhole.dev {
+	reverse_proxy openhole-server:8080
+}
+
+*.ophl.link {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	reverse_proxy openhole-server:8080
+}

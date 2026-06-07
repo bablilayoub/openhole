@@ -1,0 +1,34 @@
+# Binaries
+/openhole
+/openhole-server
+/dist/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+/vendor/
+
+# Env & secrets
+.env
+deployments/.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Node / Next.js
+website/node_modules/
+website/.next/
+website/out/
+
+# Caddy / Docker
+deployments/caddy_data/
+
+# Test
+*.test
+coverage.out
