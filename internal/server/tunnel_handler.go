@@ -85,19 +85,12 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	localHost := reg.LocalHost
-	if localHost == "" {
-		localHost = "localhost"
-	}
-
 	tunnel := &Tunnel{
 		ID:        uuid.NewString(),
 		Subdomain: subdomain,
 		Conn:      conn,
 		ClientIP:  ip,
 		CreatedAt: time.Now(),
-		LocalHost: localHost,
-		LocalPort: reg.LocalPort,
 		Pending:   make(map[string]chan tunnelResponse),
 		sem:       make(chan struct{}, s.cfg.MaxConcurrentRequestsPerTunnel),
 	}

@@ -17,8 +17,6 @@ type Tunnel struct {
 	Conn      *websocket.Conn
 	ClientIP  string
 	CreatedAt time.Time
-	LocalHost string
-	LocalPort int
 	Pending   map[string]chan tunnelResponse
 	mu        sync.Mutex
 	writeMu   sync.Mutex
@@ -154,18 +152,6 @@ func (r *Registry) IsAvailableFor(subdomain, clientIP string) bool {
 		}
 	}
 	return shared.ValidateSubdomain(subdomain) == nil
-}
-
-func (r *Registry) CountByIP(ip string) int {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	n := 0
-	for _, t := range r.tunnels {
-		if t.ClientIP == ip {
-			n++
-		}
-	}
-	return n
 }
 
 func (r *Registry) CleanupExpiredHolds() {

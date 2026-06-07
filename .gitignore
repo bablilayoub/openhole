@@ -2,6 +2,7 @@
 /openhole
 /openhole-server
 /dist/
+dist/
 *.exe
 *.dll
 *.so
@@ -31,6 +32,6 @@ website/out/
 # Caddy / Docker
 deployments/caddy_data/
 
-# Test
+# Test artifacts
 *.test
 coverage.out
