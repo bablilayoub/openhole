@@ -183,6 +183,7 @@ CLOUDFLARE_API_TOKEN=your_token_here
 CADDY_ACME_EMAIL=admin@yourdomain.com
 PUBLIC_TUNNEL_DOMAIN=ophl.link
 TUNNEL_ENDPOINT_HOST=tunnel.yourdomain.com
+NEXT_PUBLIC_SITE_URL=https://yourdomain.dev
 NEXT_PUBLIC_TUNNEL_DOMAIN=ophl.link
 ```
 

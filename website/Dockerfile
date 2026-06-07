@@ -3,9 +3,11 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
 COPY . .
+ARG NEXT_PUBLIC_SITE_URL=https://openhole.dev
 ARG NEXT_PUBLIC_TUNNEL_DOMAIN=ophl.link
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_TUNNEL_DOMAIN=$NEXT_PUBLIC_TUNNEL_DOMAIN
-# public/install.sh is committed; skip prebuild sync (../scripts not in build context)
+# public/install.sh and public/uninstall.sh are committed; skip prebuild sync (../scripts not in build context)
 RUN npm run build --ignore-scripts
 
 FROM node:22-alpine

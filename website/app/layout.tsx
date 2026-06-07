@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { getSiteUrl } from "@/lib/site";
 import "./globals.css";
+
+const siteUrl = getSiteUrl();
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,7 +18,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://openhole.dev"),
+  metadataBase: new URL(siteUrl),
   title: "OpenHole — Share localhost instantly",
   description: "Expose local ports to the internet over HTTPS. No accounts, no config. Just one command.",
   icons: {
@@ -25,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "OpenHole",
     description: "Share localhost instantly over HTTPS.",
-    url: "https://openhole.dev",
+    url: siteUrl,
     siteName: "OpenHole",
     images: [
       {
