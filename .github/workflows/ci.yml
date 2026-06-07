@@ -59,6 +59,7 @@ jobs:
           test -f public/icon-black-bg.png
           test -f app/icon.png
           test -f public/install.sh
+          test -f public/uninstall.sh
 
       - name: Install
         run: npm ci

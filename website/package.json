@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "sync-install": "test -f ../scripts/install.sh && cp ../scripts/install.sh public/install.sh && chmod +x public/install.sh || true",
-    "prebuild": "npm run sync-install",
+    "sync-scripts": "for f in install uninstall; do test -f ../scripts/${f}.sh && cp ../scripts/${f}.sh public/${f}.sh && chmod +x public/${f}.sh; done",
+    "prebuild": "npm run sync-scripts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"

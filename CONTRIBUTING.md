@@ -129,7 +129,7 @@ internal/
   shared/             Subdomain validation, headers, errors, version
 website/              Next.js landing page
 deployments/          Docker Compose, Caddyfile, env template
-scripts/              build.sh, release.sh, install.sh
+scripts/              build.sh, release.sh, install.sh, uninstall.sh
 ```
 
 ### Conventions

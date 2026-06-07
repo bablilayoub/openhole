@@ -7,6 +7,7 @@ import (
 
 	"github.com/bablilayoub/openhole/internal/client"
 	"github.com/bablilayoub/openhole/internal/shared"
+	"github.com/bablilayoub/openhole/internal/uninstall"
 	"github.com/spf13/cobra"
 )
 
@@ -54,6 +55,17 @@ func main() {
 	root.Flags().StringVar(&subdomain, "subdomain", "", "Requested subdomain on ophl.link")
 	root.Flags().StringVar(&serverURL, "server", "", "Tunnel server WebSocket URL")
 	root.Flags().BoolVar(&verbose, "verbose", false, "Enable verbose logs")
+
+	var installDir string
+	uninstallCmd := &cobra.Command{
+		Use:   "uninstall",
+		Short: "Remove the openhole CLI from your system",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return uninstall.Run(installDir)
+		},
+	}
+	uninstallCmd.Flags().StringVar(&installDir, "install-dir", "", "Install directory to check (default: /usr/local/bin or $INSTALL_DIR)")
+	root.AddCommand(uninstallCmd)
 
 	if err := root.Execute(); err != nil {
 		os.Exit(1)

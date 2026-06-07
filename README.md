@@ -59,6 +59,20 @@ cd openhole
 
 Binaries are written to `dist/`.
 
+### Uninstall
+
+```bash
+openhole uninstall
+```
+
+Or without the CLI installed:
+
+```bash
+curl -fsSL https://openhole.dev/uninstall.sh | sh
+```
+
+Removes `openhole` from `/usr/local/bin`, `~/.local/bin`, and the Go bin directory (if present). Uses `sudo` only when needed.
+
 ---
 
 ## Usage
@@ -270,7 +284,7 @@ npm run dev
 
 This cross-compiles all platform binaries, generates `dist/checksums.txt`, and prints the `gh release create` command. Always attach `checksums.txt` to GitHub releases so the install script can verify downloads.
 
-The install script served at `openhole.dev/install.sh` is synced automatically from `scripts/install.sh` on `npm run build` (website).
+Install and uninstall scripts (`openhole.dev/install.sh`, `openhole.dev/uninstall.sh`) are synced from `scripts/` on `npm run build` (website).
 
 ---
 
