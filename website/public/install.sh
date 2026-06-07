@@ -68,30 +68,8 @@ install_binary() {
   echo "  Run: openhole 3000"
 }
 
-go_install_path() {
-  local gobin
-  gobin="$(go env GOBIN)"
-  if [ -n "$gobin" ]; then
-    echo "${gobin}/openhole"
-    return
-  fi
-  echo "$(go env GOPATH)/bin/openhole"
-}
-
 echo "OpenHole install script"
 echo ""
-
-if command -v go >/dev/null 2>&1; then
-  GO_TAG="@latest"
-  if [ -n "${OPENHOLE_VERSION:-}" ] && [ "${OPENHOLE_VERSION}" != "latest" ]; then
-    GO_TAG="@${OPENHOLE_VERSION}"
-  fi
-  echo "Installing via go install${GO_TAG}..."
-  go install "github.com/${REPO}/cmd/openhole${GO_TAG}"
-  echo ""
-  install_binary "$(go_install_path)"
-  exit 0
-fi
 
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m)"
@@ -121,8 +99,8 @@ CHECKSUMS_URL="${BASE_URL}/checksums.txt"
 echo "Downloading ${URL}..."
 TMP="$(mktemp)"
 if ! curl -fsSL "$URL" -o "$TMP"; then
-  echo "Release binary not found. Install Go and run:"
-  echo "  go install github.com/${REPO}/cmd/openhole@latest"
+  echo "Release binary not found. Check OPENHOLE_VERSION or GitHub releases:"
+  echo "  https://github.com/${REPO}/releases"
   exit 1
 fi
 

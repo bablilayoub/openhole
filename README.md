@@ -29,7 +29,7 @@ https://blue-fox.ophl.link  →  http://localhost:3000
 
 ## Install
 
-### Option A — Install script (macOS / Linux)
+### Install script (macOS / Linux)
 
 ```bash
 curl -fsSL https://openhole.dev/install.sh | sh
@@ -40,16 +40,10 @@ Downloads the latest release binary from GitHub, verifies its SHA256 checksum (w
 Pin a specific version:
 
 ```bash
-OPENHOLE_VERSION=v0.1.0 curl -fsSL https://openhole.dev/install.sh | sh
+OPENHOLE_VERSION=v0.1.1 curl -fsSL https://openhole.dev/install.sh | sh
 ```
 
-### Option B — Go install
-
-```bash
-go install github.com/bablilayoub/openhole/cmd/openhole@latest
-```
-
-### Option C — Build from source
+### Build from source
 
 ```bash
 git clone https://github.com/bablilayoub/openhole.git

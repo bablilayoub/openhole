@@ -31,7 +31,6 @@ const runSteps = [
   },
 ];
 
-const goCmd = "go install github.com/bablilayoub/openhole/cmd/openhole@latest";
 const uninstallCmd = "openhole uninstall";
 
 function CopyIcon() {
@@ -182,21 +181,11 @@ export function Install() {
             ))}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="card-base bg-neutral-900/30 p-5 sm:p-6">
-              <p className="mb-4 text-sm text-neutral-500">Prefer Go?</p>
-              <div className="code-block border-none bg-transparent p-0">
-                <code className="min-w-0 flex-1 font-mono text-sm text-neutral-300 break-all">{goCmd}</code>
-                <CopyButton cmd={goCmd} id="go" copied={copied} onCopy={copy} />
-              </div>
-            </div>
-
-            <div className="card-base bg-neutral-900/30 p-5 sm:p-6">
-              <p className="mb-4 text-sm text-neutral-500">Need to remove it?</p>
-              <div className="code-block border-none bg-transparent p-0">
-                <code className="min-w-0 flex-1 font-mono text-sm text-neutral-300 break-all">{uninstallCmd}</code>
-                <CopyButton cmd={uninstallCmd} id="uninstall" copied={copied} onCopy={copy} />
-              </div>
+          <div className="card-base bg-neutral-900/30 p-5 sm:p-6">
+            <p className="mb-4 text-sm text-neutral-500">Need to remove it?</p>
+            <div className="code-block border-none bg-transparent p-0">
+              <code className="min-w-0 flex-1 font-mono text-sm text-neutral-300 break-all">{uninstallCmd}</code>
+              <CopyButton cmd={uninstallCmd} id="uninstall" copied={copied} onCopy={copy} />
             </div>
           </div>
         </div>
