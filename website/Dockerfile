@@ -13,6 +13,8 @@ RUN apk add --no-cache wget \
   && addgroup -g 10001 -S openhole && adduser -S -u 10001 -G openhole openhole
 WORKDIR /app
 ENV NODE_ENV=production
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
 COPY --from=builder --chown=openhole:openhole /app/.next/standalone ./
 COPY --from=builder --chown=openhole:openhole /app/.next/static ./.next/static
 COPY --from=builder --chown=openhole:openhole /app/public ./public
