@@ -1,27 +1,25 @@
 import type { Metadata } from "next";
-import { Syne, IBM_Plex_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const syne = Syne({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-syne",
+  variable: "--font-inter",
   display: "swap",
 });
 
-const ibmPlex = IBM_Plex_Mono({
+const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-ibm-plex",
+  variable: "--font-jetbrains",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "OpenHole — punch a hole through localhost",
-  description:
-    "One-command tunnels. No accounts. HTTPS on ophl.link. Open source Go binary.",
+  title: "OpenHole — Share localhost instantly",
+  description: "Expose local ports to the internet over HTTPS. No accounts, no config. Just one command.",
   openGraph: {
     title: "OpenHole",
-    description: "Punch a hole from localhost to the internet.",
+    description: "Share localhost instantly over HTTPS.",
     url: "https://openhole.dev",
     siteName: "OpenHole",
   },
@@ -33,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${syne.variable} ${ibmPlex.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jetbrains.variable}`}>
       <body>{children}</body>
     </html>
   );

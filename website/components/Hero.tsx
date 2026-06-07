@@ -3,108 +3,102 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { TunnelDiagram } from "./TunnelDiagram";
 
 gsap.registerPlugin(useGSAP);
 
-const lines = ["PUNCH", "A HOLE", "THROUGH", "LOCALHOST"];
+const domain = process.env.NEXT_PUBLIC_TUNNEL_DOMAIN || "ophl.link";
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
 
-  useGSAP(
-    () => {
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced) {
-        gsap.set(".hero-line, .hero-sub, .hero-cta, .hero-diagram", { opacity: 1, y: 0 });
-        return;
-      }
+  useGSAP(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
 
-      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      tl.from(".hero-line", {
-        yPercent: 110,
-        opacity: 0,
-        duration: 0.9,
-        stagger: 0.12,
-      })
-        .from(
-          ".hero-sub",
-          { y: 24, opacity: 0, duration: 0.7 },
-          "-=0.35"
-        )
-        .from(
-          ".hero-cta > *",
-          { y: 16, opacity: 0, duration: 0.5, stagger: 0.08 },
-          "-=0.4"
-        )
-        .from(
-          ".hero-diagram",
-          { y: 40, opacity: 0, duration: 0.9 },
-          "-=0.2"
-        );
-    },
-    { scope: root }
-  );
+    tl.from(".hero-text", {
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+    }).from(".hero-terminal", {
+      y: 40,
+      opacity: 0,
+      duration: 1,
+    }, "-=0.4");
+  }, { scope: root });
 
   return (
-    <section
-      ref={root}
-      className="min-h-[calc(100vh-4rem)] flex flex-col justify-center px-6 md:px-10 lg:px-16 pt-28 pb-16"
-    >
-      <div className="max-w-6xl mx-auto w-full">
-        <p className="hero-sub font-mono text-xs uppercase tracking-[0.3em] text-muted mb-8">
-          ophl.link · no login · one binary
-        </p>
-
-        <h1 className="mb-10">
-          {lines.map((line) => (
-            <span
-              key={line}
-              className="hero-line block text-[clamp(3.5rem,14vw,9rem)] font-extrabold leading-[0.88] tracking-[-0.04em] uppercase overflow-hidden"
-            >
-              {line === "A HOLE" ? (
-                <>
-                  A{" "}
-                  <span className="text-hole underline decoration-[6px] underline-offset-[0.12em]">
-                    HOLE
-                  </span>
-                </>
-              ) : (
-                line
-              )}
-            </span>
-          ))}
-        </h1>
-
-        <div className="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-end">
-          <div>
-            <p className="hero-sub text-lg md:text-xl text-muted max-w-md leading-relaxed mb-8">
-              Expose any local port to HTTPS in one command. No accounts, no YAML, no dashboard — just a tunnel that works.
-            </p>
-
-            <div className="hero-cta flex flex-wrap gap-4">
-              <a
-                href="#install"
-                className="inline-block bg-ink text-paper px-6 py-3 font-mono text-sm font-medium hover:bg-hole transition-colors"
-              >
-                $ curl install
-              </a>
-              <a
-                href="https://github.com/bablilayoub/openhole"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block border-2 border-ink px-6 py-3 font-mono text-sm hover:bg-ink hover:text-paper transition-colors"
-              >
-                github →
-              </a>
-            </div>
-          </div>
-
-          <div className="hero-diagram">
-            <TunnelDiagram />
+    <section ref={root} className="pt-32 pb-20 sm:pt-40 sm:pb-32 px-6">
+      <div className="mx-auto max-w-6xl">
+        
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h1 className="hero-text text-5xl sm:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.1]">
+            Share localhost. <br className="hidden sm:block" />
+            <span className="text-neutral-500">Zero configuration.</span>
+          </h1>
+          <p className="hero-text text-lg sm:text-xl text-neutral-400 mb-10 max-w-2xl mx-auto">
+            Expose any local port to the internet over HTTPS. No accounts, no API keys, no dashboard. Just a single command.
+          </p>
+          <div className="hero-text flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="#install" className="w-full sm:w-auto bg-white text-black px-8 py-3.5 rounded-full font-medium hover:bg-neutral-200 transition-colors">
+              Get Started
+            </a>
+            <a href="https://github.com/bablilayoub/openhole" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto bg-neutral-900 text-white border border-neutral-800 px-8 py-3.5 rounded-full font-medium hover:bg-neutral-800 transition-colors">
+              View on GitHub
+            </a>
           </div>
         </div>
+
+        <div className="hero-terminal max-w-4xl mx-auto card-base shadow-2xl shadow-white/5">
+          <div className="flex items-center px-4 py-3 border-b border-neutral-800 bg-neutral-900/50">
+            <div className="flex gap-2">
+              <div className="w-3 h-3 rounded-full bg-neutral-700" />
+              <div className="w-3 h-3 rounded-full bg-neutral-700" />
+              <div className="w-3 h-3 rounded-full bg-neutral-700" />
+            </div>
+            <div className="mx-auto text-xs font-mono text-neutral-500">bash — openhole</div>
+          </div>
+          
+          <div className="p-6 sm:p-8 font-mono text-sm sm:text-base leading-relaxed">
+            <div className="flex gap-3">
+              <span className="text-neutral-500">$</span>
+              <span className="text-white">openhole 3000</span>
+            </div>
+            
+            <div className="mt-6 space-y-2">
+              <div className="flex gap-3">
+                <span className="text-emerald-500">✓</span>
+                <span className="text-neutral-300">Tunnel registered successfully</span>
+              </div>
+              <div className="flex gap-3">
+                <span className="text-neutral-500">→</span>
+                <span className="text-white">https://blue-fox.{domain}</span>
+              </div>
+              <div className="flex gap-3">
+                <span className="text-neutral-500">→</span>
+                <span className="text-neutral-400">Forwarding to 127.0.0.1:3000</span>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-neutral-800/50 space-y-2 text-xs sm:text-sm">
+              <div className="grid grid-cols-[3rem_1fr_3rem_4rem] gap-4 text-neutral-400">
+                <span className="text-white">GET</span>
+                <span>/api/users</span>
+                <span className="text-emerald-500">200</span>
+                <span className="text-right">12ms</span>
+              </div>
+              <div className="grid grid-cols-[3rem_1fr_3rem_4rem] gap-4 text-neutral-400">
+                <span className="text-white">POST</span>
+                <span>/webhooks/stripe</span>
+                <span className="text-emerald-500">201</span>
+                <span className="text-right">45ms</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
   );

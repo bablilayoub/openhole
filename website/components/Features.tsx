@@ -1,0 +1,86 @@
+"use client";
+
+import { useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
+
+const features = [
+  {
+    title: "No accounts required",
+    description: "We don't want your email. Download the binary and start tunneling immediately. No signup flow, no API keys.",
+  },
+  {
+    title: "HTTPS by default",
+    description: "Every tunnel gets a secure, trusted TLS certificate automatically via Caddy and Cloudflare DNS-01.",
+  },
+  {
+    title: "Custom subdomains",
+    description: "Pass the --subdomain flag to claim a specific URL. Keep your webhook endpoints stable across restarts.",
+  },
+  {
+    title: "Live request logging",
+    description: "See exactly what's hitting your local server. Method, path, status code, and latency printed right in your terminal.",
+  },
+  {
+    title: "Single Go binary",
+    description: "Written in Go for blazing fast startup times and minimal memory footprint. No runtime dependencies.",
+  },
+  {
+    title: "100% Self-hostable",
+    description: "The entire stack is open source. Deploy your own edge server with our provided Docker Compose setup.",
+  },
+];
+
+export function Features() {
+  const root = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+
+    gsap.from(".feature-card", {
+      y: 30,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: root.current,
+        start: "top 80%",
+      },
+    });
+  }, { scope: root });
+
+  return (
+    <section ref={root} id="features" className="py-24 sm:py-32 border-t border-neutral-900">
+      <div className="mx-auto max-w-6xl px-6">
+        
+        <div className="mb-16 max-w-2xl">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">
+            Everything you need.<br/>Nothing you don&apos;t.
+          </h2>
+          <p className="text-lg text-neutral-400">
+            A focused feature set designed to get out of your way and let you build.
+          </p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {features.map((feature) => (
+            <div key={feature.title} className="feature-card card-base p-6 sm:p-8 hover:border-neutral-700 transition-colors">
+              <h3 className="text-lg font-semibold text-white mb-3">
+                {feature.title}
+              </h3>
+              <p className="text-neutral-400 leading-relaxed text-sm sm:text-base">
+                {feature.description}
+              </p>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </section>
+  );
+}

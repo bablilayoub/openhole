@@ -1,16 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #f3efe6;
-  --color-ink: #111111;
-  --color-muted: #5c5a54;
-  --color-line: #d4cfc4;
-  --color-hole: #ff4d00;
-  --color-hole-dim: #ffd6c2;
-  --color-panel: #1a1a1a;
-
-  --font-display: var(--font-syne), system-ui, sans-serif;
-  --font-mono: var(--font-ibm-plex), ui-monospace, monospace;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
 @layer base {
@@ -19,33 +11,16 @@
   }
 
   body {
-    background-color: var(--color-paper);
-    color: var(--color-ink);
-    font-family: var(--font-display);
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-  }
-
-  ::selection {
-    background: var(--color-hole);
-    color: white;
+    @apply bg-black text-neutral-300 font-sans antialiased selection:bg-neutral-800 selection:text-white;
   }
 }
 
 @layer utilities {
-  .hole-ring {
-    box-shadow:
-      0 0 0 1px var(--color-hole),
-      0 0 0 8px var(--color-hole-dim);
+  .glass-nav {
+    @apply bg-black/50 backdrop-blur-md border-b border-white/5;
   }
-
-  .spec-rule {
-    background-image: repeating-linear-gradient(
-      90deg,
-      var(--color-line) 0,
-      var(--color-line) 1px,
-      transparent 1px,
-      transparent 12px
-    );
+  
+  .card-base {
+    @apply bg-neutral-950 border border-neutral-800 rounded-2xl;
   }
 }

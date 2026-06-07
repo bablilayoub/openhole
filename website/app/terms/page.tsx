@@ -10,36 +10,38 @@ export default function TermsPage() {
   return (
     <>
       <Nav />
-      <main className="pt-28 pb-20 px-6 md:px-10 lg:px-16">
-        <div className="max-w-2xl mx-auto">
+      <main className="pt-32 pb-24 px-6 min-h-[80vh]">
+        <div className="mx-auto max-w-3xl">
           <Link
             href="/"
-            className="inline-block font-mono text-xs uppercase tracking-wider text-muted hover:text-hole mb-12"
+            className="mb-12 inline-block text-sm text-neutral-500 hover:text-white transition-colors"
           >
-            ← back
+            ← Back to home
           </Link>
 
-          <h1 className="text-5xl font-extrabold uppercase tracking-tight mb-8">
-            Acceptable use
+          <h1 className="mb-8 text-4xl font-bold tracking-tight text-white">
+            Acceptable Use Policy
           </h1>
 
-          <div className="space-y-6 text-muted leading-relaxed text-lg">
+          <div className="space-y-6 text-lg text-neutral-400 leading-relaxed">
             <p>
-              OpenHole is a developer tool for exposing local applications during
-              development and demos.
+              OpenHole is a developer tool designed strictly for exposing local applications
+              during development, testing, and demonstrations.
             </p>
             <p>
               You may not use OpenHole to host phishing pages, malware, spam,
               illegal content, or to impersonate brands, banks, or login pages.
-              We block reserved subdomains and rate-limit usage. Tunnels may be
-              terminated without notice for abuse.
+              We actively block reserved subdomains and rate-limit usage to prevent abuse. 
+              Tunnels violating these terms will be terminated immediately without notice.
             </p>
-            <p className="border-2 border-ink p-5 font-mono text-sm text-ink">
-              Report abuse:{" "}
-              <a href="mailto:abuse@openhole.dev" className="text-hole hover:underline">
-                abuse@openhole.dev
-              </a>
-            </p>
+            <div className="mt-12 p-6 rounded-2xl border border-neutral-800 bg-neutral-900/30">
+              <p className="text-base text-neutral-300 m-0">
+                To report abuse, phishing, or malware, please contact:{" "}
+                <a href="mailto:abuse@openhole.dev" className="text-white font-medium hover:underline">
+                  abuse@openhole.dev
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </main>
