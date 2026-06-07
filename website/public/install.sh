@@ -53,6 +53,31 @@ verify_checksum() {
   echo "✓ Checksum verified"
 }
 
+install_binary() {
+  local src="$1"
+  if [ ! -f "$src" ]; then
+    echo "Error: binary not found at ${src}"
+    exit 1
+  fi
+  if [ -w "$INSTALL_DIR" ]; then
+    install -m 755 "$src" "${INSTALL_DIR}/openhole"
+  else
+    sudo install -m 755 "$src" "${INSTALL_DIR}/openhole"
+  fi
+  echo "✓ Installed to ${INSTALL_DIR}/openhole"
+  echo "  Run: openhole 3000"
+}
+
+go_install_path() {
+  local gobin
+  gobin="$(go env GOBIN)"
+  if [ -n "$gobin" ]; then
+    echo "${gobin}/openhole"
+    return
+  fi
+  echo "$(go env GOPATH)/bin/openhole"
+}
+
 echo "OpenHole install script"
 echo ""
 
@@ -64,7 +89,7 @@ if command -v go >/dev/null 2>&1; then
   echo "Installing via go install${GO_TAG}..."
   go install "github.com/${REPO}/cmd/openhole${GO_TAG}"
   echo ""
-  echo "✓ Installed. Run: openhole 3000"
+  install_binary "$(go_install_path)"
   exit 0
 fi
 
@@ -103,12 +128,5 @@ fi
 
 verify_checksum "$TMP" "$BINARY" "$CHECKSUMS_URL"
 
-chmod +x "$TMP"
-if [ -w "$INSTALL_DIR" ]; then
-  mv "$TMP" "${INSTALL_DIR}/openhole"
-else
-  sudo mv "$TMP" "${INSTALL_DIR}/openhole"
-fi
-
-echo "✓ Installed to ${INSTALL_DIR}/openhole"
-echo "  Run: openhole 3000"
+install_binary "$TMP"
+rm -f "$TMP"
