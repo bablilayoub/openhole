@@ -1,46 +1,51 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #050506;
-  --color-foreground: #f4f4f5;
-  --color-accent: #22d3a6;
-  --color-accent-dim: rgba(34, 211, 166, 0.2);
-  --color-terminal-bg: #08080a;
-  --color-terminal-border: #27272a;
-  
-  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --color-paper: #f3efe6;
+  --color-ink: #111111;
+  --color-muted: #5c5a54;
+  --color-line: #d4cfc4;
+  --color-hole: #ff4d00;
+  --color-hole-dim: #ffd6c2;
+  --color-panel: #1a1a1a;
+
+  --font-display: var(--font-syne), system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex), ui-monospace, monospace;
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-display);
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
 
-  /* Custom subtle grid background */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image: 
-      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 4rem 4rem;
-    mask-image: radial-gradient(circle at center, black, transparent 80%);
-    pointer-events: none;
-    z-index: -1;
+  ::selection {
+    background: var(--color-hole);
+    color: white;
   }
 }
 
 @layer utilities {
-  .text-glow {
-    text-shadow: 0 0 20px rgba(34, 211, 166, 0.5);
+  .hole-ring {
+    box-shadow:
+      0 0 0 1px var(--color-hole),
+      0 0 0 8px var(--color-hole-dim);
   }
-  .box-glow {
-    box-shadow: 0 0 40px rgba(34, 211, 166, 0.15);
+
+  .spec-rule {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-line) 0,
+      var(--color-line) 1px,
+      transparent 1px,
+      transparent 12px
+    );
   }
 }

@@ -10,31 +10,33 @@ export default function TermsPage() {
   return (
     <>
       <Nav />
-      <main className="min-h-screen pt-32 pb-20">
-        <div className="container mx-auto px-6 max-w-3xl">
-          <Link href="/" className="inline-flex items-center text-sm text-zinc-500 hover:text-accent transition-colors mb-12">
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to home
+      <main className="pt-28 pb-20 px-6 md:px-10 lg:px-16">
+        <div className="max-w-2xl mx-auto">
+          <Link
+            href="/"
+            className="inline-block font-mono text-xs uppercase tracking-wider text-muted hover:text-hole mb-12"
+          >
+            ← back
           </Link>
-          
-          <h1 className="text-4xl font-bold mb-8">Acceptable Use</h1>
-          
-          <div className="prose prose-invert prose-zinc max-w-none text-zinc-400">
-            <p className="text-lg mb-6">
-              OpenHole is a developer tool for exposing local applications
-              during development and demos.
+
+          <h1 className="text-5xl font-extrabold uppercase tracking-tight mb-8">
+            Acceptable use
+          </h1>
+
+          <div className="space-y-6 text-muted leading-relaxed text-lg">
+            <p>
+              OpenHole is a developer tool for exposing local applications during
+              development and demos.
             </p>
-            <p className="mb-6">
+            <p>
               You may not use OpenHole to host phishing pages, malware, spam,
               illegal content, or to impersonate brands, banks, or login pages.
               We block reserved subdomains and rate-limit usage. Tunnels may be
               terminated without notice for abuse.
             </p>
-            <p className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+            <p className="border-2 border-ink p-5 font-mono text-sm text-ink">
               Report abuse:{" "}
-              <a href="mailto:abuse@openhole.dev" className="text-accent hover:underline font-medium">
+              <a href="mailto:abuse@openhole.dev" className="text-hole hover:underline">
                 abuse@openhole.dev
               </a>
             </p>

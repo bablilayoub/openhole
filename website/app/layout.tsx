@@ -1,26 +1,27 @@
 import type { Metadata } from "next";
-import { DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Syne, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+const syne = Syne({
   subsets: ["latin"],
-  variable: "--font-dm-sans",
+  variable: "--font-syne",
   display: "swap",
 });
 
-const jetbrains = JetBrains_Mono({
+const ibmPlex = IBM_Plex_Mono({
   subsets: ["latin"],
-  variable: "--font-jetbrains",
+  weight: ["400", "500", "600"],
+  variable: "--font-ibm-plex",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "OpenHole — localhost tunnels in one command",
+  title: "OpenHole — punch a hole through localhost",
   description:
-    "Fast, clean, no-login tunnel for developers. Expose localhost to the internet with one command.",
+    "One-command tunnels. No accounts. HTTPS on ophl.link. Open source Go binary.",
   openGraph: {
     title: "OpenHole",
-    description: "Open localhost to the internet in one command.",
+    description: "Punch a hole from localhost to the internet.",
     url: "https://openhole.dev",
     siteName: "OpenHole",
   },
@@ -32,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${jetbrains.variable}`}>
+    <html lang="en" className={`${syne.variable} ${ibmPlex.variable}`}>
       <body>{children}</body>
     </html>
   );
