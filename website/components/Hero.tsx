@@ -3,10 +3,9 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { tunnelDomain as domain } from "@/lib/site";
 
 gsap.registerPlugin(useGSAP);
-
-const domain = process.env.NEXT_PUBLIC_TUNNEL_DOMAIN || "ophl.link";
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);

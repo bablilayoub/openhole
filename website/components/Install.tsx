@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { scriptUrl } from "@/lib/site";
 import { Section, SectionHeader } from "./Section";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -12,7 +13,7 @@ const installStep = {
   num: "01",
   title: "Install the CLI",
   desc: "Download the binary for macOS or Linux.",
-  cmd: "curl -fsSL https://openhole.dev/install.sh | sh",
+  cmd: `curl -fsSL ${scriptUrl("install")} | sh`,
 };
 
 const runSteps = [
@@ -31,6 +32,7 @@ const runSteps = [
 ];
 
 const goCmd = "go install github.com/bablilayoub/openhole/cmd/openhole@latest";
+const uninstallCmd = "openhole uninstall";
 
 function CopyIcon() {
   return (
@@ -180,11 +182,21 @@ export function Install() {
             ))}
           </div>
 
-          <div className="card-base bg-neutral-900/30 p-5 sm:p-6">
-            <p className="mb-4 text-sm text-neutral-500">Prefer Go?</p>
-            <div className="code-block border-none bg-transparent p-0">
-              <code className="min-w-0 flex-1 font-mono text-sm text-neutral-300 break-all">{goCmd}</code>
-              <CopyButton cmd={goCmd} id="go" copied={copied} onCopy={copy} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="card-base bg-neutral-900/30 p-5 sm:p-6">
+              <p className="mb-4 text-sm text-neutral-500">Prefer Go?</p>
+              <div className="code-block border-none bg-transparent p-0">
+                <code className="min-w-0 flex-1 font-mono text-sm text-neutral-300 break-all">{goCmd}</code>
+                <CopyButton cmd={goCmd} id="go" copied={copied} onCopy={copy} />
+              </div>
+            </div>
+
+            <div className="card-base bg-neutral-900/30 p-5 sm:p-6">
+              <p className="mb-4 text-sm text-neutral-500">Need to remove it?</p>
+              <div className="code-block border-none bg-transparent p-0">
+                <code className="min-w-0 flex-1 font-mono text-sm text-neutral-300 break-all">{uninstallCmd}</code>
+                <CopyButton cmd={uninstallCmd} id="uninstall" copied={copied} onCopy={copy} />
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { scriptPath } from "@/lib/site";
 import { Logo } from "./Logo";
 
 const projectLinks = [
@@ -18,11 +19,8 @@ const connectLinks = [
     label: "GitHub",
     external: true,
   },
-  {
-    href: "https://openhole.dev/install.sh",
-    label: "install.sh",
-    external: true,
-  },
+  { href: scriptPath("install"), label: "install.sh" },
+  { href: scriptPath("uninstall"), label: "uninstall.sh" },
   { href: "mailto:abuse@openhole.dev", label: "abuse@openhole.dev" },
 ];
 
