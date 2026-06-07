@@ -4,14 +4,16 @@ import { Footer } from "@/components/Footer";
 
 export const metadata = {
   title: "Terms — OpenHole",
+  description: "Acceptable use policy for OpenHole tunnels. Report abuse at abuse@openhole.dev.",
 };
 
 export default function TermsPage() {
   return (
     <>
       <Nav />
-      <main className="pt-32 pb-24 px-6 min-h-[80vh]">
-        <div className="mx-auto max-w-3xl">
+      <main className="min-h-[80vh] pb-24 pt-28 sm:pt-36">
+        <div className="page-container">
+          <div className="max-w-3xl">
           <Link
             href="/"
             className="mb-12 inline-block text-sm text-neutral-500 hover:text-white transition-colors"
@@ -42,6 +44,7 @@ export default function TermsPage() {
                 </a>
               </p>
             </div>
+          </div>
           </div>
         </div>
       </main>

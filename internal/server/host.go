@@ -1,6 +1,7 @@
 package server
 
 import (
+	"net"
 	"net/http"
 	"strings"
 )
@@ -9,7 +10,7 @@ func (s *Server) parseTunnelHost(r *http.Request) (subdomain string, isTunnelEnd
 	host := hostWithoutPort(r.Host)
 	tunnelHost := hostWithoutPort(s.cfg.TunnelEndpointHost)
 
-	if host == tunnelHost || host == "localhost" || host == "127.0.0.1" {
+	if host == tunnelHost || host == "localhost" || host == "127.0.0.1" || host == "::1" {
 		return "", true, false
 	}
 
@@ -31,10 +32,8 @@ func (s *Server) parseTunnelHost(r *http.Request) (subdomain string, isTunnelEnd
 }
 
 func hostWithoutPort(host string) string {
-	if i := strings.LastIndex(host, ":"); i != -1 {
-		if strings.Count(host, ":") == 1 {
-			return host[:i]
-		}
+	if h, _, err := net.SplitHostPort(host); err == nil {
+		return h
 	}
 	return host
 }

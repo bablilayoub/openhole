@@ -12,6 +12,8 @@
 
 # Env & secrets
 .env
+.env.local
+**/.env.local
 deployments/.env
 
 # IDE

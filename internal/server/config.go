@@ -9,19 +9,19 @@ import (
 )
 
 type Config struct {
-	PublicTunnelDomain            string
-	TunnelEndpointHost            string
-	ServerPort                    string
-	MaxBodyBytes                  int64
-	RequestTimeoutSeconds         int
-	MaxConcurrentRequestsPerTunnel int
-	MaxTunnelsPerIP               int
-	MaxRegistrationsPerIPPerMinute int
+	PublicTunnelDomain              string
+	TunnelEndpointHost              string
+	ServerPort                      string
+	MaxBodyBytes                    int64
+	RequestTimeoutSeconds           int
+	MaxConcurrentRequestsPerTunnel  int
+	MaxTunnelsPerIP                 int
+	MaxRegistrationsPerIPPerMinute  int
 	MaxPublicRequestsPerIPPerMinute int
-	SubdomainHoldSeconds          int
-	PublicURLScheme               string
-	TrustProxyHeaders             bool
-	BlockedIPs                    map[string]struct{}
+	SubdomainHoldSeconds            int
+	PublicURLScheme                 string
+	TrustProxyHeaders               bool
+	BlockedIPs                      map[string]struct{}
 }
 
 func LoadConfig() Config {
@@ -37,7 +37,7 @@ func LoadConfig() Config {
 		MaxPublicRequestsPerIPPerMinute: envInt("MAX_PUBLIC_REQUESTS_PER_IP_PER_MINUTE", 120),
 		SubdomainHoldSeconds:            envInt("SUBDOMAIN_HOLD_SECONDS", 30),
 		PublicURLScheme:                 envOr("PUBLIC_URL_SCHEME", "https"),
-		TrustProxyHeaders:               envOr("TRUST_PROXY_HEADERS", "true") == "true",
+		TrustProxyHeaders:               envOr("TRUST_PROXY_HEADERS", "false") == "true",
 		BlockedIPs:                      parseBlockedIPs(os.Getenv("BLOCKED_IPS")),
 	}
 

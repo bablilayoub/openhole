@@ -31,11 +31,8 @@ func (l *Limits) IsIPBlocked(ip string) bool {
 	return ok
 }
 
-func (l *Limits) AllowRegistration(ip string, activeTunnels int) bool {
+func (l *Limits) AllowRegistrationRate(ip string) bool {
 	if l.IsIPBlocked(ip) {
-		return false
-	}
-	if activeTunnels >= l.cfg.MaxTunnelsPerIP {
 		return false
 	}
 	return l.checkRate(&l.regMu, l.regTimes, ip, l.cfg.MaxRegistrationsPerIPPerMinute, time.Minute)
@@ -61,7 +58,11 @@ func (l *Limits) checkRate(mu *sync.Mutex, store map[string][]time.Time, key str
 		}
 	}
 	if len(filtered) >= max {
-		store[key] = filtered
+		if len(filtered) == 0 {
+			delete(store, key)
+		} else {
+			store[key] = filtered
+		}
 		return false
 	}
 	filtered = append(filtered, now)

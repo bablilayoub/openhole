@@ -7,7 +7,9 @@ COPY . .
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /openhole-server ./cmd/openhole-server
 
 FROM alpine:3.20
-RUN apk add --no-cache ca-certificates wget
+RUN apk add --no-cache ca-certificates wget \
+  && adduser -D -H -u 10001 openhole
 COPY --from=builder /openhole-server /usr/local/bin/openhole-server
+USER 10001
 EXPOSE 8080
 CMD ["openhole-server"]

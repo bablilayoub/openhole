@@ -4,46 +4,136 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { Section, SectionHeader } from "./Section";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const steps = [
+const installStep = {
+  num: "01",
+  title: "Install the CLI",
+  desc: "Download the binary for macOS or Linux.",
+  cmd: "curl -fsSL https://openhole.dev/install.sh | sh",
+};
+
+const runSteps = [
   {
-    num: "1",
-    title: "Install the CLI",
-    desc: "Download the binary for macOS or Linux.",
-    cmd: "curl -fsSL https://openhole.dev/install.sh | sh",
-    prompt: "$"
-  },
-  {
-    num: "2",
+    num: "02",
     title: "Start your local app",
     desc: "Run your Next.js, Vite, or Django server normally.",
     cmd: "npm run dev",
-    prompt: "$"
   },
   {
-    num: "3",
+    num: "03",
     title: "Open the hole",
     desc: "Point OpenHole at your local port to get a public URL.",
     cmd: "openhole 3000",
-    prompt: "$"
-  }
+  },
 ];
 
+const goCmd = "go install github.com/bablilayoub/openhole/cmd/openhole@latest";
+
+function CopyIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="9" y="9" width="13" height="13" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+function CopyButton({
+  cmd,
+  id,
+  copied,
+  onCopy,
+}: {
+  cmd: string;
+  id: string;
+  copied: string | null;
+  onCopy: (text: string, id: string) => void;
+}) {
+  const isCopied = copied === id;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onCopy(cmd, id)}
+      aria-label={isCopied ? "Copied" : "Copy command"}
+      className="shrink-0 rounded-lg p-2 text-neutral-500 transition-colors hover:bg-neutral-800 hover:text-white"
+    >
+      {isCopied ? <CheckIcon /> : <CopyIcon />}
+    </button>
+  );
+}
+
+function StepCode({
+  cmd,
+  id,
+  copied,
+  onCopy,
+}: {
+  cmd: string;
+  id: string;
+  copied: string | null;
+  onCopy: (text: string, id: string) => void;
+}) {
+  return (
+    <div className="code-block">
+      <code className="min-w-0 flex-1 font-mono text-sm leading-relaxed text-neutral-300 break-all">
+        <span className="text-neutral-500">$ </span>
+        {cmd}
+      </code>
+      <CopyButton cmd={cmd} id={id} copied={copied} onCopy={onCopy} />
+    </div>
+  );
+}
+
+function StepCard({
+  num,
+  title,
+  desc,
+  cmd,
+  copied,
+  onCopy,
+}: {
+  num: string;
+  title: string;
+  desc: string;
+  cmd: string;
+  copied: string | null;
+  onCopy: (text: string, id: string) => void;
+}) {
+  return (
+    <div className="step-card flex h-full flex-col">
+      <span className="mb-3 block font-mono text-sm text-neutral-500">{num}</span>
+      <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
+      <p className="mb-6 flex-1 text-sm leading-relaxed text-neutral-400 sm:text-base">{desc}</p>
+      <StepCode cmd={cmd} id={num} copied={copied} onCopy={onCopy} />
+    </div>
+  );
+}
+
 export function Install() {
-  const root = useRef<HTMLElement>(null);
+  const root = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
   useGSAP(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    gsap.from(".step-row", {
-      y: 20,
+    gsap.from(root.current?.querySelectorAll(".step-card") ?? [], {
+      y: 24,
       opacity: 0,
       duration: 0.6,
-      stagger: 0.15,
+      stagger: 0.12,
       ease: "power2.out",
       scrollTrigger: {
         trigger: root.current,
@@ -59,56 +149,46 @@ export function Install() {
   }
 
   return (
-    <section ref={root} id="install" className="py-24 sm:py-32 border-t border-neutral-900">
-      <div className="mx-auto max-w-4xl px-6">
-        
-        <div className="mb-16 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">
-            Start tunneling in seconds
-          </h2>
-          <p className="text-lg text-neutral-400">
-            No signup required. Just install the CLI and run it.
-          </p>
-        </div>
+    <Section id="install" border>
+      <div ref={root}>
+        <SectionHeader
+          title="Start tunneling in seconds"
+          description="No signup required. Just install the CLI and run it."
+        />
 
-        <div className="space-y-4 sm:space-y-6">
-          {steps.map((step) => (
-            <div key={step.num} className="step-row card-base p-6 sm:p-8 flex flex-col md:flex-row md:items-center gap-6 md:gap-12">
-              <div className="flex-1">
-                <div className="flex items-center gap-4 mb-2">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-neutral-900 text-neutral-400 font-mono text-sm border border-neutral-800 shrink-0">
-                    {step.num}
-                  </span>
-                  <h3 className="text-lg sm:text-xl font-semibold text-white">{step.title}</h3>
-                </div>
-                <p className="text-neutral-400 text-sm md:ml-12">{step.desc}</p>
-              </div>
-              
-              <div className="w-full md:w-auto md:min-w-[420px]">
-                <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-2 pl-4 flex items-center justify-between group">
-                  <code className="font-mono text-[13px] sm:text-sm text-neutral-300">
-                    <span className="text-neutral-500 mr-2">{step.prompt}</span>
-                    {step.cmd}
-                  </code>
-                  <button 
-                    onClick={() => copy(step.cmd, step.num)}
-                    className="shrink-0 ml-4 px-4 py-2 text-xs font-medium text-neutral-500 hover:text-white transition-colors rounded-lg hover:bg-neutral-800"
-                  >
-                    {copied === step.num ? "Copied!" : "Copy"}
-                  </button>
-                </div>
-              </div>
+        <div className="space-y-8">
+          <StepCard
+            num={installStep.num}
+            title={installStep.title}
+            desc={installStep.desc}
+            cmd={installStep.cmd}
+            copied={copied}
+            onCopy={copy}
+          />
+
+          <div className="grid gap-8 sm:grid-cols-2">
+            {runSteps.map((step) => (
+              <StepCard
+                key={step.num}
+                num={step.num}
+                title={step.title}
+                desc={step.desc}
+                cmd={step.cmd}
+                copied={copied}
+                onCopy={copy}
+              />
+            ))}
+          </div>
+
+          <div className="card-base bg-neutral-900/30 p-5 sm:p-6">
+            <p className="mb-4 text-sm text-neutral-500">Prefer Go?</p>
+            <div className="code-block border-none bg-transparent p-0">
+              <code className="min-w-0 flex-1 font-mono text-sm text-neutral-300 break-all">{goCmd}</code>
+              <CopyButton cmd={goCmd} id="go" copied={copied} onCopy={copy} />
             </div>
-          ))}
+          </div>
         </div>
-
-        <div className="mt-12 text-center">
-          <p className="text-sm text-neutral-500">
-            Prefer Go? <code className="text-neutral-300 font-mono bg-neutral-900 px-2 py-1 rounded mx-1">go install github.com/bablilayoub/openhole/cmd/openhole@latest</code>
-          </p>
-        </div>
-
       </div>
-    </section>
+    </Section>
   );
 }

@@ -35,7 +35,7 @@ var blockedSubdomains = map[string]struct{}{
 }
 
 var (
-	extraMu     sync.RWMutex
+	extraMu      sync.RWMutex
 	extraBlocked map[string]struct{}
 )
 

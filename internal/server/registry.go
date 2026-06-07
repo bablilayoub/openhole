@@ -21,6 +21,7 @@ type Tunnel struct {
 	LocalPort int
 	Pending   map[string]chan tunnelResponse
 	mu        sync.Mutex
+	writeMu   sync.Mutex
 	sem       chan struct{}
 }
 
@@ -29,33 +30,67 @@ type tunnelResponse struct {
 	Err error
 }
 
+type holdEntry struct {
+	until    time.Time
+	clientIP string
+}
+
 type Registry struct {
 	mu      sync.RWMutex
 	tunnels map[string]*Tunnel
-	holds   map[string]time.Time
+	holds   map[string]holdEntry
 	holdDur time.Duration
 }
 
 func NewRegistry(holdSeconds int) *Registry {
 	return &Registry{
 		tunnels: make(map[string]*Tunnel),
-		holds:   make(map[string]time.Time),
+		holds:   make(map[string]holdEntry),
 		holdDur: time.Duration(holdSeconds) * time.Second,
 	}
 }
 
+func (t *Tunnel) WriteMessage(v any) error {
+	t.writeMu.Lock()
+	defer t.writeMu.Unlock()
+	return protocol.WriteMessage(t.Conn, v)
+}
+
 func (r *Registry) Register(t *Tunnel) error {
+	return r.register(t, 0)
+}
+
+func (r *Registry) RegisterWithIPLimit(t *Tunnel, maxPerIP int) error {
+	return r.register(t, maxPerIP)
+}
+
+func (r *Registry) register(t *Tunnel, maxPerIP int) error {
 	if err := shared.ValidateSubdomain(t.Subdomain); err != nil {
 		return err
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.cleanupHoldsLocked()
+
+	if maxPerIP > 0 {
+		n := 0
+		for _, existing := range r.tunnels {
+			if existing.ClientIP == t.ClientIP {
+				n++
+			}
+		}
+		if n >= maxPerIP {
+			return fmt.Errorf("too many tunnels from this IP")
+		}
+	}
+
 	if _, ok := r.tunnels[t.Subdomain]; ok {
 		return shared.ErrSubdomainTaken
 	}
-	if hold, ok := r.holds[t.Subdomain]; ok && time.Now().Before(hold) {
-		return shared.ErrSubdomainTaken
+	if hold, ok := r.holds[t.Subdomain]; ok && time.Now().Before(hold.until) {
+		if hold.clientIP != t.ClientIP {
+			return shared.ErrSubdomainTaken
+		}
 	}
 	delete(r.holds, t.Subdomain)
 	r.tunnels[t.Subdomain] = t
@@ -65,11 +100,18 @@ func (r *Registry) Register(t *Tunnel) error {
 func (r *Registry) Unregister(subdomain string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	var clientIP string
 	if t, ok := r.tunnels[subdomain]; ok {
+		clientIP = t.ClientIP
 		t.closeAllPending(fmt.Errorf("tunnel disconnected"))
 	}
 	delete(r.tunnels, subdomain)
-	r.holds[subdomain] = time.Now().Add(r.holdDur)
+	if clientIP != "" {
+		r.holds[subdomain] = holdEntry{
+			until:    time.Now().Add(r.holdDur),
+			clientIP: clientIP,
+		}
+	}
 }
 
 func (t *Tunnel) closeAllPending(err error) {
@@ -81,6 +123,10 @@ func (t *Tunnel) closeAllPending(err error) {
 		default:
 		}
 		delete(t.Pending, id)
+		select {
+		case <-t.sem:
+		default:
+		}
 	}
 }
 
@@ -92,14 +138,20 @@ func (r *Registry) GetBySubdomain(subdomain string) (*Tunnel, bool) {
 }
 
 func (r *Registry) IsAvailable(subdomain string) bool {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
+	return r.IsAvailableFor(subdomain, "")
+}
+
+func (r *Registry) IsAvailableFor(subdomain, clientIP string) bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.cleanupHoldsLocked()
 	if _, ok := r.tunnels[subdomain]; ok {
 		return false
 	}
-	if hold, ok := r.holds[subdomain]; ok && time.Now().Before(hold) {
-		return false
+	if hold, ok := r.holds[subdomain]; ok && time.Now().Before(hold.until) {
+		if clientIP == "" || hold.clientIP != clientIP {
+			return false
+		}
 	}
 	return shared.ValidateSubdomain(subdomain) == nil
 }
@@ -125,19 +177,19 @@ func (r *Registry) CleanupExpiredHolds() {
 func (r *Registry) cleanupHoldsLocked() {
 	now := time.Now()
 	for k, v := range r.holds {
-		if now.After(v) {
+		if now.After(v.until) {
 			delete(r.holds, k)
 		}
 	}
 }
 
-func (r *Registry) AssignSubdomain(requested string) (string, error) {
+func (r *Registry) AssignSubdomain(requested, clientIP string) (string, error) {
 	requested = strings.ToLower(strings.TrimSpace(requested))
 	if requested != "" {
 		if err := shared.ValidateSubdomain(requested); err != nil {
 			return "", err
 		}
-		if !r.IsAvailable(requested) {
+		if !r.IsAvailableFor(requested, clientIP) {
 			return "", shared.ErrSubdomainTaken
 		}
 		return requested, nil

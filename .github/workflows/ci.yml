@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache-dependency-path: go.sum
+
+      - name: Verify formatting
+        run: test -z "$(gofmt -l .)"
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race -count=1 -coverprofile=coverage.out ./...
+
+      - name: Coverage summary
+        run: go tool cover -func=coverage.out
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-coverage
+          path: coverage.out
+          retention-days: 7
+
+  website:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Verify assets
+        run: |
+          test -f public/icon-transparent.png
+          test -f public/icon-black-bg.png
+          test -f app/icon.png
+          test -f public/install.sh
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build server image
+        run: docker build -f deployments/Dockerfile.server -t openhole-server:ci .
+
+      - name: Build website image
+        run: docker build -f website/Dockerfile -t openhole-website:ci website

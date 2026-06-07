@@ -31,6 +31,9 @@ func main() {
 				host = "localhost"
 			}
 			if serverURL == "" {
+				serverURL = os.Getenv("OPENHOLE_SERVER_URL")
+			}
+			if serverURL == "" {
 				serverURL = "wss://tunnel.openhole.dev/tunnel"
 			}
 			if verbose {

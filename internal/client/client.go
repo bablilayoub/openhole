@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 type Client struct {
 	cfg        Config
 	reconnects int
+	writeMu    sync.Mutex
 }
 
 func New(cfg Config) *Client {
@@ -75,7 +77,7 @@ func (c *Client) runSession(done <-chan struct{}) error {
 		LocalHost:          c.cfg.Host,
 		Version:            shared.Version,
 	}
-	if err := protocol.WriteMessage(conn, reg); err != nil {
+	if err := c.writeMessage(conn, reg); err != nil {
 		return err
 	}
 
@@ -131,21 +133,31 @@ func (c *Client) readLoop(conn *websocket.Conn) error {
 		case protocol.TypeRequest:
 			req, err := protocol.ParseRequest(raw)
 			if err != nil {
+				_ = c.writeMessage(conn, protocol.ErrorMessage{
+					Type:    protocol.TypeError,
+					Message: "invalid request message",
+				})
 				continue
 			}
 			go c.handleRequest(conn, req)
 		case protocol.TypePing:
-			_ = protocol.WriteMessage(conn, protocol.PongMessage{Type: protocol.TypePong})
+			_ = c.writeMessage(conn, protocol.PongMessage{Type: protocol.TypePong})
 		case protocol.TypePong:
 		default:
 		}
 	}
 }
 
+func (c *Client) writeMessage(conn *websocket.Conn, v any) error {
+	c.writeMu.Lock()
+	defer c.writeMu.Unlock()
+	return protocol.WriteMessage(conn, v)
+}
+
 func (c *Client) handleRequest(conn *websocket.Conn, req protocol.RequestMessage) {
 	resp, dur, err := ForwardToLocal(req, c.cfg.Host, c.cfg.Port)
 	if err != nil {
-		_ = protocol.WriteMessage(conn, protocol.ErrorMessage{
+		_ = c.writeMessage(conn, protocol.ErrorMessage{
 			Type:      protocol.TypeError,
 			RequestID: req.RequestID,
 			Message:   err.Error(),
@@ -153,6 +165,6 @@ func (c *Client) handleRequest(conn *websocket.Conn, req protocol.RequestMessage
 		logRequest(req.Method, req.Path, 502, dur)
 		return
 	}
-	_ = protocol.WriteMessage(conn, resp)
+	_ = c.writeMessage(conn, resp)
 	logRequest(req.Method, req.Path, resp.StatusCode, dur)
 }

@@ -46,6 +46,10 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 
 	reg, err := protocol.ParseRegister(raw)
 	if err != nil {
+		_ = protocol.WriteMessage(conn, protocol.ErrorMessage{
+			Type:    protocol.TypeError,
+			Message: "invalid register message",
+		})
 		conn.Close()
 		return
 	}
@@ -59,17 +63,16 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	active := s.registry.CountByIP(ip)
-	if !s.limits.AllowRegistration(ip, active) {
+	if !s.limits.AllowRegistrationRate(ip) {
 		_ = protocol.WriteMessage(conn, protocol.ErrorMessage{
 			Type:    protocol.TypeError,
-			Message: "rate limit exceeded or too many tunnels",
+			Message: "rate limit exceeded",
 		})
 		conn.Close()
 		return
 	}
 
-	subdomain, err := s.registry.AssignSubdomain(reg.RequestedSubdomain)
+	subdomain, err := s.registry.AssignSubdomain(reg.RequestedSubdomain, ip)
 	if err != nil {
 		msg := err.Error()
 		if err == shared.ErrSubdomainTaken {
@@ -99,14 +102,14 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		sem:       make(chan struct{}, s.cfg.MaxConcurrentRequestsPerTunnel),
 	}
 
-	if err := s.registry.Register(tunnel); err != nil {
+	if err := s.registry.RegisterWithIPLimit(tunnel, s.cfg.MaxTunnelsPerIP); err != nil {
 		_ = protocol.WriteMessage(conn, protocol.ErrorMessage{Type: protocol.TypeError, Message: err.Error()})
 		conn.Close()
 		return
 	}
 
 	publicURL := s.cfg.PublicURL(subdomain)
-	_ = protocol.WriteMessage(conn, protocol.RegisteredMessage{
+	_ = tunnel.WriteMessage(protocol.RegisteredMessage{
 		Type:      protocol.TypeRegistered,
 		TunnelID:  tunnel.ID,
 		Subdomain: subdomain,
@@ -186,7 +189,7 @@ func (s *Server) tunnelPingLoop(tunnel *Tunnel) {
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
 	for range ticker.C {
-		if err := protocol.WriteMessage(tunnel.Conn, protocol.PingMessage{Type: protocol.TypePing}); err != nil {
+		if err := tunnel.WriteMessage(protocol.PingMessage{Type: protocol.TypePing}); err != nil {
 			return
 		}
 	}
@@ -204,7 +207,7 @@ func (s *Server) forwardRequest(tunnel *Tunnel, req protocol.RequestMessage) (pr
 	tunnel.Pending[req.RequestID] = ch
 	tunnel.mu.Unlock()
 
-	if err := protocol.WriteMessage(tunnel.Conn, req); err != nil {
+	if err := tunnel.WriteMessage(req); err != nil {
 		tunnel.mu.Lock()
 		delete(tunnel.Pending, req.RequestID)
 		tunnel.mu.Unlock()
@@ -213,13 +216,19 @@ func (s *Server) forwardRequest(tunnel *Tunnel, req protocol.RequestMessage) (pr
 	}
 
 	timeout := time.Duration(s.cfg.RequestTimeoutSeconds) * time.Second
+	timer := time.NewTimer(timeout)
+	defer timer.Stop()
+
 	select {
 	case res := <-ch:
+		if !timer.Stop() {
+			<-timer.C
+		}
 		if res.Err != nil {
 			return protocol.ResponseMessage{}, res.Err
 		}
 		return res.Msg, nil
-	case <-time.After(timeout):
+	case <-timer.C:
 		tunnel.mu.Lock()
 		delete(tunnel.Pending, req.RequestID)
 		tunnel.mu.Unlock()

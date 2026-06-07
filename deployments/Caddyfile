@@ -2,15 +2,35 @@
 	email {$CADDY_ACME_EMAIL}
 }
 
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
 openhole.dev, www.openhole.dev {
+	import security_headers
 	reverse_proxy website:3000
 }
 
 tunnel.openhole.dev {
+	import security_headers
+	reverse_proxy openhole-server:8080
+}
+
+ophl.link {
+	import security_headers
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
 	reverse_proxy openhole-server:8080
 }
 
 *.ophl.link {
+	import security_headers
 	tls {
 		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 	}

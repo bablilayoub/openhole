@@ -15,13 +15,32 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://openhole.dev"),
   title: "OpenHole — Share localhost instantly",
   description: "Expose local ports to the internet over HTTPS. No accounts, no config. Just one command.",
+  icons: {
+    icon: "/icon-transparent.png",
+    apple: "/icon-transparent.png",
+  },
   openGraph: {
     title: "OpenHole",
     description: "Share localhost instantly over HTTPS.",
     url: "https://openhole.dev",
     siteName: "OpenHole",
+    images: [
+      {
+        url: "/icon-black-bg.png",
+        width: 1024,
+        height: 1024,
+        alt: "OpenHole",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "OpenHole",
+    description: "Share localhost instantly over HTTPS.",
+    images: ["/icon-black-bg.png"],
   },
 };
 

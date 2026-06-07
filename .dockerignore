@@ -1,0 +1,28 @@
+# Secrets
+.env
+**/.env
+deployments/.env
+
+# Git
+.git
+.gitignore
+
+# Node / Next.js
+website/node_modules
+website/.next
+website/out
+
+# Go build artifacts
+/dist
+*.test
+coverage.out
+
+# IDE & OS
+.idea
+.vscode
+.DS_Store
+*.swp
+*.swo
+
+# Docker local data
+deployments/caddy_data

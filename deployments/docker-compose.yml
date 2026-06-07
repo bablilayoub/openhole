@@ -19,7 +19,7 @@ services:
       openhole-server:
         condition: service_healthy
       website:
-        condition: service_started
+        condition: service_healthy
 
   openhole-server:
     build:
@@ -54,12 +54,17 @@ services:
     build:
       context: ../website
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_TUNNEL_DOMAIN: ${NEXT_PUBLIC_TUNNEL_DOMAIN}
     restart: unless-stopped
     expose:
       - "3000"
-    env_file: .env
-    environment:
-      - NEXT_PUBLIC_TUNNEL_DOMAIN=${NEXT_PUBLIC_TUNNEL_DOMAIN}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
 
 volumes:
   caddy_data:

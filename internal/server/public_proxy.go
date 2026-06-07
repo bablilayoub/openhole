@@ -2,11 +2,11 @@ package server
 
 import (
 	"encoding/base64"
-	"io"
-	"net/http"
 	"github.com/bablilayoub/openhole/internal/protocol"
 	"github.com/bablilayoub/openhole/internal/shared"
 	"github.com/google/uuid"
+	"io"
+	"net/http"
 )
 
 func (s *Server) handlePublicProxy(w http.ResponseWriter, r *http.Request, subdomain string) {
@@ -78,19 +78,24 @@ func (s *Server) handlePublicProxy(w http.ResponseWriter, r *http.Request, subdo
 		return
 	}
 
+	status := resp.StatusCode
+	if status < 100 || status > 599 {
+		status = http.StatusBadGateway
+	}
+
 	for k, vals := range shared.SanitizeResponseHeaders(resp.Headers) {
 		for _, v := range vals {
 			w.Header().Add(k, v)
 		}
 	}
-	w.WriteHeader(resp.StatusCode)
+	w.WriteHeader(status)
 	_, _ = w.Write(bodyOut)
 
 	s.log.Info("public request",
 		"host", subdomain+"."+s.cfg.PublicTunnelDomain,
 		"method", r.Method,
 		"path", path,
-		"status", resp.StatusCode,
+		"status", status,
 	)
 }
 

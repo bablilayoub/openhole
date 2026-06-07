@@ -4,14 +4,17 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+VERSION="${VERSION:-$(grep 'const Version' internal/shared/version.go | sed 's/.*"\(.*\)".*/\1/')}"
+LDFLAGS="-s -w -X github.com/bablilayoub/openhole/internal/shared.Version=${VERSION}"
+
 mkdir -p dist
 GOOS="${GOOS:-$(go env GOOS)}"
 GOARCH="${GOARCH:-$(go env GOARCH)}"
 
-echo "Building openhole CLI (${GOOS}/${GOARCH})..."
-CGO_ENABLED=0 go build -ldflags="-s -w" -o "dist/openhole-${GOOS}-${GOARCH}" ./cmd/openhole
+echo "Building openhole CLI (${GOOS}/${GOARCH}) v${VERSION}..."
+CGO_ENABLED=0 go build -ldflags="${LDFLAGS}" -o "dist/openhole-${GOOS}-${GOARCH}" ./cmd/openhole
 
-echo "Building openhole-server (${GOOS}/${GOARCH})..."
-CGO_ENABLED=0 go build -ldflags="-s -w" -o "dist/openhole-server-${GOOS}-${GOARCH}" ./cmd/openhole-server
+echo "Building openhole-server (${GOOS}/${GOARCH}) v${VERSION}..."
+CGO_ENABLED=0 go build -ldflags="${LDFLAGS}" -o "dist/openhole-server-${GOOS}-${GOARCH}" ./cmd/openhole-server
 
 echo "Done. Binaries in dist/"
