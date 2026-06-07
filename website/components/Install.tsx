@@ -74,20 +74,22 @@ export function Install() {
         <div className="grid lg:grid-cols-3 gap-8">
           {steps.map((step) => (
             <div key={step.num} className="step-card flex flex-col">
-              <div className="mb-6">
+              <div className="mb-8">
                 <span className="text-sm font-mono text-neutral-500 mb-2 block">{step.num}</span>
                 <h3 className="text-xl font-semibold text-white mb-2">{step.title}</h3>
                 <p className="text-neutral-400 text-sm">{step.desc}</p>
               </div>
               
-              <div className="mt-auto card-base bg-neutral-900/50 p-4 flex items-center justify-between group">
-                <code className="font-mono text-sm text-neutral-300 overflow-x-auto whitespace-nowrap scrollbar-hide">
-                  <span className="text-neutral-500 mr-2">{step.prompt}</span>
-                  {step.cmd}
-                </code>
+              <div className="mt-auto card-base bg-neutral-900/40 p-1.5 pl-4 flex items-center justify-between group">
+                <div className="overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden min-w-0 pr-4 py-2">
+                  <code className="font-mono text-[13px] text-neutral-300">
+                    <span className="text-neutral-500 mr-2">{step.prompt}</span>
+                    {step.cmd}
+                  </code>
+                </div>
                 <button 
                   onClick={() => copy(step.cmd, step.num)}
-                  className="ml-4 text-xs font-medium text-neutral-500 hover:text-white transition-colors shrink-0"
+                  className="shrink-0 px-4 py-2 text-xs font-medium text-neutral-500 hover:text-white transition-colors rounded-xl hover:bg-neutral-800/50"
                 >
                   {copied === step.num ? "Copied!" : "Copy"}
                 </button>
