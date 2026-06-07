@@ -10,52 +10,47 @@ export default function Home() {
   return (
     <>
       <Nav />
-      <main>
+      <main className="min-h-screen">
         <Hero />
         <WhyOpenHole />
         <HowItWorks />
         <Features />
         <Install />
 
-        <section className="section" id="self-host">
-          <div className="container container-narrow">
-            <p className="section-label">Self-hosting</p>
-            <h2 className="section-title">Run your own server</h2>
-            <p className="section-desc" style={{ marginBottom: 0 }}>
-              OpenHole is open source. Deploy with Docker Compose, Caddy, and
-              Cloudflare DNS. Full instructions in the{" "}
+        <section id="self-host" className="py-24 border-t border-zinc-800/50 bg-zinc-900/10">
+          <div className="container mx-auto px-6 max-w-3xl text-center">
+            <h2 className="text-3xl font-bold mb-4">Run your own server</h2>
+            <p className="text-zinc-400 text-lg leading-relaxed">
+              OpenHole is open source. Deploy with Docker Compose, Caddy, and Cloudflare DNS on any VPS. 
+              Full instructions are available in the{" "}
               <a
                 href="https://github.com/bablilayoub/openhole#self-hosting"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: "var(--accent)" }}
+                className="text-accent hover:underline"
               >
                 README
-              </a>
-              .
+              </a>.
             </p>
           </div>
         </section>
 
-        <div className="divider" />
-
-        <section className="section" id="terms-preview" style={{ paddingTop: 0 }}>
-          <div className="container container-narrow">
-            <p className="section-desc" style={{ marginBottom: 0, fontSize: "0.9375rem" }}>
+        <section id="terms-preview" className="py-12 border-t border-zinc-800/50">
+          <div className="container mx-auto px-6 max-w-3xl text-center">
+            <p className="text-zinc-500 text-sm">
               Acceptable use: dev and demos only. No phishing or brand impersonation.{" "}
-              <a href="mailto:abuse@openhole.dev" style={{ color: "var(--accent)" }}>
+              <a href="mailto:abuse@openhole.dev" className="text-zinc-400 hover:text-accent transition-colors">
                 abuse@openhole.dev
               </a>
               {" · "}
-              <a href="/terms" style={{ color: "var(--accent)" }}>
+              <a href="/terms" className="text-zinc-400 hover:text-accent transition-colors">
                 Terms
               </a>
             </p>
           </div>
         </section>
-
-        <Footer />
       </main>
+      <Footer />
     </>
   );
 }
