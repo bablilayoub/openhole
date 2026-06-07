@@ -201,6 +201,16 @@ Orange-cloud (proxied) records on `tunnel.*` or `*.ophl.link` will break tunnel 
 docker compose up -d --build
 ```
 
+### Upgrading an existing VPS
+
+From the repo root on your server:
+
+```bash
+./scripts/migrate.sh
+```
+
+Pulls `main`, ensures `NEXT_PUBLIC_SITE_URL` is in `.env`, rebuilds all containers, and checks internal health.
+
 Verify the server is healthy:
 
 ```bash
