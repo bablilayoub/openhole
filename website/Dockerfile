@@ -9,7 +9,8 @@ ENV NEXT_PUBLIC_TUNNEL_DOMAIN=$NEXT_PUBLIC_TUNNEL_DOMAIN
 RUN npm run build --ignore-scripts
 
 FROM node:22-alpine
-RUN addgroup -g 10001 -S openhole && adduser -S -u 10001 -G openhole openhole
+RUN apk add --no-cache wget \
+  && addgroup -g 10001 -S openhole && adduser -S -u 10001 -G openhole openhole
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder --chown=openhole:openhole /app/.next/standalone ./
