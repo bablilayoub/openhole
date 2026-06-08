@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bablilayoub/openhole/internal/protocol"
 	"github.com/bablilayoub/openhole/internal/shared"
 )
 
@@ -43,6 +44,12 @@ func LoadConfig() Config {
 
 	extra := strings.Split(os.Getenv("BLOCKED_SUBDOMAINS_EXTRA"), ",")
 	shared.InitBlockedSubdomains(extra)
+
+	maxSafeBody := int64(protocol.MaxMessageSize*3/4) - 4096
+	if cfg.MaxBodyBytes > maxSafeBody {
+		cfg.MaxBodyBytes = maxSafeBody
+	}
+
 	return cfg
 }
 

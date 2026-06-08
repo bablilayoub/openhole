@@ -28,7 +28,7 @@ func (s *Server) parseTunnelHost(r *http.Request) (subdomain string, isTunnelEnd
 	if sub == "www" {
 		return "", false, true
 	}
-	return sub, false, true
+	return strings.ToLower(sub), false, true
 }
 
 func hostWithoutPort(host string) string {

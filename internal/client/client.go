@@ -157,10 +157,14 @@ func (c *Client) writeMessage(conn *websocket.Conn, v any) error {
 func (c *Client) handleRequest(conn *websocket.Conn, req protocol.RequestMessage) {
 	resp, dur, err := ForwardToLocal(req, c.cfg.Host, c.cfg.Port)
 	if err != nil {
+		msg := "local backend unavailable"
+		if c.cfg.Verbose {
+			msg = err.Error()
+		}
 		_ = c.writeMessage(conn, protocol.ErrorMessage{
 			Type:      protocol.TypeError,
 			RequestID: req.RequestID,
-			Message:   err.Error(),
+			Message:   msg,
 		})
 		logRequest(req.Method, req.Path, 502, dur)
 		return

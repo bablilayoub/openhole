@@ -10,7 +10,16 @@ import (
 )
 
 func (s *Server) handlePublicProxy(w http.ResponseWriter, r *http.Request, subdomain string) {
+	if err := shared.ValidateHTTPMethod(r.Method); err != nil {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	ip := ClientIP(r, s.cfg.TrustProxyHeaders)
+	if ip == "" {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
 	if !s.limits.AllowPublicRequest(ip) {
 		http.Error(w, "rate limit exceeded", http.StatusTooManyRequests)
 		return
@@ -33,6 +42,10 @@ func (s *Server) handlePublicProxy(w http.ResponseWriter, r *http.Request, subdo
 	}
 
 	path := requestPath(r)
+	if err := shared.ValidateRequestPath(path); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
 
 	reqMsg := protocol.RequestMessage{
 		Type:       protocol.TypeRequest,

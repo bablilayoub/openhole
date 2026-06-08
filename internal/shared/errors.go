@@ -12,4 +12,7 @@ var (
 	ErrBodyTooLarge      = errors.New("body exceeds size limit")
 	ErrRequestTimeout    = errors.New("request timed out")
 	ErrTooManyConcurrent = errors.New("too many concurrent requests")
+	ErrInvalidMethod     = errors.New("invalid http method")
+	ErrInvalidPath       = errors.New("invalid request path")
+	ErrInvalidHost       = errors.New("invalid host")
 )

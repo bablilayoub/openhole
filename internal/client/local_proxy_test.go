@@ -124,3 +124,16 @@ func TestForwardToLocalPreservesEncodedSlash(t *testing.T) {
 		t.Fatalf("RequestURI = %q, want %q", gotRequestURI, "/a%2fb")
 	}
 }
+
+func TestForwardToLocalRejectsAbsolutePath(t *testing.T) {
+	req := protocol.RequestMessage{
+		Type:      protocol.TypeRequest,
+		RequestID: "req-abs",
+		Method:    "GET",
+		Path:      "http://169.254.169.254/",
+	}
+	_, _, err := ForwardToLocal(req, "127.0.0.1", 8080)
+	if err == nil {
+		t.Fatal("expected error for absolute path")
+	}
+}

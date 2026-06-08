@@ -12,7 +12,10 @@ import (
 )
 
 var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool { return true },
+	// CLI clients do not send Origin; block browser-driven WebSocket registration.
+	CheckOrigin: func(r *http.Request) bool {
+		return r.Header.Get("Origin") == ""
+	},
 }
 
 func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
@@ -22,10 +25,19 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ip := ClientIP(r, s.cfg.TrustProxyHeaders)
+	if ip == "" {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
 	if s.limits.IsIPBlocked(ip) {
 		http.Error(w, "forbidden", http.StatusForbidden)
 		return
 	}
+	if !s.limits.BeginTunnelUpgrade(ip) {
+		http.Error(w, "rate limit exceeded", http.StatusTooManyRequests)
+		return
+	}
+	defer s.limits.EndTunnelUpgrade(ip)
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -33,6 +45,7 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	conn.SetReadLimit(protocol.MaxMessageSize)
+	_ = conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 
 	env, raw, err := protocol.ReadMessage(conn)
 	if err != nil || env.Type != protocol.TypeRegister {
@@ -58,15 +71,6 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		_ = protocol.WriteMessage(conn, protocol.ErrorMessage{
 			Type:    protocol.TypeError,
 			Message: "invalid local_port",
-		})
-		conn.Close()
-		return
-	}
-
-	if !s.limits.AllowRegistrationRate(ip) {
-		_ = protocol.WriteMessage(conn, protocol.ErrorMessage{
-			Type:    protocol.TypeError,
-			Message: "rate limit exceeded",
 		})
 		conn.Close()
 		return
@@ -102,6 +106,8 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	publicURL := s.cfg.PublicURL(subdomain)
+	_ = conn.SetReadDeadline(time.Time{})
+
 	_ = tunnel.WriteMessage(protocol.RegisteredMessage{
 		Type:      protocol.TypeRegistered,
 		TunnelID:  tunnel.ID,

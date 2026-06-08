@@ -9,6 +9,8 @@ func TestSanitizeIncomingHTTPHeaders(t *testing.T) {
 	h := http.Header{}
 	h.Set("Content-Type", "application/json")
 	h.Set("X-Forwarded-For", "1.2.3.4")
+	h.Set("CF-Connecting-IP", "9.9.9.9")
+	h.Set("Content-Length", "42")
 	h.Set("Connection", "keep-alive")
 	h.Set("X-Custom", "ok")
 
@@ -16,6 +18,12 @@ func TestSanitizeIncomingHTTPHeaders(t *testing.T) {
 
 	if _, ok := out["X-Forwarded-For"]; ok {
 		t.Fatal("X-Forwarded-For should be stripped")
+	}
+	if _, ok := out["Cf-Connecting-Ip"]; ok {
+		t.Fatal("CF-Connecting-IP should be stripped")
+	}
+	if _, ok := out["Content-Length"]; ok {
+		t.Fatal("Content-Length should be stripped")
 	}
 	if _, ok := out["Connection"]; ok {
 		t.Fatal("Connection should be stripped")

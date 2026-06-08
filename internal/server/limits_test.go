@@ -63,4 +63,31 @@ func TestClientIP(t *testing.T) {
 	if got := ClientIP(req, true); got != "1.2.3.4" {
 		t.Fatalf("with proxy: got %q", got)
 	}
+
+	req.Header.Set("X-Forwarded-For", "not-an-ip")
+	if got := ClientIP(req, true); got != "203.0.113.5" {
+		t.Fatalf("invalid XFF should fall back to RemoteAddr, got %q", got)
+	}
+}
+
+func TestBeginTunnelUpgradePendingLimit(t *testing.T) {
+	cfg := testConfig()
+	cfg.MaxRegistrationsPerIPPerMinute = 100
+	l := NewLimits(cfg)
+	ip := "198.51.100.1"
+
+	for i := 0; i < maxPendingUpgradesPerIP; i++ {
+		if !l.BeginTunnelUpgrade(ip) {
+			t.Fatalf("pending upgrade %d should be allowed", i+1)
+		}
+	}
+	if l.BeginTunnelUpgrade(ip) {
+		t.Fatal("pending upgrade above cap should be blocked")
+	}
+	for i := 0; i < maxPendingUpgradesPerIP; i++ {
+		l.EndTunnelUpgrade(ip)
+	}
+	if !l.BeginTunnelUpgrade(ip) {
+		t.Fatal("slot should be available after release")
+	}
 }

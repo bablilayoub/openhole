@@ -8,6 +8,7 @@ import (
 	"github.com/bablilayoub/openhole/internal/client"
 	"github.com/bablilayoub/openhole/internal/shared"
 	"github.com/bablilayoub/openhole/internal/uninstall"
+	"github.com/bablilayoub/openhole/internal/update"
 	"github.com/spf13/cobra"
 )
 
@@ -31,6 +32,14 @@ func main() {
 			if host == "" {
 				host = "localhost"
 			}
+			if err := shared.ValidateHost(host); err != nil {
+				return fmt.Errorf("invalid --host: use a hostname without a port (e.g. localhost)")
+			}
+			if subdomain != "" {
+				if err := shared.ValidateSubdomain(subdomain); err != nil {
+					return err
+				}
+			}
 			if serverURL == "" {
 				serverURL = os.Getenv("OPENHOLE_SERVER_URL")
 			}
@@ -40,6 +49,7 @@ func main() {
 			if verbose {
 				fmt.Fprintf(os.Stderr, "server=%s host=%s port=%d\n", serverURL, host, port)
 			}
+			update.MaybeNotify()
 			c := client.New(client.Config{
 				Port:      port,
 				Host:      host,
@@ -66,6 +76,22 @@ func main() {
 	}
 	uninstallCmd.Flags().StringVar(&installDir, "install-dir", "", "Install directory to check (default: /usr/local/bin or $INSTALL_DIR)")
 	root.AddCommand(uninstallCmd)
+
+	var checkOnly bool
+	var updateInstallDir string
+	updateCmd := &cobra.Command{
+		Use:   "update",
+		Short: "Check for and install the latest openhole release",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if checkOnly {
+				return update.PrintStatus(cmd.Context())
+			}
+			return update.Run(cmd.Context(), updateInstallDir)
+		},
+	}
+	updateCmd.Flags().BoolVar(&checkOnly, "check", false, "Check for updates without installing")
+	updateCmd.Flags().StringVar(&updateInstallDir, "install-dir", "", "Install directory (default: current openhole binary path)")
+	root.AddCommand(updateCmd)
 
 	if err := root.Execute(); err != nil {
 		os.Exit(1)

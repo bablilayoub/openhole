@@ -53,6 +53,15 @@ cd openhole
 
 Binaries are written to `dist/`.
 
+### Update
+
+```bash
+openhole update          # download and install the latest release
+openhole update --check  # check only
+```
+
+When you start a tunnel, OpenHole checks for updates once per day and prints a hint if a newer version is available. Disable with `OPENHOLE_SKIP_UPDATE_CHECK=1`.
+
 ### Uninstall
 
 ```bash
