@@ -60,7 +60,7 @@ func (c *Client) Run() error {
 		case <-done:
 			return nil
 		default:
-			fmt.Println("Connection lost. Reconnecting...")
+			fmt.Println(shared.Paint(shared.AnsiYellow, "Connection lost. Reconnecting..."))
 			time.Sleep(backoff)
 			backoff *= 2
 			if backoff > 30*time.Second {
@@ -124,18 +124,25 @@ func (c *Client) runSession(done <-chan struct{}) error {
 	}
 
 	if c.reconnects == 0 {
-		fmt.Fprintf(os.Stderr,
-			"\n⚠  This exposes http://%s to the internet. Anyone with the URL can access it.\n\n",
+		warn := fmt.Sprintf(
+			"⚠  This exposes http://%s to the internet. Anyone with the URL can access it.",
 			net.JoinHostPort(c.cfg.Host, strconv.Itoa(c.cfg.Port)),
 		)
-		fmt.Printf("OpenHole %s\n\n✓ Tunnel ready\n", shared.Version)
+		fmt.Fprintf(os.Stderr, "\n%s\n\n", shared.PaintErr(shared.AnsiYellow, warn))
+		fmt.Printf("%s\n\n%s\n",
+			shared.Paint(shared.AnsiBold, "OpenHole "+shared.Version),
+			shared.Paint(shared.AnsiGreen, "✓ Tunnel ready"),
+		)
 	} else {
-		fmt.Println("✓ Reconnected")
+		fmt.Println(shared.Paint(shared.AnsiGreen, "✓ Reconnected"))
 	}
-	fmt.Printf("→ %s\n", regd.PublicURL)
-	fmt.Printf("→ forwarding to http://%s:%d\n\n", c.cfg.Host, c.cfg.Port)
+	fmt.Printf("%s %s\n", shared.Paint(shared.AnsiDim, "→"), shared.Paint(shared.AnsiCyan, regd.PublicURL))
+	fmt.Printf("%s %s\n\n",
+		shared.Paint(shared.AnsiDim, "→"),
+		shared.Paint(shared.AnsiDim, fmt.Sprintf("forwarding to http://%s:%d", c.cfg.Host, c.cfg.Port)),
+	)
 	if c.reconnects == 0 {
-		fmt.Println("Requests:")
+		fmt.Println(shared.Paint(shared.AnsiDim, "Requests:"))
 	}
 	c.reconnects++
 

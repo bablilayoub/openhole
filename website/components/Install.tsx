@@ -29,9 +29,28 @@ const runSteps = [
     desc: "Point OpenHole at your local port to get a public URL.",
     cmd: "openhole 3000",
   },
+  {
+    num: "04",
+    title: "Stable webhook URL",
+    desc: "Use --subdomain for a fixed name. Reclaim tokens persist in ~/.config/openhole/reclaim.json.",
+    cmd: "openhole 3000 --subdomain myapp",
+  },
 ];
 
-const uninstallCmd = "openhole uninstall";
+const maintenanceSteps = [
+  {
+    num: "05",
+    title: "Update the CLI",
+    desc: "Download and install the latest release from GitHub.",
+    cmd: "openhole update",
+  },
+  {
+    num: "06",
+    title: "Uninstall",
+    desc: "Remove the binary from your PATH when you are done.",
+    cmd: "openhole uninstall",
+  },
+];
 
 function CopyIcon() {
   return (
@@ -181,11 +200,19 @@ export function Install() {
             ))}
           </div>
 
-          <div className="card-base bg-neutral-900/30 p-5 sm:p-6">
-            <p className="mb-4 text-sm text-neutral-500">Need to remove it?</p>
-            <div className="code-block border-none bg-transparent p-0">
-              <code className="min-w-0 flex-1 font-mono text-sm text-neutral-300 break-all">{uninstallCmd}</code>
-              <CopyButton cmd={uninstallCmd} id="uninstall" copied={copied} onCopy={copy} />
+          <div className="space-y-8 border-t border-neutral-800 pt-8">
+            <div className="grid gap-8 sm:grid-cols-2">
+              {maintenanceSteps.map((step) => (
+                <StepCard
+                  key={step.num}
+                  num={step.num}
+                  title={step.title}
+                  desc={step.desc}
+                  cmd={step.cmd}
+                  copied={copied}
+                  onCopy={copy}
+                />
+              ))}
             </div>
           </div>
         </div>

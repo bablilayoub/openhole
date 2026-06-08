@@ -14,12 +14,13 @@ export function Nav() {
   }, []);
 
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4 sm:px-6 sm:pt-5">
-      <div
-        className={`pointer-events-auto flex h-12 w-full max-w-2xl items-center justify-between rounded-full px-2 pl-4 transition-all duration-300 sm:h-14 sm:max-w-3xl sm:pl-5 ${
-          scrolled ? "floating-nav floating-nav-scrolled" : "floating-nav"
-        }`}
-      >
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-4 sm:pt-5">
+      <div className="page-container pointer-events-auto">
+        <div
+          className={`flex h-12 w-full items-center justify-between rounded-full px-2 pl-4 transition-all duration-300 sm:h-14 sm:pl-5 ${
+            scrolled ? "floating-nav floating-nav-scrolled" : "floating-nav"
+          }`}
+        >
         <Logo iconClassName="h-10 w-10 sm:h-11 sm:w-11" className="text-base sm:text-lg" />
 
         <nav className="flex items-center gap-1 sm:gap-2">
@@ -44,6 +45,7 @@ export function Nav() {
             Install
           </a>
         </nav>
+        </div>
       </div>
     </header>
   );

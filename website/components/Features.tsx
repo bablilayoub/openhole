@@ -19,7 +19,7 @@ const features = [
   },
   {
     title: "Custom subdomains",
-    description: "Pass --subdomain to claim a specific URL. Reconnect with the same flag to keep webhook endpoints stable.",
+    description: "Pass --subdomain for a stable URL. A reclaim token keeps the name across reconnects, even from a new network.",
   },
   {
     title: "Live request logging",
@@ -66,7 +66,7 @@ export function Features() {
               Nothing you don&apos;t.
             </>
           }
-          description="A focused feature set designed to get out of your way and let you build."
+          description="HTTPS hits ophl.link, relays over WebSocket to your CLI, then localhost. Anyone with the URL can access your tunnel — use it carefully."
         />
 
         <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">

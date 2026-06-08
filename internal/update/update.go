@@ -215,10 +215,11 @@ func MaybeNotify() {
 		}
 
 		if CompareVersions(shared.Version, latest) < 0 && state.LastNotifiedLatest != latest {
-			fmt.Fprintf(os.Stderr,
-				"\n→ Update available: v%s (you have v%s). Run: openhole update\n\n",
+			msg := fmt.Sprintf(
+				"→ Update available: v%s (you have v%s). Run: openhole update",
 				latest, shared.Version,
 			)
+			fmt.Fprintf(os.Stderr, "\n%s\n\n", shared.PaintErr(shared.AnsiYellow, msg))
 			state.LastNotifiedLatest = latest
 		}
 
@@ -233,13 +234,13 @@ func PrintStatus(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Printf("openhole v%s\n", shared.Version)
+	fmt.Println(shared.Paint(shared.AnsiBold, "openhole v"+shared.Version))
 	if available {
-		fmt.Printf("Latest:  v%s (update available)\n", latest)
-		fmt.Println("Run: openhole update")
+		fmt.Println(shared.Paint(shared.AnsiYellow, fmt.Sprintf("Latest:  v%s (update available)", latest)))
+		fmt.Println(shared.Paint(shared.AnsiDim, "Run: openhole update"))
 		return nil
 	}
-	fmt.Printf("Latest:  v%s (up to date)\n", latest)
+	fmt.Println(shared.Paint(shared.AnsiGreen, fmt.Sprintf("Latest:  v%s (up to date)", latest)))
 	return nil
 }
 
@@ -257,7 +258,7 @@ func Run(ctx context.Context, installDir string) error {
 	_ = saveCache(state)
 
 	if CompareVersions(shared.Version, latest) >= 0 {
-		fmt.Printf("Already on the latest version (v%s).\n", shared.Version)
+		fmt.Println(shared.Paint(shared.AnsiGreen, fmt.Sprintf("Already on the latest version (v%s).", shared.Version)))
 		return nil
 	}
 
@@ -266,7 +267,7 @@ func Run(ctx context.Context, installDir string) error {
 		return err
 	}
 
-	fmt.Printf("Updating openhole v%s → v%s\n", shared.Version, latest)
+	fmt.Println(shared.Paint(shared.AnsiCyan, fmt.Sprintf("Updating openhole v%s → v%s", shared.Version, latest)))
 
 	tmp, err := downloadRelease(ctx, latest)
 	if err != nil {
@@ -278,8 +279,8 @@ func Run(ctx context.Context, installDir string) error {
 		return err
 	}
 
-	fmt.Printf("✓ Updated to v%s\n", latest)
-	fmt.Printf("  Installed to %s\n", target)
+	fmt.Println(shared.Paint(shared.AnsiGreen, "✓ Updated to v"+latest))
+	fmt.Println(shared.Paint(shared.AnsiDim, "  Installed to "+target))
 	return nil
 }
 
@@ -421,7 +422,7 @@ func verifyChecksum(ctx context.Context, file, binary, checksumsURL string) erro
 		return fmt.Errorf("checksum mismatch for %s", binary)
 	}
 
-	fmt.Fprintln(os.Stderr, "✓ Checksum verified")
+	fmt.Fprintln(os.Stderr, shared.PaintErr(shared.AnsiGreen, "✓ Checksum verified"))
 	return nil
 }
 

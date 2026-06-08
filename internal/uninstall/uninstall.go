@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/bablilayoub/openhole/internal/shared"
 )
 
 const binaryName = "openhole"
@@ -140,7 +142,7 @@ func Run(installDir string) error {
 	paths := Candidates(installDir)
 	result := Result{Checked: paths}
 
-	fmt.Println("OpenHole uninstall")
+	fmt.Println(shared.Paint(shared.AnsiBold, "OpenHole uninstall"))
 	fmt.Println()
 
 	for _, path := range paths {
@@ -157,21 +159,21 @@ func Run(installDir string) error {
 		if err := removeBinary(path); err != nil {
 			return err
 		}
-		fmt.Printf("✓ Removed %s\n", path)
+		fmt.Printf("%s %s\n", shared.Paint(shared.AnsiGreen, "✓ Removed"), path)
 		result.Removed = append(result.Removed, path)
 	}
 
 	if len(result.Removed) == 0 {
-		fmt.Println("openhole not found — nothing to remove")
+		fmt.Println(shared.Paint(shared.AnsiYellow, "openhole not found — nothing to remove"))
 		fmt.Println()
-		fmt.Println("Checked:")
+		fmt.Println(shared.Paint(shared.AnsiDim, "Checked:"))
 		for _, path := range paths {
-			fmt.Printf("  %s\n", path)
+			fmt.Printf("  %s\n", shared.Paint(shared.AnsiDim, path))
 		}
 		return nil
 	}
 
 	fmt.Println()
-	fmt.Println("Done. OpenHole has been uninstalled.")
+	fmt.Println(shared.Paint(shared.AnsiGreen, "Done. OpenHole has been uninstalled."))
 	return nil
 }

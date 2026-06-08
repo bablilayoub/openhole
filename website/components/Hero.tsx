@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { tunnelDomain as domain } from "@/lib/site";
+import { cliVersion, tunnelDomain as domain } from "@/lib/site";
 
 gsap.registerPlugin(useGSAP);
 
@@ -57,7 +57,7 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="hero-terminal mx-auto max-w-4xl card-base shadow-2xl shadow-white/5">
+        <div className="hero-terminal w-full card-base shadow-2xl shadow-white/5">
           <div className="flex items-center border-b border-neutral-800 bg-neutral-900/50 px-4 py-3">
             <div className="flex gap-2">
               <div className="h-3 w-3 rounded-full bg-neutral-700" />
@@ -70,17 +70,22 @@ export function Hero() {
           <div className="p-6 font-mono text-sm leading-relaxed sm:p-8 sm:text-base">
             <div className="flex gap-3">
               <span className="text-neutral-500">$</span>
-              <span className="text-white">openhole 3000</span>
+              <span className="text-white">openhole 3000 --subdomain myapp</span>
             </div>
 
-            <div className="mt-6 space-y-2">
+            <div className="mt-4 rounded-lg border border-amber-900/30 bg-amber-950/20 px-3 py-2 text-xs text-amber-200/90 sm:text-sm">
+              ⚠ Exposes http://localhost:3000 to the internet
+            </div>
+
+            <div className="mt-5 space-y-2 text-neutral-400">
+              <div>OpenHole v{cliVersion}</div>
               <div className="flex gap-3">
                 <span className="text-emerald-500">✓</span>
-                <span className="text-neutral-300">Tunnel registered successfully</span>
+                <span className="text-neutral-300">Tunnel ready</span>
               </div>
               <div className="flex gap-3">
                 <span className="text-neutral-500">→</span>
-                <span className="text-white">https://blue-fox.{domain}</span>
+                <span className="text-white">https://myapp.{domain}</span>
               </div>
               <div className="flex gap-3">
                 <span className="text-neutral-500">→</span>

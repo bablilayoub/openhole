@@ -10,6 +10,10 @@ export const tunnelDomain =
 
 export const githubRepo = "https://github.com/bablilayoub/openhole";
 
+export const githubReleases = `${githubRepo}/releases`;
+
+export const cliVersion = "0.1.4";
+
 export function isGitHubReferrer(referrer: string): boolean {
   if (!referrer) return false;
   try {
