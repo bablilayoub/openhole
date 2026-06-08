@@ -12,22 +12,22 @@ var hopByHop = map[string]struct{}{
 }
 
 var stripForwarded = map[string]struct{}{
-	"x-forwarded-for":          {},
-	"x-forwarded-host":         {},
-	"x-forwarded-proto":        {},
-	"x-forwarded-port":         {},
-	"x-forwarded-ssl":          {},
-	"x-real-ip":                {},
+	"x-forwarded-for":        {},
+	"x-forwarded-host":       {},
+	"x-forwarded-proto":      {},
+	"x-forwarded-port":       {},
+	"x-forwarded-ssl":        {},
+	"x-real-ip":              {},
 	"forwarded":              {},
-	"cf-connecting-ip":         {},
-	"true-client-ip":           {},
-	"x-client-ip":              {},
-	"x-cluster-client-ip":      {},
-	"fastly-client-ip":         {},
-	"x-original-url":           {},
-	"x-rewrite-url":            {},
-	"x-http-method-override":   {},
-	"content-length":           {},
+	"cf-connecting-ip":       {},
+	"true-client-ip":         {},
+	"x-client-ip":            {},
+	"x-cluster-client-ip":    {},
+	"fastly-client-ip":       {},
+	"x-original-url":         {},
+	"x-rewrite-url":          {},
+	"x-http-method-override": {},
+	"content-length":         {},
 }
 
 func SanitizeIncomingHTTPHeaders(h http.Header) map[string][]string {

@@ -20,13 +20,13 @@ import (
 )
 
 const (
-	defaultRepo      = "bablilayoub/openhole"
-	checkInterval    = 24 * time.Hour
-	httpTimeout      = 15 * time.Second
-	cacheDirName     = "openhole"
-	cacheFileName    = "update.json"
-	envSkipCheck     = "OPENHOLE_SKIP_UPDATE_CHECK"
-	envInstallScript = "OPENHOLE_INSTALL_URL"
+	defaultRepo       = "bablilayoub/openhole"
+	checkInterval     = 24 * time.Hour
+	httpTimeout       = 15 * time.Second
+	cacheDirName      = "openhole"
+	cacheFileName     = "update.json"
+	envSkipCheck      = "OPENHOLE_SKIP_UPDATE_CHECK"
+	envInstallScript  = "OPENHOLE_INSTALL_URL"
 	defaultInstallURL = "https://openhole.dev/install.sh"
 )
 
