@@ -10,6 +10,16 @@ export const tunnelDomain =
 
 export const githubRepo = "https://github.com/bablilayoub/openhole";
 
+export function isGitHubReferrer(referrer: string): boolean {
+  if (!referrer) return false;
+  try {
+    const host = new URL(referrer).hostname.toLowerCase();
+    return host === "github.com" || host.endsWith(".github.com");
+  } catch {
+    return false;
+  }
+}
+
 export function scriptPath(name: "install" | "uninstall"): string {
   return `/${name}.sh`;
 }

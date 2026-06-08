@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { githubRepo } from "@/lib/site";
+import { githubRepo, isGitHubReferrer } from "@/lib/site";
 
 gsap.registerPlugin(useGSAP);
 
@@ -16,7 +16,7 @@ export function StarModal() {
 
   useEffect(() => {
     if (localStorage.getItem(STORAGE_KEY)) return;
-    if (document.referrer.includes("github.com")) return;
+    if (isGitHubReferrer(document.referrer)) return;
 
     let shown = false;
     const show = () => {
