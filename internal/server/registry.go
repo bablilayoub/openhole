@@ -12,15 +12,16 @@ import (
 )
 
 type Tunnel struct {
-	ID        string
-	Subdomain string
-	Conn      *websocket.Conn
-	ClientIP  string
-	CreatedAt time.Time
-	Pending   map[string]chan tunnelResponse
-	mu        sync.Mutex
-	writeMu   sync.Mutex
-	sem       chan struct{}
+	ID               string
+	Subdomain        string
+	Conn             *websocket.Conn
+	ClientIP         string
+	ReclaimTokenHash string
+	CreatedAt        time.Time
+	Pending          map[string]chan tunnelResponse
+	mu               sync.Mutex
+	writeMu          sync.Mutex
+	sem              chan struct{}
 }
 
 type tunnelResponse struct {
@@ -29,8 +30,9 @@ type tunnelResponse struct {
 }
 
 type holdEntry struct {
-	until    time.Time
-	clientIP string
+	until     time.Time
+	clientIP  string
+	tokenHash string
 }
 
 type Registry struct {
@@ -55,14 +57,14 @@ func (t *Tunnel) WriteMessage(v any) error {
 }
 
 func (r *Registry) Register(t *Tunnel) error {
-	return r.register(t, 0)
+	return r.register(t, 0, "")
 }
 
-func (r *Registry) RegisterWithIPLimit(t *Tunnel, maxPerIP int) error {
-	return r.register(t, maxPerIP)
+func (r *Registry) RegisterWithIPLimit(t *Tunnel, maxPerIP int, reclaimToken string) error {
+	return r.register(t, maxPerIP, reclaimToken)
 }
 
-func (r *Registry) register(t *Tunnel, maxPerIP int) error {
+func (r *Registry) register(t *Tunnel, maxPerIP int, reclaimToken string) error {
 	if err := shared.ValidateSubdomain(t.Subdomain); err != nil {
 		return err
 	}
@@ -86,7 +88,7 @@ func (r *Registry) register(t *Tunnel, maxPerIP int) error {
 		return shared.ErrSubdomainTaken
 	}
 	if hold, ok := r.holds[t.Subdomain]; ok && time.Now().Before(hold.until) {
-		if hold.clientIP != t.ClientIP {
+		if !canReclaimHold(hold, t.ClientIP, reclaimToken) {
 			return shared.ErrSubdomainTaken
 		}
 	}
@@ -95,19 +97,34 @@ func (r *Registry) register(t *Tunnel, maxPerIP int) error {
 	return nil
 }
 
+// IssueReclaimToken creates a reclaim token for named subdomains.
+func (r *Registry) IssueReclaimToken(t *Tunnel, named bool) string {
+	if !named {
+		return ""
+	}
+	plain, hash, err := newReclaimToken()
+	if err != nil {
+		return ""
+	}
+	t.ReclaimTokenHash = hash
+	return plain
+}
+
 func (r *Registry) Unregister(subdomain string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	var clientIP string
+	var clientIP, tokenHash string
 	if t, ok := r.tunnels[subdomain]; ok {
 		clientIP = t.ClientIP
+		tokenHash = t.ReclaimTokenHash
 		t.closeAllPending(fmt.Errorf("tunnel disconnected"))
 	}
 	delete(r.tunnels, subdomain)
 	if clientIP != "" {
 		r.holds[subdomain] = holdEntry{
-			until:    time.Now().Add(r.holdDur),
-			clientIP: clientIP,
+			until:     time.Now().Add(r.holdDur),
+			clientIP:  clientIP,
+			tokenHash: tokenHash,
 		}
 	}
 }
@@ -136,10 +153,10 @@ func (r *Registry) GetBySubdomain(subdomain string) (*Tunnel, bool) {
 }
 
 func (r *Registry) IsAvailable(subdomain string) bool {
-	return r.IsAvailableFor(subdomain, "")
+	return r.IsAvailableFor(subdomain, "", "")
 }
 
-func (r *Registry) IsAvailableFor(subdomain, clientIP string) bool {
+func (r *Registry) IsAvailableFor(subdomain, clientIP, reclaimToken string) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.cleanupHoldsLocked()
@@ -147,7 +164,7 @@ func (r *Registry) IsAvailableFor(subdomain, clientIP string) bool {
 		return false
 	}
 	if hold, ok := r.holds[subdomain]; ok && time.Now().Before(hold.until) {
-		if clientIP == "" || hold.clientIP != clientIP {
+		if !canReclaimHold(hold, clientIP, reclaimToken) {
 			return false
 		}
 	}
@@ -169,13 +186,13 @@ func (r *Registry) cleanupHoldsLocked() {
 	}
 }
 
-func (r *Registry) AssignSubdomain(requested, clientIP string) (string, error) {
+func (r *Registry) AssignSubdomain(requested, clientIP, reclaimToken string) (string, error) {
 	requested = strings.ToLower(strings.TrimSpace(requested))
 	if requested != "" {
 		if err := shared.ValidateSubdomain(requested); err != nil {
 			return "", err
 		}
-		if !r.IsAvailableFor(requested, clientIP) {
+		if !r.IsAvailableFor(requested, clientIP, reclaimToken) {
 			return "", shared.ErrSubdomainTaken
 		}
 		return requested, nil

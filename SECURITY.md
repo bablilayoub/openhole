@@ -26,6 +26,18 @@ OpenHole tunnels can expose local services to the public internet. To report phi
 | `openhole.dev` / `ophl.link` infrastructure | Social engineering |
 | Official Docker deployment configs | Third-party dependencies (report upstream) |
 
+## Deployment requirements
+
+- **Never expose `openhole-server` port 8080 directly to the internet** with `TRUST_PROXY_HEADERS=true`. Place Caddy (or another trusted reverse proxy) in front so it overwrites `X-Forwarded-For`. Otherwise clients can spoof IP-based rate limits and subdomain hold reclaim.
+- **Always use `wss://`** for the CLI tunnel endpoint in production. Reclaim tokens are secrets; `ws://` sends them in cleartext.
+- **Do not run tunnels with `--verbose`** against production services — backend error details are forwarded to public requesters.
+
+## Known limitations (not bugs)
+
+- Tunnel registration is intentionally unauthenticated on the public free tier.
+- Named subdomains can be reclaimed during the hold window by the same egress IP without a reclaim token (NAT/shared-IP environments).
+- Per-IP rate limits do not stop distributed abuse across many source IPs.
+
 ## Supported Versions
 
 | Version | Supported |

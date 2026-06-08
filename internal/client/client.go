@@ -2,8 +2,11 @@ package client
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"os/signal"
+	"strconv"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -14,14 +17,20 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+const maxConcurrentLocal = 25
+
 type Client struct {
 	cfg        Config
 	reconnects int
 	writeMu    sync.Mutex
+	reqSem     chan struct{}
 }
 
 func New(cfg Config) *Client {
-	return &Client{cfg: cfg}
+	return &Client{
+		cfg:    cfg,
+		reqSem: make(chan struct{}, maxConcurrentLocal),
+	}
 }
 
 func (c *Client) Run() error {
@@ -62,6 +71,10 @@ func (c *Client) Run() error {
 }
 
 func (c *Client) runSession(done <-chan struct{}) error {
+	if strings.HasPrefix(strings.ToLower(c.cfg.ServerURL), "ws://") {
+		return fmt.Errorf("insecure WebSocket URL (ws://); use wss://")
+	}
+
 	conn, _, err := websocket.DefaultDialer.Dial(c.cfg.ServerURL, nil)
 	if err != nil {
 		return err
@@ -69,10 +82,16 @@ func (c *Client) runSession(done <-chan struct{}) error {
 	defer conn.Close()
 	conn.SetReadLimit(protocol.MaxMessageSize)
 
+	reclaimToken := ""
+	if c.cfg.Subdomain != "" {
+		reclaimToken = loadReclaimToken(c.cfg.Subdomain)
+	}
+
 	reg := protocol.RegisterMessage{
 		Type:               protocol.TypeRegister,
 		ClientID:           uuid.NewString(),
 		RequestedSubdomain: c.cfg.Subdomain,
+		ReclaimToken:       reclaimToken,
 		LocalPort:          c.cfg.Port,
 		LocalHost:          c.cfg.Host,
 		Version:            shared.Version,
@@ -97,7 +116,18 @@ func (c *Client) runSession(done <-chan struct{}) error {
 		return err
 	}
 
+	if regd.ReclaimToken != "" && c.cfg.Subdomain != "" {
+		want := strings.ToLower(strings.TrimSpace(c.cfg.Subdomain))
+		if regd.Subdomain == want {
+			_ = saveReclaimToken(regd.Subdomain, regd.ReclaimToken)
+		}
+	}
+
 	if c.reconnects == 0 {
+		fmt.Fprintf(os.Stderr,
+			"\n⚠  This exposes http://%s to the internet. Anyone with the URL can access it.\n\n",
+			net.JoinHostPort(c.cfg.Host, strconv.Itoa(c.cfg.Port)),
+		)
 		fmt.Printf("OpenHole %s\n\n✓ Tunnel ready\n", shared.Version)
 	} else {
 		fmt.Println("✓ Reconnected")
@@ -155,6 +185,19 @@ func (c *Client) writeMessage(conn *websocket.Conn, v any) error {
 }
 
 func (c *Client) handleRequest(conn *websocket.Conn, req protocol.RequestMessage) {
+	select {
+	case c.reqSem <- struct{}{}:
+	default:
+		_ = c.writeMessage(conn, protocol.ErrorMessage{
+			Type:      protocol.TypeError,
+			RequestID: req.RequestID,
+			Message:   "too many concurrent requests",
+		})
+		logRequest(req.Method, req.Path, 503, 0)
+		return
+	}
+	defer func() { <-c.reqSem }()
+
 	resp, dur, err := ForwardToLocal(req, c.cfg.Host, c.cfg.Port)
 	if err != nil {
 		msg := "local backend unavailable"

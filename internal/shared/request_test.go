@@ -8,7 +8,9 @@ func TestValidateRequestPath(t *testing.T) {
 		ok   bool
 	}{
 		{"/api/users", true},
-		{"/%2e%2e/secret", true},
+		{"/%2e%2e/secret", false},
+		{"/foo..bar", true},
+		{"/%252e%252e/secret", false},
 		{"http://evil.com/", false},
 		{"//evil.com/", false},
 		{"../secret", false},

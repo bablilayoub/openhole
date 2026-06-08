@@ -1,6 +1,7 @@
 package shared
 
 import (
+	"net/url"
 	"strings"
 	"unicode"
 )
@@ -37,7 +38,37 @@ func ValidateRequestPath(path string) error {
 	if strings.Contains(path, "://") {
 		return ErrInvalidPath
 	}
+	return rejectTraversalInPath(path)
+}
+
+func rejectTraversalInPath(path string) error {
+	decoded := path
+	for i := 0; i < 3; i++ {
+		if hasDotDotSegment(decoded) {
+			return ErrInvalidPath
+		}
+		next, err := url.PathUnescape(decoded)
+		if err != nil {
+			return ErrInvalidPath
+		}
+		if next == decoded {
+			break
+		}
+		decoded = next
+	}
+	if hasDotDotSegment(decoded) {
+		return ErrInvalidPath
+	}
 	return nil
+}
+
+func hasDotDotSegment(path string) bool {
+	for _, seg := range strings.Split(path, "/") {
+		if seg == ".." {
+			return true
+		}
+	}
+	return false
 }
 
 // ValidateHost rejects host strings that embed a port or look like URLs.

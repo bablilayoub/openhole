@@ -53,13 +53,13 @@ func TestRegistryIPLimit(t *testing.T) {
 
 	for i := 0; i < 2; i++ {
 		tunnel := newTestTunnel(shared.RandomSubdomain(), "192.168.1.5")
-		sub, err := r.AssignSubdomain("", "192.168.1.5")
+		sub, err := r.AssignSubdomain("", "192.168.1.5", "")
 		if err != nil {
 			t.Fatalf("assign subdomain: %v", err)
 		}
 		tunnel.Subdomain = sub
 
-		err = r.RegisterWithIPLimit(tunnel, maxPerIP)
+		err = r.RegisterWithIPLimit(tunnel, maxPerIP, "")
 		if i == 0 && err != nil {
 			t.Fatalf("first register should succeed: %v", err)
 		}
@@ -79,7 +79,7 @@ func TestRegistryExpiredHold(t *testing.T) {
 	r.Unregister("quick-fox")
 
 	r.mu.Lock()
-	r.holds["quick-fox"] = holdEntry{until: time.Now().Add(-time.Second), clientIP: "10.0.0.2"}
+	r.holds["quick-fox"] = holdEntry{until: time.Now().Add(-time.Second), clientIP: "10.0.0.2", tokenHash: ""}
 	r.mu.Unlock()
 
 	r.CleanupExpiredHolds()
@@ -97,11 +97,37 @@ func TestRegistrySameIPReclaimsSubdomainDuringHold(t *testing.T) {
 	}
 	r.Unregister("my-app")
 
-	if !r.IsAvailableFor("my-app", "10.0.0.9") {
+	if !r.IsAvailableFor("my-app", "10.0.0.9", "") {
 		t.Fatal("same IP should reclaim subdomain during hold")
 	}
-	if r.IsAvailableFor("my-app", "10.0.0.10") {
+	if r.IsAvailableFor("my-app", "10.0.0.10", "") {
 		t.Fatal("different IP should not claim subdomain during hold")
+	}
+}
+
+func TestRegistryReclaimTokenAllowsNewIP(t *testing.T) {
+	r := NewRegistry(300)
+	tunnel := newTestTunnel("webhook-app", "10.0.0.1")
+
+	if err := r.Register(tunnel); err != nil {
+		t.Fatalf("register: %v", err)
+	}
+	token := r.IssueReclaimToken(tunnel, true)
+	if token == "" {
+		t.Fatal("expected reclaim token")
+	}
+	r.Unregister("webhook-app")
+
+	if r.IsAvailableFor("webhook-app", "10.0.0.99", "") {
+		t.Fatal("different IP without token should not claim subdomain during hold")
+	}
+	if !r.IsAvailableFor("webhook-app", "10.0.0.99", token) {
+		t.Fatal("reclaim token should allow new IP during hold")
+	}
+
+	tunnel2 := newTestTunnel("webhook-app", "10.0.0.99")
+	if err := r.RegisterWithIPLimit(tunnel2, 10, token); err != nil {
+		t.Fatalf("register with token: %v", err)
 	}
 }
 

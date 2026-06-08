@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/bablilayoub/openhole/internal/protocol"
@@ -76,7 +77,7 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	subdomain, err := s.registry.AssignSubdomain(reg.RequestedSubdomain, ip)
+	subdomain, err := s.registry.AssignSubdomain(reg.RequestedSubdomain, ip, reg.ReclaimToken)
 	if err != nil {
 		msg := err.Error()
 		if err == shared.ErrSubdomainTaken {
@@ -99,20 +100,23 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		sem:       make(chan struct{}, s.cfg.MaxConcurrentRequestsPerTunnel),
 	}
 
-	if err := s.registry.RegisterWithIPLimit(tunnel, s.cfg.MaxTunnelsPerIP); err != nil {
+	named := strings.TrimSpace(reg.RequestedSubdomain) != ""
+	if err := s.registry.RegisterWithIPLimit(tunnel, s.cfg.MaxTunnelsPerIP, reg.ReclaimToken); err != nil {
 		_ = protocol.WriteMessage(conn, protocol.ErrorMessage{Type: protocol.TypeError, Message: err.Error()})
 		conn.Close()
 		return
 	}
 
 	publicURL := s.cfg.PublicURL(subdomain)
+	reclaimToken := s.registry.IssueReclaimToken(tunnel, named)
 	_ = conn.SetReadDeadline(time.Time{})
 
 	_ = tunnel.WriteMessage(protocol.RegisteredMessage{
-		Type:      protocol.TypeRegistered,
-		TunnelID:  tunnel.ID,
-		Subdomain: subdomain,
-		PublicURL: publicURL,
+		Type:         protocol.TypeRegistered,
+		TunnelID:     tunnel.ID,
+		Subdomain:    subdomain,
+		PublicURL:    publicURL,
+		ReclaimToken: reclaimToken,
 	})
 
 	s.log.Info("tunnel registered", "subdomain", subdomain, "ip", ip)

@@ -65,6 +65,11 @@ func (s *Server) handlePublicProxy(w http.ResponseWriter, r *http.Request, subdo
 	}
 	reqMsg.Headers["X-OpenHole-Tunnel"] = []string{subdomain}
 
+	if err := protocol.ValidateRequest(&reqMsg); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
 	resp, err := s.forwardRequest(tunnel, reqMsg)
 	if err != nil {
 		status := http.StatusBadGateway

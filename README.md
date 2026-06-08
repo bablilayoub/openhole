@@ -117,6 +117,8 @@ POST /webhooks/stripe    201  45ms
 
 The CLI reconnects automatically if the connection drops. Your subdomain may change on reconnect unless you use `--subdomain`.
 
+With `--subdomain`, the CLI stores a reclaim token locally (`~/.config/openhole/reclaim.json`) so you can reconnect from a different network during the hold window after a disconnect.
+
 ---
 
 ## How it works
@@ -142,7 +144,7 @@ openhole-server  ←WebSocket→  openhole CLI  →  localhost:PORT
 
 - Do not tunnel admin panels, databases, `.env` files, or internal APIs you would not publish publicly.
 - Tunnels are unauthenticated — anyone can register one if they can reach the server.
-- Use `--subdomain` for stable webhook URLs; random subdomains change on reconnect.
+- Use `--subdomain` for stable webhook URLs; a reclaim token lets you keep the name across reconnects (even from a new IP) during the hold window.
 - Report abuse: [abuse@openhole.dev](mailto:abuse@openhole.dev)
 - Acceptable use policy: [openhole.dev/terms](https://openhole.dev/terms)
 
@@ -155,6 +157,8 @@ openhole-server  ←WebSocket→  openhole CLI  →  localhost:PORT
 | Rate limits | Per-IP registration and request limits |
 | Blocked subdomains | Reserved names (admin, api, www, …) |
 | Header sanitization | Spoofed `X-Forwarded-*` stripped before reaching your app |
+| Protocol validation | Message size, header count, and CRLF injection limits |
+| Client concurrency | 25 concurrent local requests per tunnel (matches server default) |
 
 ---
 
@@ -334,7 +338,7 @@ See [`deployments/env.example`](deployments/env.example) for the full template.
 - **HTTP only** — request/response proxying; WebSocket passthrough through tunnels is not supported yet.
 - **10 MB body limit** per request and response.
 - **In-memory registry** — all tunnels are lost on server restart.
-- **Random subdomains change** on reconnect unless `--subdomain` is used (same IP can reclaim its subdomain within the 30s hold window).
+- **Random subdomains change** on reconnect unless `--subdomain` is used. Named subdomains are held after disconnect; the same IP or a valid reclaim token can reclaim them within the hold window.
 - **No authentication** — tunnel registration is open to anyone who can reach the server.
 
 ---

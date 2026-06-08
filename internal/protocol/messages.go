@@ -18,16 +18,18 @@ type RegisterMessage struct {
 	Type               string `json:"type"`
 	ClientID           string `json:"client_id"`
 	RequestedSubdomain string `json:"requested_subdomain,omitempty"`
+	ReclaimToken       string `json:"reclaim_token,omitempty"`
 	LocalPort          int    `json:"local_port"`
 	LocalHost          string `json:"local_host"`
 	Version            string `json:"version"`
 }
 
 type RegisteredMessage struct {
-	Type      string `json:"type"`
-	TunnelID  string `json:"tunnel_id"`
-	Subdomain string `json:"subdomain"`
-	PublicURL string `json:"public_url"`
+	Type         string `json:"type"`
+	TunnelID     string `json:"tunnel_id"`
+	Subdomain    string `json:"subdomain"`
+	PublicURL    string `json:"public_url"`
+	ReclaimToken string `json:"reclaim_token,omitempty"`
 }
 
 type RequestMessage struct {

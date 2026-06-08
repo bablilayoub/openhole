@@ -31,30 +31,40 @@ func WriteMessage(conn *websocket.Conn, v any) error {
 
 func ParseRegister(data json.RawMessage) (RegisterMessage, error) {
 	var m RegisterMessage
-	err := json.Unmarshal(data, &m)
-	return m, err
+	if err := json.Unmarshal(data, &m); err != nil {
+		return m, err
+	}
+	return m, ValidateRegister(&m)
 }
 
 func ParseRegistered(data json.RawMessage) (RegisteredMessage, error) {
 	var m RegisteredMessage
-	err := json.Unmarshal(data, &m)
-	return m, err
+	if err := json.Unmarshal(data, &m); err != nil {
+		return m, err
+	}
+	return m, ValidateRegistered(&m)
 }
 
 func ParseRequest(data json.RawMessage) (RequestMessage, error) {
 	var m RequestMessage
-	err := json.Unmarshal(data, &m)
-	return m, err
+	if err := json.Unmarshal(data, &m); err != nil {
+		return m, err
+	}
+	return m, ValidateRequest(&m)
 }
 
 func ParseResponse(data json.RawMessage) (ResponseMessage, error) {
 	var m ResponseMessage
-	err := json.Unmarshal(data, &m)
-	return m, err
+	if err := json.Unmarshal(data, &m); err != nil {
+		return m, err
+	}
+	return m, ValidateResponse(&m)
 }
 
 func ParseError(data json.RawMessage) (ErrorMessage, error) {
 	var m ErrorMessage
-	err := json.Unmarshal(data, &m)
-	return m, err
+	if err := json.Unmarshal(data, &m); err != nil {
+		return m, err
+	}
+	return m, ValidateError(&m)
 }
