@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/bablilayoub/openhole/internal/protocol"
@@ -16,11 +17,6 @@ const maxBodyBytes = 10 * 1024 * 1024
 
 func ForwardToLocal(req protocol.RequestMessage, host string, port int) (protocol.ResponseMessage, time.Duration, error) {
 	start := time.Now()
-
-	url := fmt.Sprintf("http://%s:%d%s", host, port, req.Path)
-	if req.Query != "" {
-		url += "?" + req.Query
-	}
 
 	var body []byte
 	if req.BodyBase64 != "" {
@@ -34,9 +30,26 @@ func ForwardToLocal(req protocol.RequestMessage, host string, port int) (protoco
 		}
 	}
 
-	httpReq, err := http.NewRequest(req.Method, url, bytes.NewReader(body))
+	target := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%d", host, port),
+	}
+	httpReq, err := http.NewRequest(req.Method, target.String(), bytes.NewReader(body))
 	if err != nil {
 		return protocol.ResponseMessage{}, 0, err
+	}
+
+	path := req.Path
+	if path == "" {
+		path = "/"
+	}
+	httpReq.URL.RawPath = path
+	httpReq.URL.Path, err = url.PathUnescape(path)
+	if err != nil {
+		httpReq.URL.Path = path
+	}
+	if req.Query != "" {
+		httpReq.URL.RawQuery = req.Query
 	}
 
 	for k, vals := range shared.SanitizeIncomingHeaderMap(req.Headers) {

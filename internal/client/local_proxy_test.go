@@ -58,3 +58,69 @@ func TestForwardToLocal(t *testing.T) {
 		t.Fatalf("body: %s", body)
 	}
 }
+
+func TestForwardToLocalPreservesEscapedPath(t *testing.T) {
+	var gotRequestURI string
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotRequestURI = r.RequestURI
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
+	host, portStr, err := net.SplitHostPort(srv.Listener.Addr().String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req := protocol.RequestMessage{
+		Type:      protocol.TypeRequest,
+		RequestID: "req-encoded",
+		Method:    "GET",
+		Path:      "/%2e%2e/secret.txt",
+	}
+
+	if _, _, err := ForwardToLocal(req, host, port); err != nil {
+		t.Fatal(err)
+	}
+	if gotRequestURI != "/%2e%2e/secret.txt" {
+		t.Fatalf("RequestURI = %q, want %q", gotRequestURI, "/%2e%2e/secret.txt")
+	}
+}
+
+func TestForwardToLocalPreservesEncodedSlash(t *testing.T) {
+	var gotRequestURI string
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotRequestURI = r.RequestURI
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
+	host, portStr, err := net.SplitHostPort(srv.Listener.Addr().String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req := protocol.RequestMessage{
+		Type:      protocol.TypeRequest,
+		RequestID: "req-slash",
+		Method:    "GET",
+		Path:      "/a%2fb",
+	}
+
+	if _, _, err := ForwardToLocal(req, host, port); err != nil {
+		t.Fatal(err)
+	}
+	if gotRequestURI != "/a%2fb" {
+		t.Fatalf("RequestURI = %q, want %q", gotRequestURI, "/a%2fb")
+	}
+}

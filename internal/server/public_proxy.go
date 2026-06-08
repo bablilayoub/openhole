@@ -32,10 +32,7 @@ func (s *Server) handlePublicProxy(w http.ResponseWriter, r *http.Request, subdo
 		return
 	}
 
-	path := r.URL.Path
-	if path == "" {
-		path = "/"
-	}
+	path := requestPath(r)
 
 	reqMsg := protocol.RequestMessage{
 		Type:       protocol.TypeRequest,
@@ -97,6 +94,14 @@ func (s *Server) handlePublicProxy(w http.ResponseWriter, r *http.Request, subdo
 		"path", path,
 		"status", status,
 	)
+}
+
+func requestPath(r *http.Request) string {
+	path := r.URL.EscapedPath()
+	if path == "" {
+		return "/"
+	}
+	return path
 }
 
 func readBodyLimited(r io.Reader, max int64) ([]byte, error) {
