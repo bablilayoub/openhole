@@ -163,8 +163,8 @@ func saveCache(state cacheState) error {
 	return os.WriteFile(path, data, 0o644)
 }
 
-func resolveLatest(ctx context.Context, state cacheState) (string, cacheState, error) {
-	if !state.CheckedAt.IsZero() && time.Since(state.CheckedAt) < checkInterval && state.Latest != "" {
+func resolveLatest(ctx context.Context, state cacheState, forceRefresh bool) (string, cacheState, error) {
+	if !forceRefresh && !state.CheckedAt.IsZero() && time.Since(state.CheckedAt) < checkInterval && state.Latest != "" {
 		return state.Latest, state, nil
 	}
 
@@ -185,7 +185,7 @@ func Status(ctx context.Context) (latest string, available bool, err error) {
 		return "", false, err
 	}
 
-	latest, state, err = resolveLatest(ctx, state)
+	latest, state, err = resolveLatest(ctx, state, false)
 	if err != nil {
 		return "", false, err
 	}
@@ -209,7 +209,7 @@ func MaybeNotify() {
 			return
 		}
 
-		latest, state, err := resolveLatest(ctx, state)
+		latest, state, err := resolveLatest(ctx, state, false)
 		if err != nil {
 			return
 		}
@@ -245,11 +245,18 @@ func PrintStatus(ctx context.Context) error {
 
 // Run downloads and installs the latest release over the current binary.
 func Run(ctx context.Context, installDir string) error {
-	latest, available, err := Status(ctx)
+	state, err := loadCache()
 	if err != nil {
 		return err
 	}
-	if !available {
+
+	latest, state, err := resolveLatest(ctx, state, true)
+	if err != nil {
+		return err
+	}
+	_ = saveCache(state)
+
+	if CompareVersions(shared.Version, latest) >= 0 {
 		fmt.Printf("Already on the latest version (v%s).\n", shared.Version)
 		return nil
 	}
