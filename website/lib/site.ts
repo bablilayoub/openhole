@@ -8,6 +8,8 @@ export function getSiteUrl(): string {
 export const tunnelDomain =
   process.env.NEXT_PUBLIC_TUNNEL_DOMAIN || "ophl.link";
 
+export const githubRepo = "https://github.com/bablilayoub/openhole";
+
 export function scriptPath(name: "install" | "uninstall"): string {
   return `/${name}.sh`;
 }
