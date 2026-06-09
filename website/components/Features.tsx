@@ -58,7 +58,10 @@ export function Features() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    gsap.from(root.current?.querySelectorAll(".feature-card") ?? [], {
+    const cards = root.current?.querySelectorAll(".feature-card");
+    if (!cards || cards.length === 0) return;
+
+    gsap.from(cards, {
       y: 30,
       opacity: 0,
       duration: 0.8,

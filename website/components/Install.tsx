@@ -170,7 +170,10 @@ export function Install() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    gsap.from(root.current?.querySelectorAll(".step-card") ?? [], {
+    const cards = root.current?.querySelectorAll(".step-card");
+    if (!cards || cards.length === 0) return;
+
+    gsap.from(cards, {
       y: 24,
       opacity: 0,
       duration: 0.6,
