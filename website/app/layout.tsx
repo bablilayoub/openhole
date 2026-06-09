@@ -26,24 +26,16 @@ export const metadata: Metadata = {
     apple: "/icon-transparent.png",
   },
   openGraph: {
-    title: "OpenHole",
-    description: "Share localhost instantly over HTTPS.",
+    title: "OpenHole — Share localhost instantly",
+    description: "Expose local ports to the internet over HTTPS. No accounts, no config. Just one command.",
     url: siteUrl,
     siteName: "OpenHole",
-    images: [
-      {
-        url: "/icon-black-bg.png",
-        width: 1024,
-        height: 1024,
-        alt: "OpenHole",
-      },
-    ],
+    type: "website",
   },
   twitter: {
-    card: "summary",
-    title: "OpenHole",
-    description: "Share localhost instantly over HTTPS.",
-    images: ["/icon-black-bg.png"],
+    card: "summary_large_image",
+    title: "OpenHole — Share localhost instantly",
+    description: "Expose local ports to the internet over HTTPS. No accounts, no config. Just one command.",
   },
 };
 
@@ -53,7 +45,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrains.variable}`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${inter.variable} ${jetbrains.variable}`}
+    >
       <body>{children}</body>
     </html>
   );

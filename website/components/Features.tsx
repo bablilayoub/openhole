@@ -10,26 +10,32 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const features = [
   {
+    badge: "FREE",
     title: "No accounts required",
     description: "We don't want your email. Download the binary and start tunneling immediately. No signup flow, no API keys.",
   },
   {
+    badge: "TLS",
     title: "HTTPS by default",
     description: "Every tunnel gets a secure, trusted TLS certificate automatically via Caddy and Cloudflare DNS-01.",
   },
   {
+    badge: "URL",
     title: "Custom subdomains",
     description: "Pass --subdomain for a stable URL. A reclaim token keeps the name across reconnects, even from a new network.",
   },
   {
+    badge: "LOG",
     title: "Live request logging",
     description: "See exactly what's hitting your local server. Method, path, status code, and latency printed right in your terminal.",
   },
   {
+    badge: "CLI",
     title: "Single Go binary",
     description: "Written in Go for blazing fast startup times and minimal memory footprint. No runtime dependencies.",
   },
   {
+    badge: "OSS",
     title: "100% Self-hostable",
     description: "The entire stack is open source. Deploy your own edge server with our provided Docker Compose setup.",
   },
@@ -42,23 +48,33 @@ export function Features() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    gsap.from(root.current?.querySelectorAll(".feature-card") ?? [], {
-      y: 30,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: root.current,
-        start: "top 80%",
-      },
-    });
+    const cards = root.current?.querySelectorAll(".feature-card");
+    if (!cards || cards.length === 0) return;
+
+    gsap.fromTo(
+      cards,
+      { y: 30, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "power2.out",
+        clearProps: "transform",
+        scrollTrigger: {
+          trigger: root.current,
+          start: "top 85%",
+          once: true,
+        },
+      }
+    );
   }, { scope: root });
 
   return (
     <Section id="features" border>
       <div ref={root}>
         <SectionHeader
+          eyebrow="Features"
           title={
             <>
               Everything you need.
@@ -73,8 +89,11 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="feature-card card-base p-6 transition-colors hover:border-neutral-700 sm:p-8"
+              className="feature-card card-base p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/20 hover:bg-emerald-500/[0.02] sm:p-8"
             >
+              <span className="text-accent mb-4 inline-block rounded-md border border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5 font-mono text-[11px] font-medium tracking-wider opacity-90">
+                {feature.badge}
+              </span>
               <h3 className="mb-3 text-lg font-semibold text-white">{feature.title}</h3>
               <p className="text-sm leading-relaxed text-neutral-400 sm:text-base">
                 {feature.description}
@@ -82,6 +101,13 @@ export function Features() {
             </div>
           ))}
         </div>
+
+        <p className="mt-10 max-w-3xl text-sm leading-relaxed text-neutral-500">
+          <span className="font-medium text-neutral-400">Limitations:</span> HTTP-only tunneling
+          (no WebSocket passthrough), 10 MB body limit per request, and random subdomains change on
+          reconnect unless you use{" "}
+          <code className="font-mono text-neutral-300">--subdomain</code>.
+        </p>
       </div>
     </Section>
   );

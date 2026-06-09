@@ -3,9 +3,24 @@
 @theme {
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --color-accent: #34d399;
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  section[id] {
+    scroll-margin-top: 5.5rem;
+  }
+
   body {
     @apply bg-black text-neutral-300 font-sans antialiased selection:bg-neutral-800 selection:text-white;
   }
@@ -35,9 +50,49 @@
 
   .card-base {
     @apply rounded-2xl border border-neutral-800 bg-neutral-950;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
   .code-block {
     @apply flex items-center gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/40 px-4 py-3.5;
+  }
+
+  .hero-glow {
+    background: radial-gradient(
+      ellipse 85% 65% at 50% 45%,
+      color-mix(in srgb, var(--color-accent) 10%, transparent) 0%,
+      transparent 72%
+    );
+  }
+
+  .compare-col-openhole {
+    background: color-mix(in srgb, var(--color-accent) 4%, transparent);
+  }
+
+  .text-accent {
+    color: var(--color-accent);
+  }
+
+  .compare-scroll-wrap {
+    @apply relative;
+  }
+
+  .compare-scroll-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 2.5rem;
+    background: linear-gradient(to left, rgb(10 10 10) 10%, transparent 100%);
+    pointer-events: none;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .compare-scroll-wrap::after {
+      display: none;
+    }
   }
 }

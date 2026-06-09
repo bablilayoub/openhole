@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { scriptUrl } from "@/lib/site";
+import { githubRepo, scriptUrl } from "@/lib/site";
 import { Section, SectionHeader } from "./Section";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -28,27 +28,6 @@ const runSteps = [
     title: "Open the hole",
     desc: "Point OpenHole at your local port to get a public URL.",
     cmd: "openhole 3000",
-  },
-  {
-    num: "04",
-    title: "Stable webhook URL",
-    desc: "Use --subdomain for a fixed name. Reclaim tokens persist in ~/.config/openhole/reclaim.json.",
-    cmd: "openhole 3000 --subdomain myapp",
-  },
-];
-
-const maintenanceSteps = [
-  {
-    num: "05",
-    title: "Update the CLI",
-    desc: "Download and install the latest release from GitHub.",
-    cmd: "openhole update",
-  },
-  {
-    num: "06",
-    title: "Uninstall",
-    desc: "Remove the binary from your PATH when you are done.",
-    cmd: "openhole uninstall",
   },
 ];
 
@@ -94,6 +73,37 @@ function CopyButton({
   );
 }
 
+function highlightCmd(cmd: string) {
+  return cmd.split(/(\s+)/).map((part, i) => {
+    if (part === "|" || part === "sh") {
+      return (
+        <span key={i} className="text-neutral-500">
+          {part}
+        </span>
+      );
+    }
+    if (part === "openhole") {
+      return (
+        <span key={i} className="text-accent">
+          {part}
+        </span>
+      );
+    }
+    if (/^(curl|npm)$/.test(part)) {
+      return (
+        <span key={i} className="text-white">
+          {part}
+        </span>
+      );
+    }
+    return (
+      <span key={i} className="text-neutral-300">
+        {part}
+      </span>
+    );
+  });
+}
+
 function StepCode({
   cmd,
   id,
@@ -107,9 +117,9 @@ function StepCode({
 }) {
   return (
     <div className="code-block">
-      <code className="min-w-0 flex-1 font-mono text-sm leading-relaxed text-neutral-300 break-all">
+      <code className="min-w-0 flex-1 font-mono text-sm leading-relaxed break-all">
         <span className="text-neutral-500">$ </span>
-        {cmd}
+        {highlightCmd(cmd)}
       </code>
       <CopyButton cmd={cmd} id={id} copied={copied} onCopy={onCopy} />
     </div>
@@ -133,7 +143,7 @@ function StepCard({
 }) {
   return (
     <div className="step-card flex h-full flex-col">
-      <span className="mb-3 block font-mono text-sm text-neutral-500">{num}</span>
+      <span className="text-accent mb-3 block font-mono text-sm opacity-80">{num}</span>
       <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
       <p className="mb-6 flex-1 text-sm leading-relaxed text-neutral-400 sm:text-base">{desc}</p>
       <StepCode cmd={cmd} id={num} copied={copied} onCopy={onCopy} />
@@ -149,17 +159,26 @@ export function Install() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    gsap.from(root.current?.querySelectorAll(".step-card") ?? [], {
-      y: 24,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.12,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: root.current,
-        start: "top 80%",
-      },
-    });
+    const steps = root.current?.querySelectorAll(".step-card");
+    if (!steps || steps.length === 0) return;
+
+    gsap.fromTo(
+      steps,
+      { y: 24, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        stagger: 0.12,
+        ease: "power2.out",
+        clearProps: "transform",
+        scrollTrigger: {
+          trigger: root.current,
+          start: "top 85%",
+          once: true,
+        },
+      }
+    );
   }, { scope: root });
 
   async function copy(text: string, id: string) {
@@ -172,6 +191,7 @@ export function Install() {
     <Section id="install" border>
       <div ref={root}>
         <SectionHeader
+          eyebrow="Install"
           title="Start tunneling in seconds"
           description="No signup required. Just install the CLI and run it."
         />
@@ -200,21 +220,19 @@ export function Install() {
             ))}
           </div>
 
-          <div className="space-y-8 border-t border-neutral-800 pt-8">
-            <div className="grid gap-8 sm:grid-cols-2">
-              {maintenanceSteps.map((step) => (
-                <StepCard
-                  key={step.num}
-                  num={step.num}
-                  title={step.title}
-                  desc={step.desc}
-                  cmd={step.cmd}
-                  copied={copied}
-                  onCopy={copy}
-                />
-              ))}
-            </div>
-          </div>
+          <p className="text-sm leading-relaxed text-neutral-400 sm:text-base">
+            For update, uninstall, subdomains, and more, see the{" "}
+            <a
+              href={githubRepo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-neutral-300 transition-colors hover:text-emerald-400"
+            >
+              GitHub README
+            </a>{" "}
+            or run{" "}
+            <code className="text-accent font-mono">openhole --help</code>.
+          </p>
         </div>
       </div>
     </Section>

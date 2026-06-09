@@ -1,11 +1,18 @@
+import { type ReactNode } from "react";
 import Link from "next/link";
-import { githubReleases, scriptPath } from "@/lib/site";
+import { githubRepo } from "@/lib/site";
+import { HashLink } from "./HashLink";
 import { Logo } from "./Logo";
 
-const projectLinks = [
-  { href: "#features", label: "Features" },
-  { href: "#install", label: "Install" },
-  { href: "/terms", label: "Terms & Abuse" },
+const siteLinks = [
+  { section: "features" as const, label: "Features" },
+  { section: "compare" as const, label: "Compare" },
+  { section: "install" as const, label: "Install" },
+];
+
+const resourceLinks = [
+  { href: githubRepo, label: "GitHub", external: true },
+  { href: "/terms", label: "Terms" },
   {
     href: "https://github.com/bablilayoub/openhole#self-hosting",
     label: "Self-host",
@@ -13,18 +20,8 @@ const projectLinks = [
   },
 ];
 
-const connectLinks = [
-  {
-    href: "https://github.com/bablilayoub/openhole",
-    label: "GitHub",
-    external: true,
-  },
-  { href: githubReleases, label: "Releases", external: true },
-  { href: scriptPath("install"), label: "install.sh" },
-  { href: scriptPath("uninstall"), label: "uninstall.sh" },
-  { href: "mailto:security@openhole.dev", label: "security@openhole.dev" },
-  { href: "mailto:abuse@openhole.dev", label: "abuse@openhole.dev" },
-];
+const linkClass =
+  "text-sm text-neutral-400 transition-colors hover:text-emerald-400";
 
 function FooterLink({
   href,
@@ -35,16 +32,13 @@ function FooterLink({
   label: string;
   external?: boolean;
 }) {
-  const className =
-    "w-fit text-sm text-neutral-400 transition-colors hover:text-white";
-
-  if (external || href.startsWith("http") || href.startsWith("mailto:")) {
+  if (external || href.startsWith("http")) {
     return (
       <a
         href={href}
-        target={href.startsWith("http") ? "_blank" : undefined}
-        rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-        className={className}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={linkClass}
       >
         {label}
       </a>
@@ -52,81 +46,74 @@ function FooterLink({
   }
 
   return (
-    <Link href={href} className={className}>
+    <Link href={href} className={linkClass}>
       {label}
     </Link>
   );
 }
 
+function LinkGroup({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
+        {title}
+      </p>
+      <nav className="flex flex-col gap-2.5">{children}</nav>
+    </div>
+  );
+}
+
 export function Footer() {
   return (
-    <footer className="relative border-t border-neutral-900">
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-700/80 to-transparent"
-        aria-hidden
-      />
-
-      <div className="page-container py-16 sm:py-20">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-5">
+    <footer className="border-t border-neutral-800">
+      <div className="page-container py-14 sm:py-16">
+        <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
+          <div className="max-w-sm">
             <Logo iconClassName="h-9 w-9 sm:h-10 sm:w-10" />
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-neutral-500">
-              Expose localhost to the internet in one command. HTTPS by default.
-              No accounts, no dashboard.
+            <p className="mt-4 text-sm leading-relaxed text-neutral-500">
+              Expose localhost over HTTPS in one command. No accounts, no
+              dashboard.
             </p>
-            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-neutral-800 bg-neutral-950 px-3 py-1.5 font-mono text-xs text-neutral-500">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              tunnel.openhole.dev
-            </div>
           </div>
 
-          <div className="lg:col-span-3 lg:col-start-7">
-            <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
-              Project
-            </p>
-            <nav className="flex flex-col gap-3">
-              {projectLinks.map((link) => (
-                <FooterLink key={link.label} {...link} />
+          <div className="flex gap-12 sm:gap-16">
+            <LinkGroup title="Site">
+              {siteLinks.map((link) => (
+                <HashLink key={link.label} section={link.section} className={linkClass}>
+                  {link.label}
+                </HashLink>
               ))}
-            </nav>
-          </div>
+            </LinkGroup>
 
-          <div className="lg:col-span-3">
-            <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
-              Connect
-            </p>
-            <nav className="flex flex-col gap-3">
-              {connectLinks.map((link) => (
+            <LinkGroup title="Resources">
+              {resourceLinks.map((link) => (
                 <FooterLink key={link.label} {...link} />
               ))}
-            </nav>
+            </LinkGroup>
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-6 border-t border-neutral-900 pt-8 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-neutral-500">
+        <div className="mt-12 flex flex-col gap-4 border-t border-neutral-800 pt-8 text-sm text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>
             Built by{" "}
             <a
               href="https://abablil.me"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-neutral-300 underline decoration-neutral-700 underline-offset-4 transition-colors hover:text-white hover:decoration-neutral-500"
+              className="text-neutral-300 transition-colors hover:text-emerald-400"
             >
               Ayoub Bablil
             </a>
           </p>
-
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-neutral-600">
-            <span>MIT License</span>
-            <span className="hidden text-neutral-800 sm:inline" aria-hidden>
-              ·
-            </span>
-            <span>Open source</span>
-            <span className="hidden text-neutral-800 sm:inline" aria-hidden>
-              ·
-            </span>
-            <span>© {new Date().getFullYear()}</span>
-          </div>
+          <p className="font-mono text-xs text-neutral-600">
+            MIT · © {new Date().getFullYear()}
+          </p>
         </div>
       </div>
     </footer>

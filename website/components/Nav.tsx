@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { HashLink } from "./HashLink";
 import { Logo } from "./Logo";
 
 export function Nav() {
@@ -23,27 +24,33 @@ export function Nav() {
         >
         <Logo iconClassName="h-10 w-10 sm:h-11 sm:w-11" className="text-base sm:text-lg" />
 
-        <nav className="flex items-center gap-1 sm:gap-2">
-          <a
-            href="#features"
-            className="hidden rounded-full px-3 py-1.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-white sm:inline-block"
+        <nav className="flex items-center gap-0.5 sm:gap-2">
+          <HashLink
+            section="features"
+            className="rounded-full px-2 py-1 text-xs font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-emerald-400 sm:px-3 sm:py-1.5 sm:text-sm"
           >
             Features
-          </a>
+          </HashLink>
+          <HashLink
+            section="compare"
+            className="rounded-full px-2 py-1 text-xs font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-emerald-400 sm:px-3 sm:py-1.5 sm:text-sm"
+          >
+            Compare
+          </HashLink>
           <a
             href="https://github.com/bablilayoub/openhole"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
+            className="hidden rounded-full px-3 py-1.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-emerald-400 sm:inline-block"
           >
             GitHub
           </a>
-          <a
-            href="#install"
-            className="ml-1 rounded-full bg-white px-4 py-1.5 text-sm font-medium text-black transition-colors hover:bg-neutral-200"
+          <HashLink
+            section="install"
+            className="ml-0.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-black transition-colors hover:bg-neutral-200 sm:ml-1 sm:px-4 sm:py-1.5 sm:text-sm"
           >
             Install
-          </a>
+          </HashLink>
         </nav>
         </div>
       </div>

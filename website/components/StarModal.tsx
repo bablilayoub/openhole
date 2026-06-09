@@ -65,13 +65,14 @@ export function StarModal() {
   if (!open) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-4 sm:px-6 sm:pb-6">
-      <div
-        ref={bar}
-        role="dialog"
-        aria-labelledby="star-prompt-title"
-        className="pointer-events-auto floating-nav flex w-full max-w-2xl items-center gap-3 rounded-full py-2.5 pl-4 pr-2 sm:gap-4 sm:py-3 sm:pl-5"
-      >
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 pb-4 sm:pb-6">
+      <div className="page-container pointer-events-auto">
+        <div
+          ref={bar}
+          role="dialog"
+          aria-labelledby="star-prompt-title"
+          className="floating-nav flex w-full items-center gap-3 rounded-full py-2.5 pl-4 pr-2 sm:gap-4 sm:py-3 sm:pl-5"
+        >
         <p
           id="star-prompt-title"
           className="min-w-0 flex-1 text-xs leading-snug text-neutral-400 sm:text-sm"
@@ -103,6 +104,7 @@ export function StarModal() {
               <path d="M18 6 6 18M6 6l12 12" />
             </svg>
           </button>
+        </div>
         </div>
       </div>
     </div>
