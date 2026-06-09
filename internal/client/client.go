@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"os/signal"
 	"strconv"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/bablilayoub/openhole/internal/protocol"
@@ -17,7 +15,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-const maxConcurrentLocal = 25
+const (
+	maxConcurrentLocal   = 25
+	shutdownDrainTimeout = 5 * time.Second
+)
 
 type Client struct {
 	cfg           Config
@@ -25,6 +26,7 @@ type Client struct {
 	lastPublicURL string
 	writeMu       sync.Mutex
 	reqSem        chan struct{}
+	inflight      sync.WaitGroup
 }
 
 func New(cfg Config) *Client {
@@ -36,17 +38,12 @@ func New(cfg Config) *Client {
 
 func (c *Client) Run() error {
 	clearStaleSession()
-
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-
-	done := make(chan struct{})
-	go func() {
-		<-sig
-		close(done)
-	}()
-
 	defer clearSession()
+
+	shutdown := shared.ListenForShutdown(func() {
+		fmt.Fprintln(os.Stderr, shared.Paint(shared.AnsiDim, "\nShutting down..."))
+	})
+	done := shutdown.Done()
 
 	backoff := 2 * time.Second
 	for {
@@ -64,16 +61,15 @@ func (c *Client) Run() error {
 			return err
 		}
 
+		fmt.Println(shared.Paint(shared.AnsiYellow, "Connection lost. Reconnecting..."))
 		select {
 		case <-done:
 			return nil
-		default:
-			fmt.Println(shared.Paint(shared.AnsiYellow, "Connection lost. Reconnecting..."))
-			time.Sleep(backoff)
-			backoff *= 2
-			if backoff > 30*time.Second {
-				backoff = 30 * time.Second
-			}
+		case <-time.After(backoff):
+		}
+		backoff *= 2
+		if backoff > 30*time.Second {
+			backoff = 30 * time.Second
 		}
 	}
 }
@@ -183,9 +179,23 @@ func (c *Client) runSession(done <-chan struct{}) error {
 	select {
 	case <-done:
 		_ = conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+		_ = conn.Close()
+		drainInflight(c, shutdownDrainTimeout)
 		return nil
 	case err := <-errCh:
 		return err
+	}
+}
+
+func drainInflight(c *Client, timeout time.Duration) {
+	wait := make(chan struct{})
+	go func() {
+		c.inflight.Wait()
+		close(wait)
+	}()
+	select {
+	case <-wait:
+	case <-time.After(timeout):
 	}
 }
 
@@ -221,6 +231,9 @@ func (c *Client) writeMessage(conn *websocket.Conn, v any) error {
 }
 
 func (c *Client) handleRequest(conn *websocket.Conn, req protocol.RequestMessage) {
+	c.inflight.Add(1)
+	defer c.inflight.Done()
+
 	select {
 	case c.reqSem <- struct{}{}:
 	default:

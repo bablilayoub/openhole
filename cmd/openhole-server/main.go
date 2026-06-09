@@ -4,12 +4,10 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/bablilayoub/openhole/internal/server"
+	"github.com/bablilayoub/openhole/internal/shared"
 )
 
 func main() {
@@ -35,11 +33,9 @@ func main() {
 		}
 	}()
 
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-	<-sig
-
-	logger.Info("shutting down")
+	<-shared.ListenForShutdown(func() {
+		logger.Info("shutting down")
+	}).Done()
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	if err := httpServer.Shutdown(ctx); err != nil {
