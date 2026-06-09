@@ -132,10 +132,8 @@ function StepCard({
   onCopy: (text: string, id: string) => void;
 }) {
   return (
-    <div className="step-card card-base flex h-full flex-col p-6 sm:p-8">
-      <span className="mb-4 inline-flex w-fit items-center rounded-full border border-neutral-800 bg-neutral-900 px-2.5 py-0.5 font-mono text-xs text-emerald-500/90">
-        {num}
-      </span>
+    <div className="step-card flex h-full flex-col">
+      <span className="mb-3 block font-mono text-sm text-neutral-500">{num}</span>
       <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
       <p className="mb-6 flex-1 text-sm leading-relaxed text-neutral-400 sm:text-base">{desc}</p>
       <StepCode cmd={cmd} id={num} copied={copied} onCopy={onCopy} />
@@ -151,24 +149,17 @@ export function Install() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    const steps = root.current?.querySelectorAll(".step-card");
-    if (!steps || steps.length === 0) return;
-
-    gsap.fromTo(
-      steps,
-      { y: 24, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        stagger: 0.12,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: root.current,
-          start: "top 85%",
-        },
-      }
-    );
+    gsap.from(root.current?.querySelectorAll(".step-card") ?? [], {
+      y: 24,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.12,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: root.current,
+        start: "top 80%",
+      },
+    });
   }, { scope: root });
 
   async function copy(text: string, id: string) {
@@ -210,9 +201,6 @@ export function Install() {
           </div>
 
           <div className="space-y-8 border-t border-neutral-800 pt-8">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
-              Maintenance
-            </p>
             <div className="grid gap-8 sm:grid-cols-2">
               {maintenanceSteps.map((step) => (
                 <StepCard
