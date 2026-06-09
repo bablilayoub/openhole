@@ -6,10 +6,6 @@
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
     @apply bg-black text-neutral-300 font-sans antialiased selection:bg-neutral-800 selection:text-white;
   }

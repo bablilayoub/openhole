@@ -170,20 +170,20 @@ export function Install() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    const cards = root.current?.querySelectorAll(".step-card");
-    if (!cards || cards.length === 0) return;
-
-    gsap.from(cards, {
-      y: 24,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.12,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: root.current,
-        start: "top 80%",
-      },
-    });
+    gsap.fromTo(".step-card", 
+      { y: 24, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        stagger: 0.12,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: root.current,
+          start: "top 85%",
+        },
+      }
+    );
   }, { scope: root });
 
   async function copy(text: string, id: string) {

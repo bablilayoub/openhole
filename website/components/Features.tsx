@@ -58,20 +58,20 @@ export function Features() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    const cards = root.current?.querySelectorAll(".feature-card");
-    if (!cards || cards.length === 0) return;
-
-    gsap.from(cards, {
-      y: 30,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: root.current,
-        start: "top 80%",
-      },
-    });
+    gsap.fromTo(".feature-card", 
+      { y: 30, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: root.current,
+          start: "top 85%",
+        },
+      }
+    );
   }, { scope: root });
 
   return (
