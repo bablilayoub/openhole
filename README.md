@@ -58,6 +58,7 @@ Binaries are written to `dist/`.
 ```bash
 openhole update          # download and install the latest release
 openhole update --check  # check only
+openhole status          # show version, active tunnel, saved subdomains
 ```
 
 When you start a tunnel, OpenHole checks for updates once per day and prints a hint if a newer version is available. Disable with `OPENHOLE_SKIP_UPDATE_CHECK=1`.
@@ -115,9 +116,15 @@ GET  /api/users          200  12ms
 POST /webhooks/stripe    201  45ms
 ```
 
-The CLI reconnects automatically if the connection drops. Your subdomain may change on reconnect unless you use `--subdomain`.
+The CLI reconnects automatically if the connection drops. Your subdomain may change on reconnect unless you use `--subdomain` — if the public URL changes, OpenHole prints a warning.
 
 With `--subdomain`, the CLI stores a reclaim token locally (`~/.config/openhole/reclaim.json`) so you can reconnect from a different network during the hold window after a disconnect.
+
+Check a running tunnel from another terminal:
+
+```bash
+openhole status
+```
 
 ---
 

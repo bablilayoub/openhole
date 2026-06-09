@@ -20,10 +20,11 @@ import (
 const maxConcurrentLocal = 25
 
 type Client struct {
-	cfg        Config
-	reconnects int
-	writeMu    sync.Mutex
-	reqSem     chan struct{}
+	cfg            Config
+	reconnects     int
+	lastPublicURL  string
+	writeMu        sync.Mutex
+	reqSem         chan struct{}
 }
 
 func New(cfg Config) *Client {
@@ -34,6 +35,8 @@ func New(cfg Config) *Client {
 }
 
 func (c *Client) Run() error {
+	clearStaleSession()
+
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
@@ -42,6 +45,8 @@ func (c *Client) Run() error {
 		<-sig
 		close(done)
 	}()
+
+	defer clearSession()
 
 	backoff := 2 * time.Second
 	for {
@@ -54,6 +59,9 @@ func (c *Client) Run() error {
 		err := c.runSession(done)
 		if err == nil {
 			return nil
+		}
+		if !isReconnectable(err) {
+			return err
 		}
 
 		select {
@@ -71,8 +79,8 @@ func (c *Client) Run() error {
 }
 
 func (c *Client) runSession(done <-chan struct{}) error {
-	if strings.HasPrefix(strings.ToLower(c.cfg.ServerURL), "ws://") {
-		return fmt.Errorf("insecure WebSocket URL (ws://); use wss://")
+	if err := validateServerURL(c.cfg.ServerURL); err != nil {
+		return err
 	}
 
 	conn, _, err := websocket.DefaultDialer.Dial(c.cfg.ServerURL, nil)
@@ -106,7 +114,7 @@ func (c *Client) runSession(done <-chan struct{}) error {
 	}
 	if env.Type == protocol.TypeError {
 		em, _ := protocol.ParseError(raw)
-		return fmt.Errorf("%s", em.Message)
+		return c.registerError(em.Message)
 	}
 	if env.Type != protocol.TypeRegistered {
 		return fmt.Errorf("unexpected response: %s", env.Type)
@@ -135,7 +143,28 @@ func (c *Client) runSession(done <-chan struct{}) error {
 		)
 	} else {
 		fmt.Println(shared.Paint(shared.AnsiGreen, "✓ Reconnected"))
+		if c.lastPublicURL != "" && c.lastPublicURL != regd.PublicURL {
+			fmt.Fprintf(os.Stderr, "\n%s\n\n",
+				shared.PaintErr(shared.AnsiYellow,
+					fmt.Sprintf("⚠  Public URL changed:\n   was %s\n   now %s", c.lastPublicURL, regd.PublicURL),
+				),
+			)
+		}
 	}
+	c.lastPublicURL = regd.PublicURL
+	startedAt := time.Now()
+	if s, ok := loadSession(); ok && s.PID == os.Getpid() {
+		startedAt = s.StartedAt
+	}
+	_ = saveSession(Session{
+		PID:       os.Getpid(),
+		PublicURL: regd.PublicURL,
+		Subdomain: regd.Subdomain,
+		Host:      c.cfg.Host,
+		Port:      c.cfg.Port,
+		ServerURL: c.cfg.ServerURL,
+		StartedAt: startedAt,
+	})
 	fmt.Printf("%s %s\n", shared.Paint(shared.AnsiDim, "→"), shared.Paint(shared.AnsiCyan, regd.PublicURL))
 	fmt.Printf("%s %s\n\n",
 		shared.Paint(shared.AnsiDim, "→"),

@@ -14,11 +14,11 @@ type reclaimStore struct {
 var reclaimMu sync.Mutex
 
 func reclaimStorePath() (string, error) {
-	dir, err := os.UserConfigDir()
+	dir, err := configDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(dir, "openhole", "reclaim.json"), nil
+	return filepath.Join(dir, "reclaim.json"), nil
 }
 
 func loadReclaimToken(subdomain string) string {
@@ -48,11 +48,15 @@ func saveReclaimToken(subdomain, token string) error {
 	reclaimMu.Lock()
 	defer reclaimMu.Unlock()
 
-	path, err := reclaimStorePath()
+	dir, err := configDir()
 	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+	if err := os.MkdirAll(dir, 0o700); err != nil {
+		return err
+	}
+	path, err := reclaimStorePath()
+	if err != nil {
 		return err
 	}
 

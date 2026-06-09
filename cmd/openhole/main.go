@@ -17,10 +17,11 @@ func main() {
 	var verbose bool
 
 	root := &cobra.Command{
-		Use:     "openhole [port]",
-		Short:   "Expose localhost to the internet",
-		Version: shared.Version,
-		Args:    cobra.MaximumNArgs(1),
+		Use:          "openhole [port]",
+		Short:        "Expose localhost to the internet",
+		Version:      shared.Version,
+		SilenceUsage: true,
+		Args:         cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 0 {
 				return cmd.Help()
@@ -68,8 +69,9 @@ func main() {
 
 	var installDir string
 	uninstallCmd := &cobra.Command{
-		Use:   "uninstall",
-		Short: "Remove the openhole CLI from your system",
+		Use:          "uninstall",
+		Short:        "Remove the openhole CLI from your system",
+		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return uninstall.Run(installDir)
 		},
@@ -80,8 +82,9 @@ func main() {
 	var checkOnly bool
 	var updateInstallDir string
 	updateCmd := &cobra.Command{
-		Use:   "update",
-		Short: "Check for and install the latest openhole release",
+		Use:          "update",
+		Short:        "Check for and install the latest openhole release",
+		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if checkOnly {
 				return update.PrintStatus(cmd.Context())
@@ -92,6 +95,16 @@ func main() {
 	updateCmd.Flags().BoolVar(&checkOnly, "check", false, "Check for updates without installing")
 	updateCmd.Flags().StringVar(&updateInstallDir, "install-dir", "", "Install directory (default: current openhole binary path)")
 	root.AddCommand(updateCmd)
+
+	statusCmd := &cobra.Command{
+		Use:          "status",
+		Short:        "Show CLI version and active tunnel info",
+		SilenceUsage: true,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return client.PrintStatus()
+		},
+	}
+	root.AddCommand(statusCmd)
 
 	if err := root.Execute(); err != nil {
 		os.Exit(1)
