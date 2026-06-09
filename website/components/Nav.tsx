@@ -26,7 +26,7 @@ export function Nav() {
         <nav className="flex items-center gap-1 sm:gap-2">
           <a
             href="#features"
-            className="hidden rounded-full px-3 py-1.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-white sm:inline-block"
+            className="rounded-full px-3 py-1.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-white"
           >
             Features
           </a>

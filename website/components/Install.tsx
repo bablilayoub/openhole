@@ -132,8 +132,10 @@ function StepCard({
   onCopy: (text: string, id: string) => void;
 }) {
   return (
-    <div className="step-card flex h-full flex-col">
-      <span className="mb-3 block font-mono text-sm text-neutral-500">{num}</span>
+    <div className="step-card card-base flex h-full flex-col p-6 sm:p-8">
+      <span className="mb-4 inline-flex w-fit items-center rounded-full border border-neutral-800 bg-neutral-900 px-2.5 py-0.5 font-mono text-xs text-emerald-500/90">
+        {num}
+      </span>
       <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
       <p className="mb-6 flex-1 text-sm leading-relaxed text-neutral-400 sm:text-base">{desc}</p>
       <StepCode cmd={cmd} id={num} copied={copied} onCopy={onCopy} />
@@ -201,6 +203,9 @@ export function Install() {
           </div>
 
           <div className="space-y-8 border-t border-neutral-800 pt-8">
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
+              Maintenance
+            </p>
             <div className="grid gap-8 sm:grid-cols-2">
               {maintenanceSteps.map((step) => (
                 <StepCard
