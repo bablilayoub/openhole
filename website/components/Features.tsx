@@ -42,39 +42,45 @@ const features = [
 ];
 
 export function Features() {
-  const root = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    gsap.from(root.current?.querySelectorAll(".feature-card") ?? [], {
-      y: 30,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: "power2.out",
-      scrollTrigger: {
-        trigger: root.current,
-        start: "top 80%",
-      },
-    });
-  }, { scope: root });
+    const cards = cardsRef.current?.querySelectorAll(".feature-card");
+    if (!cards || cards.length === 0) return;
+
+    gsap.fromTo(
+      cards,
+      { y: 30, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: cardsRef.current,
+          start: "top 85%",
+        },
+      }
+    );
+  }, { scope: cardsRef });
 
   return (
     <Section id="features" border>
-      <div ref={root}>
-        <SectionHeader
-          title={
-            <>
-              Everything you need.
-              <br />
-              Nothing you don&apos;t.
-            </>
-          }
-          description="HTTPS hits ophl.link, relays over WebSocket to your CLI, then localhost. Anyone with the URL can access your tunnel — use it carefully."
-        />
+      <SectionHeader
+        title={
+          <>
+            <span className="block text-white">Everything you need.</span>
+            <span className="block text-neutral-500">Nothing you don&apos;t.</span>
+          </>
+        }
+        description="HTTPS hits ophl.link, relays over WebSocket to your CLI, then localhost. Anyone with the URL can access your tunnel — use it carefully."
+      />
 
+      <div ref={cardsRef}>
         <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
           {features.map((feature) => (
             <div
