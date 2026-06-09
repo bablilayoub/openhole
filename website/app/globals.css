@@ -44,4 +44,13 @@
   .code-block {
     @apply flex items-center gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/40 px-4 py-3.5;
   }
+
+  .portal-glow {
+    background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.05) 40%, transparent 70%);
+    filter: blur(40px);
+  }
+
+  .bento-card {
+    @apply relative overflow-hidden rounded-3xl border border-neutral-800/50 bg-neutral-900/20 backdrop-blur-sm transition-all duration-500 hover:border-neutral-700/50 hover:bg-neutral-900/40;
+  }
 }
