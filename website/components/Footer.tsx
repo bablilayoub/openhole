@@ -2,29 +2,26 @@ import Link from "next/link";
 import { githubReleases, scriptPath } from "@/lib/site";
 import { Logo } from "./Logo";
 
-const productLinks = [
+const projectLinks = [
   { href: "#features", label: "Features" },
   { href: "#install", label: "Install" },
+  { href: "/terms", label: "Terms & Abuse" },
   {
     href: "https://github.com/bablilayoub/openhole#self-hosting",
     label: "Self-host",
     external: true,
   },
-  { href: githubReleases, label: "Releases", external: true },
 ];
 
-const resourceLinks = [
+const connectLinks = [
   {
     href: "https://github.com/bablilayoub/openhole",
     label: "GitHub",
     external: true,
   },
+  { href: githubReleases, label: "Releases", external: true },
   { href: scriptPath("install"), label: "install.sh" },
   { href: scriptPath("uninstall"), label: "uninstall.sh" },
-];
-
-const legalLinks = [
-  { href: "/terms", label: "Terms & Abuse" },
   { href: "mailto:security@openhole.dev", label: "security@openhole.dev" },
   { href: "mailto:abuse@openhole.dev", label: "abuse@openhole.dev" },
 ];
@@ -39,7 +36,7 @@ function FooterLink({
   external?: boolean;
 }) {
   const className =
-    "w-fit text-sm text-neutral-400 transition-all hover:text-emerald-400 hover:translate-x-0.5";
+    "w-fit text-sm text-neutral-400 transition-colors hover:text-white";
 
   if (external || href.startsWith("http") || href.startsWith("mailto:")) {
     return (
@@ -63,9 +60,9 @@ function FooterLink({
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-neutral-900/50 bg-black/50 backdrop-blur-3xl mt-24">
+    <footer className="relative border-t border-neutral-900">
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neutral-700/80 to-transparent"
         aria-hidden
       />
 
@@ -77,58 +74,43 @@ export function Footer() {
               Expose localhost to the internet in one command. HTTPS by default.
               No accounts, no dashboard.
             </p>
-            
-            <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-emerald-500/10 bg-emerald-500/5 px-4 py-2 font-mono text-xs text-emerald-400/80 backdrop-blur-md transition-colors hover:bg-emerald-500/10">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
+            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-neutral-800 bg-neutral-950 px-3 py-1.5 font-mono text-xs text-neutral-500">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               tunnel.openhole.dev
             </div>
           </div>
 
-          <div className="lg:col-span-2 lg:col-start-7">
-            <p className="mb-5 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
-              Product
+          <div className="lg:col-span-3 lg:col-start-7">
+            <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
+              Project
             </p>
-            <nav className="flex flex-col gap-3.5">
-              {productLinks.map((link) => (
-                <FooterLink key={link.label} {...link} />
-              ))}
-            </nav>
-          </div>
-
-          <div className="lg:col-span-2">
-            <p className="mb-5 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
-              Resources
-            </p>
-            <nav className="flex flex-col gap-3.5">
-              {resourceLinks.map((link) => (
+            <nav className="flex flex-col gap-3">
+              {projectLinks.map((link) => (
                 <FooterLink key={link.label} {...link} />
               ))}
             </nav>
           </div>
 
           <div className="lg:col-span-3">
-            <p className="mb-5 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
-              Legal & Support
+            <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
+              Connect
             </p>
-            <nav className="flex flex-col gap-3.5">
-              {legalLinks.map((link) => (
+            <nav className="flex flex-col gap-3">
+              {connectLinks.map((link) => (
                 <FooterLink key={link.label} {...link} />
               ))}
             </nav>
           </div>
         </div>
 
-        <div className="mt-20 flex flex-col gap-6 border-t border-neutral-900/50 pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 flex flex-col gap-6 border-t border-neutral-900 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-neutral-500">
             Built by{" "}
             <a
               href="https://abablil.me"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-neutral-300 underline decoration-neutral-700 underline-offset-4 transition-colors hover:text-emerald-400 hover:decoration-emerald-500/50"
+              className="font-medium text-neutral-300 underline decoration-neutral-700 underline-offset-4 transition-colors hover:text-white hover:decoration-neutral-500"
             >
               Ayoub Bablil
             </a>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -38,40 +38,21 @@ const features = [
 export function Features() {
   const root = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!root.current) return;
-      const cards = root.current.querySelectorAll(".bento-card");
-      for (const card of cards) {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        (card as HTMLElement).style.setProperty("--mouse-x", `${x}px`);
-        (card as HTMLElement).style.setProperty("--mouse-y", `${y}px`);
-      }
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
   useGSAP(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    gsap.fromTo(".feature-card", 
-      { y: 30, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: root.current,
-          start: "top 85%",
-        },
-      }
-    );
+    gsap.from(root.current?.querySelectorAll(".feature-card") ?? [], {
+      y: 30,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: root.current,
+        start: "top 80%",
+      },
+    });
   }, { scope: root });
 
   return (
@@ -82,19 +63,17 @@ export function Features() {
             <>
               Everything you need.
               <br />
-              <span className="text-neutral-500">Nothing you don&apos;t.</span>
+              Nothing you don&apos;t.
             </>
           }
           description="HTTPS hits ophl.link, relays over WebSocket to your CLI, then localhost. Anyone with the URL can access your tunnel — use it carefully."
         />
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature, i) => (
+        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
+          {features.map((feature) => (
             <div
               key={feature.title}
-              className={`feature-card bento-card p-6 sm:p-8 ${
-                i === 0 || i === 3 ? "lg:col-span-2" : "lg:col-span-1"
-              }`}
+              className="feature-card card-base p-6 transition-colors hover:border-neutral-700 sm:p-8"
             >
               <h3 className="mb-3 text-lg font-semibold text-white">{feature.title}</h3>
               <p className="text-sm leading-relaxed text-neutral-400 sm:text-base">

@@ -23,7 +23,7 @@ export function Hero() {
       stagger: 0.15,
     }).from(
       ".hero-terminal",
-      { y: 40, opacity: 0, rotationX: 15, scale: 0.95, duration: 1.2 },
+      { y: 40, opacity: 0, duration: 1 },
       "-=0.4"
     );
   }, { scope: root });
@@ -34,7 +34,7 @@ export function Hero() {
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <h1 className="hero-text mb-6 text-5xl font-bold leading-[1.1] tracking-tight text-white sm:text-7xl">
             Share localhost. <br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Zero configuration.</span>
+            <span className="text-neutral-500">Zero configuration.</span>
           </h1>
           <p className="hero-text mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-neutral-400 sm:text-xl">
             Expose any local port to the internet over HTTPS. No accounts, no API keys, no dashboard. Just a single command.
@@ -57,17 +57,15 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-4xl" style={{ perspective: "2000px" }}>
-          <div className="portal-glow absolute -inset-10 -z-10" />
-          <div className="hero-terminal w-full card-base shadow-2xl shadow-emerald-500/10 border-neutral-800/60 bg-neutral-950/80 backdrop-blur-xl">
-            <div className="flex items-center border-b border-neutral-800/60 bg-neutral-900/40 px-4 py-3">
-              <div className="flex gap-2">
-                <div className="h-3 w-3 rounded-full bg-red-500/80" />
-                <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
-                <div className="h-3 w-3 rounded-full bg-green-500/80" />
-              </div>
-              <div className="mx-auto font-mono text-xs text-neutral-500">bash — openhole</div>
+        <div className="hero-terminal w-full card-base shadow-2xl shadow-white/5">
+          <div className="flex items-center border-b border-neutral-800 bg-neutral-900/50 px-4 py-3">
+            <div className="flex gap-2">
+              <div className="h-3 w-3 rounded-full bg-neutral-700" />
+              <div className="h-3 w-3 rounded-full bg-neutral-700" />
+              <div className="h-3 w-3 rounded-full bg-neutral-700" />
             </div>
+            <div className="mx-auto font-mono text-xs text-neutral-500">bash — openhole</div>
+          </div>
 
           <div className="p-6 font-mono text-sm leading-relaxed sm:p-8 sm:text-base">
             <div className="flex gap-3">
@@ -97,23 +95,16 @@ export function Hero() {
 
             <div className="mt-8 space-y-2 border-t border-neutral-800/50 pt-6 text-xs sm:text-sm">
               <div className="grid grid-cols-[3rem_1fr_3rem_4rem] gap-4 text-neutral-400">
-                <span className="text-white font-bold">GET</span>
+                <span className="text-white">GET</span>
                 <span>/api/users</span>
                 <span className="text-emerald-500">200</span>
-                <span className="text-right text-neutral-500">12ms</span>
+                <span className="text-right">12ms</span>
               </div>
               <div className="grid grid-cols-[3rem_1fr_3rem_4rem] gap-4 text-neutral-400">
-                <span className="text-white font-bold">POST</span>
+                <span className="text-white">POST</span>
                 <span>/webhooks/stripe</span>
                 <span className="text-emerald-500">201</span>
-                <span className="text-right text-neutral-500">45ms</span>
-              </div>
-              <div className="grid grid-cols-[3rem_1fr_3rem_4rem] gap-4 text-neutral-400">
-                <span className="text-white font-bold">GET</span>
-                <span>/admin/dashboard</span>
-                <span className="text-red-500">404</span>
-                <span className="text-right text-neutral-500">2ms</span>
-              </div>
+                <span className="text-right">45ms</span>
               </div>
             </div>
           </div>

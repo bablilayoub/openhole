@@ -105,27 +105,11 @@ function StepCode({
   copied: string | null;
   onCopy: (text: string, id: string) => void;
 }) {
-  // Simple syntax highlighting for bash commands
-  const highlightCmd = (text: string) => {
-    return text.split(" ").map((word, i) => {
-      if (word === "openhole" || word === "curl" || word === "npm") {
-        return <span key={i} className="text-emerald-400">{word} </span>;
-      }
-      if (word.startsWith("--")) {
-        return <span key={i} className="text-cyan-400">{word} </span>;
-      }
-      if (word === "|" || word === "sh") {
-        return <span key={i} className="text-neutral-500">{word} </span>;
-      }
-      return <span key={i} className="text-neutral-300">{word} </span>;
-    });
-  };
-
   return (
-    <div className="code-block border-neutral-800/60 bg-black/40">
-      <code className="min-w-0 flex-1 font-mono text-sm leading-relaxed break-all">
-        <span className="text-neutral-600 select-none">$ </span>
-        {highlightCmd(cmd)}
+    <div className="code-block">
+      <code className="min-w-0 flex-1 font-mono text-sm leading-relaxed text-neutral-300 break-all">
+        <span className="text-neutral-500">$ </span>
+        {cmd}
       </code>
       <CopyButton cmd={cmd} id={id} copied={copied} onCopy={onCopy} />
     </div>
@@ -148,16 +132,11 @@ function StepCard({
   onCopy: (text: string, id: string) => void;
 }) {
   return (
-    <div className="step-card relative flex h-full flex-col overflow-hidden rounded-3xl border border-neutral-800/50 bg-neutral-900/20 p-6 sm:p-8">
-      <div className="absolute -right-4 -top-8 select-none font-mono text-[120px] font-bold leading-none text-white/[0.02] sm:-right-6 sm:-top-10 sm:text-[160px]">
-        {num}
-      </div>
-      <div className="relative z-10 flex h-full flex-col">
-        <span className="mb-3 block font-mono text-sm font-medium text-emerald-500">{num}</span>
-        <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
-        <p className="mb-6 flex-1 text-sm leading-relaxed text-neutral-400 sm:text-base">{desc}</p>
-        <StepCode cmd={cmd} id={num} copied={copied} onCopy={onCopy} />
-      </div>
+    <div className="step-card flex h-full flex-col">
+      <span className="mb-3 block font-mono text-sm text-neutral-500">{num}</span>
+      <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
+      <p className="mb-6 flex-1 text-sm leading-relaxed text-neutral-400 sm:text-base">{desc}</p>
+      <StepCode cmd={cmd} id={num} copied={copied} onCopy={onCopy} />
     </div>
   );
 }
@@ -170,20 +149,17 @@ export function Install() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    gsap.fromTo(".step-card", 
-      { y: 24, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        stagger: 0.12,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: root.current,
-          start: "top 85%",
-        },
-      }
-    );
+    gsap.from(root.current?.querySelectorAll(".step-card") ?? [], {
+      y: 24,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.12,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: root.current,
+        start: "top 80%",
+      },
+    });
   }, { scope: root });
 
   async function copy(text: string, id: string) {
@@ -224,10 +200,7 @@ export function Install() {
             ))}
           </div>
 
-          <div className="space-y-8 border-t border-neutral-800/50 pt-12">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500">
-              Maintenance
-            </p>
+          <div className="space-y-8 border-t border-neutral-800 pt-8">
             <div className="grid gap-8 sm:grid-cols-2">
               {maintenanceSteps.map((step) => (
                 <StepCard
