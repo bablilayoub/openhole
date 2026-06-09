@@ -20,11 +20,11 @@ import (
 const maxConcurrentLocal = 25
 
 type Client struct {
-	cfg            Config
-	reconnects     int
-	lastPublicURL  string
-	writeMu        sync.Mutex
-	reqSem         chan struct{}
+	cfg           Config
+	reconnects    int
+	lastPublicURL string
+	writeMu       sync.Mutex
+	reqSem        chan struct{}
 }
 
 func New(cfg Config) *Client {
