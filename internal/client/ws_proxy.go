@@ -185,9 +185,9 @@ func localWebSocketURL(host string, port int, path, query string) (string, error
 		path = "/"
 	}
 	u := &url.URL{
-		Scheme: "ws",
-		Host:   net.JoinHostPort(host, strconv.Itoa(port)),
-		Path:   path,
+		Scheme:   "ws",
+		Host:     net.JoinHostPort(host, strconv.Itoa(port)),
+		Path:     path,
 		RawQuery: query,
 	}
 	return u.String(), nil
