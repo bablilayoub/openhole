@@ -1,0 +1,16 @@
+# Default OpenHole CLI settings.
+# Copy to ~/.config/openhole/config.yaml
+
+# Tunnel server WebSocket URL
+# server: wss://tunnel.openhole.dev/tunnel
+
+# Local host to forward to (default: localhost)
+# host: localhost
+
+# Request a specific subdomain (single-port tunnels only)
+# subdomain: myapp
+
+# Registration token for self-hosted servers (REGISTRATION_TOKENS)
+# token: your-secret-token
+
+# verbose: false

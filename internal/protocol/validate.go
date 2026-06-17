@@ -55,6 +55,9 @@ func ValidateRegister(m *RegisterMessage) error {
 	if err := validateStringField("reclaim_token", m.ReclaimToken, MaxIDLen*2); err != nil {
 		return err
 	}
+	if err := validateStringField("auth_token", m.AuthToken, MaxIDLen*2); err != nil {
+		return err
+	}
 	if err := validateStringField("local_host", m.LocalHost, MaxIDLen); err != nil {
 		return err
 	}

@@ -12,7 +12,7 @@ cd "$ROOT"
 
 export VERSION="${VERSION#v}"
 
-for os in darwin linux; do
+for os in darwin linux windows; do
   for arch in amd64 arm64; do
     GOOS=$os GOARCH=$arch VERSION="$VERSION" ./scripts/build.sh
   done

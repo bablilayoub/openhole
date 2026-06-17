@@ -11,12 +11,12 @@ const siteLinks = [
 ];
 
 const resourceLinks = [
+  { href: "/docs", label: "Documentation" },
   { href: githubRepo, label: "GitHub", external: true },
   { href: "/terms", label: "Terms" },
   {
-    href: "https://github.com/bablilayoub/openhole#self-hosting",
+    href: "/docs/self-hosting",
     label: "Self-host",
-    external: true,
   },
 ];
 

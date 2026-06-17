@@ -12,7 +12,7 @@ export const githubRepo = "https://github.com/bablilayoub/openhole";
 
 export const githubReleases = `${githubRepo}/releases`;
 
-export const cliVersion = "0.2.0";
+export const cliVersion = "0.2.1";
 
 export function isGitHubReferrer(referrer: string): boolean {
   if (!referrer) return false;
@@ -30,4 +30,8 @@ export function scriptPath(name: "install" | "uninstall"): string {
 
 export function scriptUrl(name: "install" | "uninstall"): string {
   return `${getSiteUrl()}${scriptPath(name)}`;
+}
+
+export function installPs1Url(): string {
+  return `${getSiteUrl()}/install.ps1`;
 }

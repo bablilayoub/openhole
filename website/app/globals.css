@@ -143,4 +143,12 @@
     border-color: rgba(255, 255, 255, 0.15) !important;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)) !important;
   }
+
+  .docs-content .docs-heading {
+    scroll-margin-top: 6rem;
+  }
+
+  .docs-content .docs-pre code {
+    @apply border-0 bg-transparent p-0 text-inherit;
+  }
 }

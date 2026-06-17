@@ -81,8 +81,15 @@ esac
 case "$OS" in
   darwin) OS="darwin" ;;
   linux) OS="linux" ;;
-  *) echo "Unsupported OS: $OS"; exit 1 ;;
+  mingw*|msys*|cygwin*|windows*) OS="windows" ;;
+  *) echo "Unsupported OS: $OS (use install.ps1 on Windows)"; exit 1 ;;
 esac
+
+if [ "$OS" = "windows" ]; then
+  echo "On Windows, use PowerShell:"
+  echo "  irm https://openhole.dev/install.ps1 | iex"
+  exit 1
+fi
 
 VERSION="${OPENHOLE_VERSION:-latest}"
 BINARY="openhole-${OS}-${ARCH}"

@@ -14,14 +14,18 @@ func PrintStatus() error {
 	fmt.Println(shared.Paint(shared.AnsiBold, "openhole v"+shared.Version))
 	fmt.Println()
 
-	clearStaleSession()
-	if s, ok := loadSession(); ok && processAlive(s.PID) {
-		uptime := time.Since(s.StartedAt).Round(time.Second)
-		fmt.Println(shared.Paint(shared.AnsiGreen, fmt.Sprintf("Tunnel running (pid %d)", s.PID)))
-		fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "URL:"), shared.Paint(shared.AnsiCyan, s.PublicURL))
-		fmt.Printf("  %s http://%s:%d\n", shared.Paint(shared.AnsiDim, "Local:"), s.Host, s.Port)
-		fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "Server:"), s.ServerURL)
-		fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "Uptime:"), formatDuration(uptime))
+	clearStaleSessions()
+	active := loadActiveSessions()
+	if len(active) > 0 {
+		for _, s := range active {
+			uptime := time.Since(s.StartedAt).Round(time.Second)
+			fmt.Println(shared.Paint(shared.AnsiGreen, fmt.Sprintf("Tunnel running (pid %d, port %d)", s.PID, s.Port)))
+			fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "URL:"), shared.Paint(shared.AnsiCyan, s.PublicURL))
+			fmt.Printf("  %s http://%s:%d\n", shared.Paint(shared.AnsiDim, "Local:"), s.Host, s.Port)
+			fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "Server:"), s.ServerURL)
+			fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "Uptime:"), formatDuration(uptime))
+			fmt.Println()
+		}
 	} else {
 		fmt.Println(shared.Paint(shared.AnsiDim, "No active tunnel."))
 	}

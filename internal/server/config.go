@@ -23,6 +23,7 @@ type Config struct {
 	PublicURLScheme                 string
 	TrustProxyHeaders               bool
 	BlockedIPs                      map[string]struct{}
+	RegistrationTokens              map[string]struct{}
 }
 
 func LoadConfig() Config {
@@ -40,6 +41,7 @@ func LoadConfig() Config {
 		PublicURLScheme:                 envOr("PUBLIC_URL_SCHEME", "https"),
 		TrustProxyHeaders:               envOr("TRUST_PROXY_HEADERS", "false") == "true",
 		BlockedIPs:                      parseBlockedIPs(os.Getenv("BLOCKED_IPS")),
+		RegistrationTokens:              parseRegistrationTokens(os.Getenv("REGISTRATION_TOKENS")),
 	}
 
 	extra := strings.Split(os.Getenv("BLOCKED_SUBDOMAINS_EXTRA"), ",")
@@ -91,4 +93,23 @@ func parseBlockedIPs(raw string) map[string]struct{} {
 		}
 	}
 	return m
+}
+
+func parseRegistrationTokens(raw string) map[string]struct{} {
+	m := make(map[string]struct{})
+	for _, tok := range strings.Split(raw, ",") {
+		tok = strings.TrimSpace(tok)
+		if tok != "" {
+			m[tok] = struct{}{}
+		}
+	}
+	return m
+}
+
+func (c Config) registrationTokenValid(token string) bool {
+	if len(c.RegistrationTokens) == 0 {
+		return true
+	}
+	_, ok := c.RegistrationTokens[token]
+	return ok
 }

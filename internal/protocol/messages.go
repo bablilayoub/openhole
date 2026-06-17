@@ -19,6 +19,7 @@ type RegisterMessage struct {
 	ClientID           string `json:"client_id"`
 	RequestedSubdomain string `json:"requested_subdomain,omitempty"`
 	ReclaimToken       string `json:"reclaim_token,omitempty"`
+	AuthToken          string `json:"auth_token,omitempty"`
 	LocalPort          int    `json:"local_port"`
 	LocalHost          string `json:"local_host"`
 	Version            string `json:"version"`

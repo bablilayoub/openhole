@@ -39,13 +39,16 @@ func New(cfg Config) *Client {
 }
 
 func (c *Client) Run() error {
-	clearStaleSession()
-	defer clearSession()
-
 	shutdown := shared.ListenForShutdown(func() {
 		fmt.Fprintln(os.Stderr, shared.Paint(shared.AnsiDim, "\nShutting down..."))
 	})
-	done := shutdown.Done()
+	return c.RunUntil(shutdown.Done())
+}
+
+// RunUntil runs the reconnect loop until done is closed.
+func (c *Client) RunUntil(done <-chan struct{}) error {
+	clearStaleSessions()
+	defer clearSessionsForPort(c.cfg.Port)
 
 	backoff := 2 * time.Second
 	for {
@@ -98,6 +101,7 @@ func (c *Client) runSession(done <-chan struct{}) error {
 		ClientID:           uuid.NewString(),
 		RequestedSubdomain: c.cfg.Subdomain,
 		ReclaimToken:       reclaimToken,
+		AuthToken:          c.cfg.Token,
 		LocalPort:          c.cfg.Port,
 		LocalHost:          c.cfg.Host,
 		Version:            shared.Version,
@@ -151,10 +155,10 @@ func (c *Client) runSession(done <-chan struct{}) error {
 	}
 	c.lastPublicURL = regd.PublicURL
 	startedAt := time.Now()
-	if s, ok := loadSession(); ok && s.PID == os.Getpid() {
+	if s, ok := loadSessionForPort(c.cfg.Port); ok {
 		startedAt = s.StartedAt
 	}
-	_ = saveSession(Session{
+	_ = saveSessionEntry(Session{
 		PID:       os.Getpid(),
 		PublicURL: regd.PublicURL,
 		Subdomain: regd.Subdomain,
@@ -255,7 +259,7 @@ func (c *Client) handleRequest(conn *websocket.Conn, req protocol.RequestMessage
 			RequestID: req.RequestID,
 			Message:   "too many concurrent requests",
 		})
-		logRequest(req.Method, req.Path, 503, 0)
+		logRequest(c.cfg.Port, req.Method, req.Path, 503, 0)
 		return
 	}
 	defer func() { <-c.reqSem }()
@@ -271,9 +275,9 @@ func (c *Client) handleRequest(conn *websocket.Conn, req protocol.RequestMessage
 			RequestID: req.RequestID,
 			Message:   msg,
 		})
-		logRequest(req.Method, req.Path, 502, dur)
+		logRequest(c.cfg.Port, req.Method, req.Path, 502, dur)
 		return
 	}
 	_ = c.writeMessage(conn, resp)
-	logRequest(req.Method, req.Path, resp.StatusCode, dur)
+	logRequest(c.cfg.Port, req.Method, req.Path, resp.StatusCode, dur)
 }

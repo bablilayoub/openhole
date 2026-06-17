@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "description": "Expose localhost to the internet with one command",
+  "homepage": "https://openhole.dev",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/bablilayoub/openhole/releases/download/v0.2.0/openhole-windows-amd64.exe",
+      "hash": "REPLACE_ON_RELEASE"
+    },
+    "arm64": {
+      "url": "https://github.com/bablilayoub/openhole/releases/download/v0.2.0/openhole-windows-arm64.exe",
+      "hash": "REPLACE_ON_RELEASE"
+    }
+  },
+  "bin": "openhole.exe",
+  "checkver": {
+    "github": "bablilayoub/openhole"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/bablilayoub/openhole/releases/download/v$version/openhole-windows-amd64.exe"
+      },
+      "arm64": {
+        "url": "https://github.com/bablilayoub/openhole/releases/download/v$version/openhole-windows-arm64.exe"
+      }
+    }
+  }
+}

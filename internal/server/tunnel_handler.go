@@ -77,6 +77,15 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !s.cfg.registrationTokenValid(reg.AuthToken) {
+		_ = protocol.WriteMessage(conn, protocol.ErrorMessage{
+			Type:    protocol.TypeError,
+			Message: "invalid or missing registration token",
+		})
+		conn.Close()
+		return
+	}
+
 	subdomain, err := s.registry.AssignSubdomain(reg.RequestedSubdomain, ip, reg.ReclaimToken)
 	if err != nil {
 		msg := err.Error()

@@ -285,8 +285,12 @@ func Run(ctx context.Context, installDir string) error {
 }
 
 func installTarget(installDir string) (string, error) {
+	name := "openhole"
+	if runtime.GOOS == "windows" {
+		name = "openhole.exe"
+	}
 	if installDir != "" {
-		return filepath.Join(installDir, "openhole"), nil
+		return filepath.Join(installDir, name), nil
 	}
 	exe, err := os.Executable()
 	if err != nil {
@@ -301,6 +305,8 @@ func platformBinary() (osName, arch, file string, err error) {
 		osName = "darwin"
 	case "linux":
 		osName = "linux"
+	case "windows":
+		osName = "windows"
 	default:
 		return "", "", "", fmt.Errorf("unsupported OS for self-update: %s", runtime.GOOS)
 	}
@@ -314,7 +320,11 @@ func platformBinary() (osName, arch, file string, err error) {
 		return "", "", "", fmt.Errorf("unsupported architecture for self-update: %s", runtime.GOARCH)
 	}
 
-	return osName, arch, fmt.Sprintf("openhole-%s-%s", osName, arch), nil
+	suffix := ""
+	if osName == "windows" {
+		suffix = ".exe"
+	}
+	return osName, arch, fmt.Sprintf("openhole-%s-%s%s", osName, arch, suffix), nil
 }
 
 func downloadRelease(ctx context.Context, version string) (string, error) {
@@ -447,6 +457,10 @@ func installBinary(dest, src string) error {
 			return err
 		}
 		return out.Close()
+	}
+
+	if runtime.GOOS == "windows" {
+		return fmt.Errorf("install to %s requires write access — re-run as administrator or use install.ps1", dest)
 	}
 
 	cmd := exec.Command("sudo", "install", "-m", "755", src, dest)

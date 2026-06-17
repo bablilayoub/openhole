@@ -28,7 +28,7 @@ Report security issues privately — see [SECURITY.md](SECURITY.md).
 - **Bug reports** — Open a GitHub issue with reproduction steps
 - **Feature requests** — Describe the use case, not just the solution
 - **Code** — Bug fixes, tests, docs, and small features via pull request
-- **Docs** — README, CONTRIBUTING, deployment guides
+- **Docs** — `docs/` and [openhole.dev/docs](https://openhole.dev/docs)
 
 We prioritize:
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HashLink } from "./HashLink";
 import { Logo } from "./Logo";
@@ -26,6 +27,12 @@ export function Nav() {
         <Logo iconClassName="h-8 w-8 sm:h-9 sm:w-9" className="text-base sm:text-lg" />
 
         <nav className="flex items-center gap-4 sm:gap-6">
+          <Link
+            href="/docs"
+            className="hidden text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:block"
+          >
+            Docs
+          </Link>
           <HashLink
             section="features"
             className="hidden text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:block"

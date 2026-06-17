@@ -136,7 +136,7 @@ func (c *Client) runWSStream(control *websocket.Conn, open protocol.WSOpenMessag
 		return
 	}
 
-	logRequest(open.Method, open.Path, http.StatusSwitchingProtocols, 0)
+	logRequest(c.cfg.Port, open.Method, open.Path, http.StatusSwitchingProtocols, 0)
 
 	errCh := make(chan error, 2)
 	go func() {

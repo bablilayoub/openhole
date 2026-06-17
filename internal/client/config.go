@@ -5,5 +5,6 @@ type Config struct {
 	Host      string
 	Subdomain string
 	ServerURL string
+	Token     string
 	Verbose   bool
 }

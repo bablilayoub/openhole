@@ -7,7 +7,8 @@ import (
 	"github.com/bablilayoub/openhole/internal/shared"
 )
 
-func logRequest(method, path string, status int, duration time.Duration) {
+func logRequest(port int, method, path string, status int, duration time.Duration) {
+	appendRequestLog(port, method, path, status, duration)
 	method = shared.SafeLogField(method)
 	path = truncatePath(shared.SafeLogField(path), 20)
 	ms := fmt.Sprintf("%dms", duration.Milliseconds())

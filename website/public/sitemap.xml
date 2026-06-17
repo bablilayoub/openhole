@@ -4,6 +4,36 @@
     <loc>https://openhole.dev/</loc>
   </url>
   <url>
+    <loc>https://openhole.dev/docs</loc>
+  </url>
+  <url>
+    <loc>https://openhole.dev/docs/getting-started</loc>
+  </url>
+  <url>
+    <loc>https://openhole.dev/docs/installation</loc>
+  </url>
+  <url>
+    <loc>https://openhole.dev/docs/usage</loc>
+  </url>
+  <url>
+    <loc>https://openhole.dev/docs/commands</loc>
+  </url>
+  <url>
+    <loc>https://openhole.dev/docs/websocket</loc>
+  </url>
+  <url>
+    <loc>https://openhole.dev/docs/configuration</loc>
+  </url>
+  <url>
+    <loc>https://openhole.dev/docs/self-hosting</loc>
+  </url>
+  <url>
+    <loc>https://openhole.dev/docs/security</loc>
+  </url>
+  <url>
+    <loc>https://openhole.dev/docs/package-managers</loc>
+  </url>
+  <url>
     <loc>https://openhole.dev/terms</loc>
   </url>
 </urlset>
