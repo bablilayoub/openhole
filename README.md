@@ -164,6 +164,7 @@ openhole-server  ←WebSocket→  openhole CLI  →  localhost:PORT
 | Rate limits | Per-IP registration and request limits |
 | Blocked subdomains | Reserved names (admin, api, www, …) |
 | Header sanitization | Spoofed `X-Forwarded-*` stripped before reaching your app |
+| WebSocket passthrough | Upgrade requests relayed to your local server |
 | Protocol validation | Message size, header count, and CRLF injection limits |
 | Client concurrency | 25 concurrent local requests per tunnel (matches server default) |
 
@@ -342,7 +343,7 @@ See [`deployments/env.example`](deployments/env.example) for the full template.
 
 ## Limitations
 
-- **HTTP only** — request/response proxying; WebSocket passthrough through tunnels is not supported yet.
+- **HTTP request/response proxying** with **WebSocket passthrough** for live reload, HMR, and real-time apps.
 - **10 MB body limit** per request and response.
 - **In-memory registry** — all tunnels are lost on server restart.
 - **Random subdomains change** on reconnect unless `--subdomain` is used. Named subdomains are held after disconnect; the same IP or a valid reclaim token can reclaim them within the hold window.

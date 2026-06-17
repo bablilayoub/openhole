@@ -133,10 +133,15 @@ func (s *Server) tunnelReadLoop(tunnel *Tunnel) {
 	}()
 
 	for {
-		env, raw, err := protocol.ReadMessage(tunnel.Conn)
+		msg, err := protocol.ReadTunnelMessage(tunnel.Conn)
 		if err != nil {
 			return
 		}
+		if msg.WSFrame != nil {
+			s.dispatchWSFrame(tunnel, msg.WSFrame)
+			continue
+		}
+		env, raw := msg.JSON, msg.RawJSON
 		switch env.Type {
 		case protocol.TypeResponse:
 			resp, err := protocol.ParseResponse(raw)
@@ -182,6 +187,18 @@ func (s *Server) tunnelReadLoop(tunnel *Tunnel) {
 			}
 		case protocol.TypePong:
 			// keepalive ack
+		case protocol.TypeWSOpenOK:
+			okMsg, err := protocol.ParseWSOpenOK(raw)
+			if err != nil {
+				continue
+			}
+			s.dispatchWSOpenResult(tunnel, &okMsg)
+		case protocol.TypeWSOpenFail:
+			failMsg, err := protocol.ParseWSOpenFail(raw)
+			if err != nil {
+				continue
+			}
+			s.dispatchWSOpenFail(tunnel, &failMsg)
 		default:
 			s.log.Warn("unknown message from client", "type", env.Type)
 		}

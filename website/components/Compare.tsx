@@ -84,7 +84,7 @@ const rows: { feature: string; values: Record<Column, CompareCell> }[] = [
   {
     feature: "WebSocket passthrough",
     values: {
-      OpenHole: { icon: "cross" },
+      OpenHole: { icon: "check" },
       ngrok: { icon: "check" },
       localtunnel: { icon: "check" },
       cloudflared: { icon: "check" },
@@ -109,7 +109,7 @@ function YesIcon() {
       strokeWidth="2.5"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="shrink-0 text-emerald-400"
+      className="shrink-0 text-cyan"
       aria-hidden
     >
       <path d="M20 6 9 17l-5-5" />
@@ -246,7 +246,7 @@ export function Compare() {
                     scope="col"
                     className={`px-4 py-4 text-center text-sm font-semibold sm:px-6 sm:text-base ${
                       col === "OpenHole"
-                        ? "compare-col-openhole text-accent"
+                        ? "compare-col-openhole text-cyan"
                         : "text-neutral-300"
                     }`}
                   >

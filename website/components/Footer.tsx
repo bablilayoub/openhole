@@ -21,7 +21,7 @@ const resourceLinks = [
 ];
 
 const linkClass =
-  "text-sm text-neutral-400 transition-colors hover:text-emerald-400";
+  "text-sm text-neutral-400 transition-colors hover:text-white";
 
 function FooterLink({
   href,
@@ -71,7 +71,7 @@ function LinkGroup({
 
 export function Footer() {
   return (
-    <footer className="border-t border-neutral-800">
+    <footer className="border-t border-white/[0.06]">
       <div className="page-container py-14 sm:py-16">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
           <div className="max-w-sm">
@@ -99,14 +99,14 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-neutral-800 pt-8 text-sm text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-4 border-t border-white/[0.06] pt-8 text-sm text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
             Built by{" "}
             <a
               href="https://abablil.me"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-300 transition-colors hover:text-emerald-400"
+              className="text-neutral-300 transition-colors hover:text-white"
             >
               Ayoub Bablil
             </a>

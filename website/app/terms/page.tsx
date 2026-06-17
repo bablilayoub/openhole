@@ -16,7 +16,7 @@ export default function TermsPage() {
           <div className="max-w-3xl">
             <Link
               href="/"
-              className="mb-12 inline-block text-sm text-neutral-500 transition-colors hover:text-emerald-400"
+              className="mb-12 inline-block text-sm text-neutral-500 transition-colors hover:text-cyan"
             >
               ← Back to home
             </Link>
@@ -44,7 +44,7 @@ export default function TermsPage() {
                   To report abuse, phishing, or malware, please contact:{" "}
                   <a
                     href="mailto:abuse@openhole.dev"
-                    className="font-medium text-white transition-colors hover:text-emerald-400"
+                    className="font-medium text-white transition-colors hover:text-cyan"
                   >
                     abuse@openhole.dev
                   </a>

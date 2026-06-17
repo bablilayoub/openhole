@@ -11,7 +11,7 @@ export function Section({ id, children, border = false, className = "" }: Sectio
   return (
     <section
       id={id}
-      className={`py-24 sm:py-32 ${border ? "border-t border-neutral-800" : ""} ${className}`}
+      className={`py-24 sm:py-32 ${border ? "border-t border-white/[0.06]" : ""} ${className}`}
     >
       <div className="page-container">{children}</div>
     </section>

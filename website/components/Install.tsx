@@ -226,7 +226,7 @@ export function Install() {
               href={githubRepo}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-300 transition-colors hover:text-emerald-400"
+              className="text-neutral-300 transition-colors hover:text-cyan"
             >
               GitHub README
             </a>{" "}

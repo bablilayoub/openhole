@@ -15,25 +15,26 @@ export function Nav() {
   }, []);
 
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-4 sm:pt-5">
-      <div className="page-container pointer-events-auto">
-        <div
-          className={`flex h-12 w-full items-center justify-between rounded-full px-2 pl-4 transition-all duration-300 sm:h-14 sm:pl-5 ${
-            scrolled ? "floating-nav floating-nav-scrolled" : "floating-nav"
-          }`}
-        >
-        <Logo iconClassName="h-10 w-10 sm:h-11 sm:w-11" className="text-base sm:text-lg" />
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "border-b border-white/[0.06] bg-black/80 backdrop-blur-md"
+          : "border-b border-transparent bg-transparent"
+      }`}
+    >
+      <div className="page-container flex h-16 items-center justify-between">
+        <Logo iconClassName="h-8 w-8 sm:h-9 sm:w-9" className="text-base sm:text-lg" />
 
-        <nav className="flex items-center gap-0.5 sm:gap-2">
+        <nav className="flex items-center gap-4 sm:gap-6">
           <HashLink
             section="features"
-            className="rounded-full px-2 py-1 text-xs font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-emerald-400 sm:px-3 sm:py-1.5 sm:text-sm"
+            className="hidden text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:block"
           >
             Features
           </HashLink>
           <HashLink
             section="compare"
-            className="rounded-full px-2 py-1 text-xs font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-emerald-400 sm:px-3 sm:py-1.5 sm:text-sm"
+            className="hidden text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:block"
           >
             Compare
           </HashLink>
@@ -41,18 +42,17 @@ export function Nav() {
             href="https://github.com/bablilayoub/openhole"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden rounded-full px-3 py-1.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-white/5 hover:text-emerald-400 sm:inline-block"
+            className="hidden text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:block"
           >
             GitHub
           </a>
           <HashLink
             section="install"
-            className="ml-0.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-black transition-colors hover:bg-neutral-200 sm:ml-1 sm:px-4 sm:py-1.5 sm:text-sm"
+            className="inline-flex h-8 items-center justify-center rounded-full bg-white px-4 text-sm font-medium text-black transition-colors hover:bg-neutral-200"
           >
             Install
           </HashLink>
         </nav>
-        </div>
       </div>
     </header>
   );

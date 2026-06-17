@@ -22,6 +22,8 @@ type Tunnel struct {
 	mu               sync.Mutex
 	writeMu          sync.Mutex
 	sem              chan struct{}
+	wsMu             sync.RWMutex
+	wsStreams        map[string]*wsStream
 }
 
 type tunnelResponse struct {
@@ -130,6 +132,7 @@ func (r *Registry) Unregister(subdomain string) {
 }
 
 func (t *Tunnel) closeAllPending(err error) {
+	t.closeAllWSStreams()
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	for id, ch := range t.Pending {

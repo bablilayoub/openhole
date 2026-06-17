@@ -8,7 +8,12 @@ import { Section, SectionHeader } from "./Section";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const features = [
+const features: {
+  badge: string;
+  title: string;
+  description: string;
+  highlight?: boolean;
+}[] = [
   {
     badge: "FREE",
     title: "No accounts required",
@@ -23,6 +28,12 @@ const features = [
     badge: "URL",
     title: "Custom subdomains",
     description: "Pass --subdomain for a stable URL. A reclaim token keeps the name across reconnects, even from a new network.",
+  },
+  {
+    badge: "NEW",
+    title: "WebSocket passthrough",
+    description: "Next.js HMR, Vite live reload, Socket.io, and other WebSocket upgrades relay through the tunnel. Shipped in v0.2.0.",
+    highlight: true,
   },
   {
     badge: "LOG",
@@ -89,9 +100,17 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="feature-card card-base p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/20 hover:bg-emerald-500/[0.02] sm:p-8"
+              className={`feature-card card-base p-6 transition-all duration-200 hover:-translate-y-0.5 sm:p-8 ${
+                feature.highlight ? "feature-card-highlight" : ""
+              }`}
             >
-              <span className="text-accent mb-4 inline-block rounded-md border border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5 font-mono text-[11px] font-medium tracking-wider opacity-90">
+              <span
+                className={
+                  feature.highlight
+                    ? "badge-new mb-4"
+                    : "badge-mono mb-4"
+                }
+              >
                 {feature.badge}
               </span>
               <h3 className="mb-3 text-lg font-semibold text-white">{feature.title}</h3>
@@ -103,9 +122,8 @@ export function Features() {
         </div>
 
         <p className="mt-10 max-w-3xl text-sm leading-relaxed text-neutral-500">
-          <span className="font-medium text-neutral-400">Limitations:</span> HTTP-only tunneling
-          (no WebSocket passthrough), 10 MB body limit per request, and random subdomains change on
-          reconnect unless you use{" "}
+          <span className="font-medium text-neutral-400">Limitations:</span> 10 MB body limit per HTTP
+          request, and random subdomains change on reconnect unless you use{" "}
           <code className="font-mono text-neutral-300">--subdomain</code>.
         </p>
       </div>

@@ -27,6 +27,8 @@ type Client struct {
 	writeMu       sync.Mutex
 	reqSem        chan struct{}
 	inflight      sync.WaitGroup
+	wsMu          sync.RWMutex
+	wsStreams     map[string]*clientWSStream
 }
 
 func New(cfg Config) *Client {
@@ -201,10 +203,15 @@ func drainInflight(c *Client, timeout time.Duration) {
 
 func (c *Client) readLoop(conn *websocket.Conn) error {
 	for {
-		env, raw, err := protocol.ReadMessage(conn)
+		msg, err := protocol.ReadTunnelMessage(conn)
 		if err != nil {
 			return err
 		}
+		if msg.WSFrame != nil {
+			c.dispatchWSFrame(msg.WSFrame)
+			continue
+		}
+		env, raw := msg.JSON, msg.RawJSON
 		switch env.Type {
 		case protocol.TypeRequest:
 			req, err := protocol.ParseRequest(raw)
@@ -219,6 +226,12 @@ func (c *Client) readLoop(conn *websocket.Conn) error {
 		case protocol.TypePing:
 			_ = c.writeMessage(conn, protocol.PongMessage{Type: protocol.TypePong})
 		case protocol.TypePong:
+		case protocol.TypeWSOpen:
+			open, err := protocol.ParseWSOpen(raw)
+			if err != nil {
+				continue
+			}
+			c.handleWSOpen(conn, open)
 		default:
 		}
 	}

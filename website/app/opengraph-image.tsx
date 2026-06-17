@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "OpenHole — Share localhost instantly";
+export const alt = "OpenHole v0.2.0 — Share localhost instantly";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -15,36 +15,49 @@ export default function OgImage() {
           flexDirection: "column",
           justifyContent: "center",
           padding: "80px",
-          background: "#000000",
+          background: "#050508",
           fontFamily: "ui-sans-serif, system-ui, sans-serif",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
         <div
           style={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: "-20%",
             background:
-              "radial-gradient(ellipse 70% 55% at 50% 45%, rgba(52, 211, 153, 0.1) 0%, transparent 72%)",
+              "radial-gradient(circle at 50% 50%, rgba(192, 132, 252, 0.25) 0%, rgba(56, 189, 248, 0.12) 35%, transparent 60%)",
           }}
         />
-        <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            width: 400,
+            height: 400,
+            marginLeft: -200,
+            marginTop: -200,
+            borderRadius: "50%",
+            border: "1px solid rgba(56, 189, 248, 0.2)",
+          }}
+        />
+        <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: "20px" }}>
           <div
             style={{
-              fontSize: 28,
-              fontWeight: 600,
-              color: "#34d399",
-              letterSpacing: "0.08em",
+              fontSize: 16,
+              fontWeight: 500,
+              color: "#c084fc",
+              letterSpacing: "0.1em",
               textTransform: "uppercase",
+              fontFamily: "ui-monospace, monospace",
             }}
           >
-            OpenHole
+            v0.2.0 — WebSocket passthrough
           </div>
           <div
             style={{
-              fontSize: 72,
+              fontSize: 64,
               fontWeight: 700,
               color: "#ffffff",
               lineHeight: 1.05,
@@ -52,21 +65,10 @@ export default function OgImage() {
               maxWidth: 900,
             }}
           >
-            Share localhost.
+            Punch a hole to localhost.
           </div>
-          <div
-            style={{
-              fontSize: 72,
-              fontWeight: 700,
-              color: "#34d399",
-              lineHeight: 1.05,
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Zero configuration.
-          </div>
-          <div style={{ fontSize: 28, color: "#a3a3a3", maxWidth: 760, lineHeight: 1.4 }}>
-            Expose local ports over HTTPS. No accounts. One command.
+          <div style={{ fontSize: 26, color: "#a1a1aa", maxWidth: 720, lineHeight: 1.4 }}>
+            HTTPS tunnels. No accounts. One command.
           </div>
         </div>
       </div>

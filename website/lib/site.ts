@@ -12,7 +12,7 @@ export const githubRepo = "https://github.com/bablilayoub/openhole";
 
 export const githubReleases = `${githubRepo}/releases`;
 
-export const cliVersion = "0.1.6";
+export const cliVersion = "0.2.0";
 
 export function isGitHubReferrer(referrer: string): boolean {
   if (!referrer) return false;

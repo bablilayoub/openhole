@@ -31,6 +31,11 @@ func (s *Server) handlePublicProxy(w http.ResponseWriter, r *http.Request, subdo
 		return
 	}
 
+	if shared.IsWebSocketUpgrade(r) {
+		s.handleWebSocketProxy(w, r, tunnel, subdomain)
+		return
+	}
+
 	body, err := readBodyLimited(r.Body, s.cfg.MaxBodyBytes)
 	if err != nil {
 		if err == shared.ErrBodyTooLarge {
