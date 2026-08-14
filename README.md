@@ -1,3 +1,5 @@
+
+
 # OpenHole
 
 Expose a local HTTP server to the internet with one command. No accounts, no dashboard.
@@ -24,7 +26,7 @@ https://blue-fox.ophl.link  →  http://localhost:3000
 | Named subdomains | `--subdomain myapp` with reclaim tokens |
 | Config file | `~/.config/openhole/config.yaml` |
 | Registration tokens | `--token` for self-hosted servers |
-| Request logs | `openhole logs -f --json` |
+| Request logs | `openhole logs -f --json` — stream proxied request logs |
 | Cross-platform | macOS, Linux, Windows (amd64 + arm64) |
 | Self-hosting | Docker Compose + Caddy + wildcard TLS |
 
