@@ -19,29 +19,32 @@ type Config struct {
 	MaxTunnelsPerIP                 int
 	MaxRegistrationsPerIPPerMinute  int
 	MaxPublicRequestsPerIPPerMinute int
-	SubdomainHoldSeconds            int
-	PublicURLScheme                 string
-	TrustProxyHeaders               bool
-	BlockedIPs                      map[string]struct{}
-	RegistrationTokens              map[string]struct{}
+	// MaxAuthFailuresPerTunnelPerMinute caps Basic Auth guesses per tunnel; 0 disables.
+	MaxAuthFailuresPerTunnelPerMinute int
+	SubdomainHoldSeconds              int
+	PublicURLScheme                   string
+	TrustProxyHeaders                 bool
+	BlockedIPs                        map[string]struct{}
+	RegistrationTokens                map[string]struct{}
 }
 
 func LoadConfig() Config {
 	cfg := Config{
-		PublicTunnelDomain:              envOr("PUBLIC_TUNNEL_DOMAIN", "ophl.link"),
-		TunnelEndpointHost:              envOr("TUNNEL_ENDPOINT_HOST", "tunnel.openhole.dev"),
-		ServerPort:                      envOr("SERVER_PORT", "8080"),
-		MaxBodyBytes:                    envInt64("MAX_BODY_BYTES", 10*1024*1024),
-		RequestTimeoutSeconds:           envInt("REQUEST_TIMEOUT_SECONDS", 30),
-		MaxConcurrentRequestsPerTunnel:  envInt("MAX_CONCURRENT_REQUESTS_PER_TUNNEL", 25),
-		MaxTunnelsPerIP:                 envInt("MAX_TUNNELS_PER_IP", 3),
-		MaxRegistrationsPerIPPerMinute:  envInt("MAX_REGISTRATIONS_PER_IP_PER_MINUTE", 5),
-		MaxPublicRequestsPerIPPerMinute: envInt("MAX_PUBLIC_REQUESTS_PER_IP_PER_MINUTE", 120),
-		SubdomainHoldSeconds:            envInt("SUBDOMAIN_HOLD_SECONDS", 30),
-		PublicURLScheme:                 envOr("PUBLIC_URL_SCHEME", "https"),
-		TrustProxyHeaders:               envOr("TRUST_PROXY_HEADERS", "false") == "true",
-		BlockedIPs:                      parseBlockedIPs(os.Getenv("BLOCKED_IPS")),
-		RegistrationTokens:              parseRegistrationTokens(os.Getenv("REGISTRATION_TOKENS")),
+		PublicTunnelDomain:                envOr("PUBLIC_TUNNEL_DOMAIN", "ophl.link"),
+		TunnelEndpointHost:                envOr("TUNNEL_ENDPOINT_HOST", "tunnel.openhole.dev"),
+		ServerPort:                        envOr("SERVER_PORT", "8080"),
+		MaxBodyBytes:                      envInt64("MAX_BODY_BYTES", 10*1024*1024),
+		RequestTimeoutSeconds:             envInt("REQUEST_TIMEOUT_SECONDS", 30),
+		MaxConcurrentRequestsPerTunnel:    envInt("MAX_CONCURRENT_REQUESTS_PER_TUNNEL", 25),
+		MaxTunnelsPerIP:                   envInt("MAX_TUNNELS_PER_IP", 3),
+		MaxRegistrationsPerIPPerMinute:    envInt("MAX_REGISTRATIONS_PER_IP_PER_MINUTE", 5),
+		MaxPublicRequestsPerIPPerMinute:   envInt("MAX_PUBLIC_REQUESTS_PER_IP_PER_MINUTE", 120),
+		MaxAuthFailuresPerTunnelPerMinute: envInt("MAX_AUTH_FAILURES_PER_TUNNEL_PER_MINUTE", 30),
+		SubdomainHoldSeconds:              envInt("SUBDOMAIN_HOLD_SECONDS", 30),
+		PublicURLScheme:                   envOr("PUBLIC_URL_SCHEME", "https"),
+		TrustProxyHeaders:                 envOr("TRUST_PROXY_HEADERS", "false") == "true",
+		BlockedIPs:                        parseBlockedIPs(os.Getenv("BLOCKED_IPS")),
+		RegistrationTokens:                parseRegistrationTokens(os.Getenv("REGISTRATION_TOKENS")),
 	}
 
 	extra := strings.Split(os.Getenv("BLOCKED_SUBDOMAINS_EXTRA"), ",")

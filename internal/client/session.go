@@ -14,6 +14,7 @@ type Session struct {
 	Host      string    `json:"host"`
 	Port      int       `json:"port"`
 	ServerURL string    `json:"server_url"`
+	AuthUser  string    `json:"auth_user,omitempty"` // Basic Auth username when the URL is gated
 	StartedAt time.Time `json:"started_at"`
 }
 

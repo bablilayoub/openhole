@@ -15,11 +15,3 @@ func configDir() (string, error) {
 	}
 	return filepath.Join(dir, "openhole"), nil
 }
-
-func sessionPath() (string, error) {
-	dir, err := configDir()
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join(dir, "session.json"), nil
-}

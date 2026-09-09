@@ -13,6 +13,7 @@ type FileConfig struct {
 	Host      string `yaml:"host"`
 	Subdomain string `yaml:"subdomain"`
 	Token     string `yaml:"token"`
+	Auth      string `yaml:"auth"` // public URL Basic Auth "user:pass"
 	Verbose   *bool  `yaml:"verbose"`
 }
 
@@ -47,7 +48,7 @@ func LoadFileConfig(path string) (FileConfig, error) {
 }
 
 // ResolveConfig merges defaults, config file, environment, and CLI flags (flags win).
-func ResolveConfig(file FileConfig, port int, host, subdomain, serverURL, token string, verbose bool, verboseSet bool) Config {
+func ResolveConfig(file FileConfig, port int, host, subdomain, serverURL, token, auth string, verbose bool, verboseSet bool) Config {
 	if host == "" {
 		host = file.Host
 	}
@@ -74,6 +75,13 @@ func ResolveConfig(file FileConfig, port int, host, subdomain, serverURL, token 
 			token = file.Token
 		}
 	}
+	if auth == "" {
+		if v := os.Getenv("OPENHOLE_AUTH"); v != "" {
+			auth = v
+		} else if file.Auth != "" {
+			auth = file.Auth
+		}
+	}
 	if !verboseSet && file.Verbose != nil {
 		verbose = *file.Verbose
 	}
@@ -83,6 +91,7 @@ func ResolveConfig(file FileConfig, port int, host, subdomain, serverURL, token 
 		Subdomain: subdomain,
 		ServerURL: serverURL,
 		Token:     token,
+		BasicAuth: auth,
 		Verbose:   verbose,
 	}
 }

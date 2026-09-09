@@ -26,6 +26,9 @@ subdomain: myapp
 # Registration token for protected servers
 token: your-secret
 
+# Public URL Basic Auth
+auth: demo:secret
+
 # Verbose stderr output
 verbose: false
 ```
@@ -51,6 +54,8 @@ See `packaging/config.example.yaml` in the repository.
 | `--subdomain` | random | Requested subdomain |
 | `--server` | `wss://tunnel.openhole.dev/tunnel` | Tunnel server URL |
 | `--token` | — | Registration token |
+| `--auth` | — | Public URL Basic Auth (`user:pass`) |
+| `--no-auth` | `false` | Ignore `auth` from the config file and `OPENHOLE_AUTH` for this run |
 | `--config` | `~/.config/openhole/config.yaml` | Config file path |
 | `--verbose` | `false` | Debug logging |
 
@@ -62,6 +67,7 @@ See `packaging/config.example.yaml` in the repository.
 |----------|-------------|
 | `OPENHOLE_SERVER_URL` | WebSocket URL of tunnel server |
 | `OPENHOLE_TOKEN` | Registration token |
+| `OPENHOLE_AUTH` | Public URL Basic Auth (`user:pass`) |
 | `OPENHOLE_CONFIG_DIR` | Config directory (default: `~/.config/openhole`) |
 | `OPENHOLE_SKIP_UPDATE_CHECK` | `1` disables daily update notification |
 | `OPENHOLE_INSTALL_URL` | Custom install script URL (shown in update errors) |
@@ -86,6 +92,7 @@ Used by `openhole-server` (self-hosted). Full template: `deployments/env.example
 | `MAX_TUNNELS_PER_IP` | `3` | Active tunnels per IP |
 | `MAX_REGISTRATIONS_PER_IP_PER_MINUTE` | `5` | Registration rate limit |
 | `MAX_PUBLIC_REQUESTS_PER_IP_PER_MINUTE` | `120` | Public request rate limit |
+| `MAX_AUTH_FAILURES_PER_TUNNEL_PER_MINUTE` | `30` | Failed Basic Auth logins per tunnel before `429` (`0` disables) |
 | `SUBDOMAIN_HOLD_SECONDS` | `30` | Hold period after disconnect |
 | `REGISTRATION_TOKENS` | — | Comma-separated tokens required to register (empty = open) |
 | `BLOCKED_IPS` | — | Comma-separated blocked IPs |

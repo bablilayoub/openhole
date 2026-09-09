@@ -1,7 +1,7 @@
 class Openhole < Formula
   desc "Expose localhost to the internet with one command"
   homepage "https://openhole.dev"
-  version "0.2.0"
+  version "0.3.0"
   license "MIT"
 
   on_macos do

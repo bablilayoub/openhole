@@ -86,6 +86,20 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var basicAuth *shared.BasicAuth
+	if strings.TrimSpace(reg.BasicAuth) != "" {
+		user, pass, err := shared.ParseBasicAuthCredentials(reg.BasicAuth)
+		if err != nil {
+			_ = protocol.WriteMessage(conn, protocol.ErrorMessage{
+				Type:    protocol.TypeError,
+				Message: "invalid basic_auth: use user:pass",
+			})
+			conn.Close()
+			return
+		}
+		basicAuth = shared.NewBasicAuth(user, pass)
+	}
+
 	subdomain, err := s.registry.AssignSubdomain(reg.RequestedSubdomain, ip, reg.ReclaimToken)
 	if err != nil {
 		msg := err.Error()
@@ -104,6 +118,7 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		Subdomain: subdomain,
 		Conn:      conn,
 		ClientIP:  ip,
+		BasicAuth: basicAuth,
 		CreatedAt: time.Now(),
 		Pending:   make(map[string]chan tunnelResponse),
 		sem:       make(chan struct{}, s.cfg.MaxConcurrentRequestsPerTunnel),
@@ -126,9 +141,10 @@ func (s *Server) handleTunnel(w http.ResponseWriter, r *http.Request) {
 		Subdomain:    subdomain,
 		PublicURL:    publicURL,
 		ReclaimToken: reclaimToken,
+		BasicAuth:    basicAuth != nil,
 	})
 
-	s.log.Info("tunnel registered", "subdomain", subdomain, "ip", ip)
+	s.log.Info("tunnel registered", "subdomain", subdomain, "ip", ip, "basic_auth", basicAuth != nil)
 
 	go s.tunnelReadLoop(tunnel)
 	go s.tunnelPingLoop(tunnel)

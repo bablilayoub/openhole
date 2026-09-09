@@ -13,4 +13,7 @@
 # Registration token for self-hosted servers (REGISTRATION_TOKENS)
 # token: your-secret-token
 
+# Public URL Basic Auth (browser prompt on the tunnel URL)
+# auth: demo:secret
+
 # verbose: false

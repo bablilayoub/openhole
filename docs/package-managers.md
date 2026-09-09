@@ -38,7 +38,7 @@ See `packaging/apt/README.md`.
 ### Quick install (manual)
 
 ```bash
-VERSION=v0.2.1
+VERSION=v0.3.0
 ARCH=amd64   # or arm64
 curl -fsSL -o /usr/local/bin/openhole \
   "https://github.com/bablilayoub/openhole/releases/download/${VERSION}/openhole-linux-${ARCH}"
@@ -52,8 +52,8 @@ Verify with `checksums.txt` from the same release.
 Requires [nfpm](https://nfpm.goreleaser.com/):
 
 ```bash
-VERSION=0.2.1 ARCH=amd64 ./packaging/apt/build-deb.sh
-sudo dpkg -i dist/openhole_0.2.1_amd64.deb
+VERSION=0.3.0 ARCH=amd64 ./packaging/apt/build-deb.sh
+sudo dpkg -i dist/openhole_0.3.0_amd64.deb
 ```
 
 ## Install scripts (recommended)

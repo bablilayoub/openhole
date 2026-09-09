@@ -91,3 +91,33 @@ func TestBeginTunnelUpgradePendingLimit(t *testing.T) {
 		t.Fatal("slot should be available after release")
 	}
 }
+
+func TestLimitsAuthFailures(t *testing.T) {
+	cfg := testConfig()
+	cfg.MaxAuthFailuresPerTunnelPerMinute = 2
+	l := NewLimits(cfg)
+
+	if !l.AllowAuthAttempt("demo") {
+		t.Fatal("fresh tunnel should allow attempts")
+	}
+	l.RecordAuthFailure("demo")
+	if !l.AllowAuthAttempt("demo") {
+		t.Fatal("one failure should still allow attempts")
+	}
+	l.RecordAuthFailure("demo")
+	if l.AllowAuthAttempt("demo") {
+		t.Fatal("budget exhausted, attempts should be refused")
+	}
+	if !l.AllowAuthAttempt("other") {
+		t.Fatal("budget is per tunnel")
+	}
+
+	cfg.MaxAuthFailuresPerTunnelPerMinute = 0
+	open := NewLimits(cfg)
+	for i := 0; i < 10; i++ {
+		open.RecordAuthFailure("demo")
+	}
+	if !open.AllowAuthAttempt("demo") {
+		t.Fatal("zero disables the limit")
+	}
+}

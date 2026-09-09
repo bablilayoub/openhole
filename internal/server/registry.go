@@ -17,13 +17,15 @@ type Tunnel struct {
 	Conn             *websocket.Conn
 	ClientIP         string
 	ReclaimTokenHash string
-	CreatedAt        time.Time
-	Pending          map[string]chan tunnelResponse
-	mu               sync.Mutex
-	writeMu          sync.Mutex
-	sem              chan struct{}
-	wsMu             sync.RWMutex
-	wsStreams        map[string]*wsStream
+	// BasicAuth gates the public URL; nil means the tunnel is open.
+	BasicAuth *shared.BasicAuth
+	CreatedAt time.Time
+	Pending   map[string]chan tunnelResponse
+	mu        sync.Mutex
+	writeMu   sync.Mutex
+	sem       chan struct{}
+	wsMu      sync.RWMutex
+	wsStreams map[string]*wsStream
 }
 
 type tunnelResponse struct {

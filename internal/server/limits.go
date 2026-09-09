@@ -24,6 +24,9 @@ type Limits struct {
 
 	upgradeMu       sync.Mutex
 	pendingUpgrades map[string]int
+
+	authMu    sync.Mutex
+	authTimes map[string][]time.Time
 }
 
 func NewLimits(cfg Config) *Limits {
@@ -32,7 +35,52 @@ func NewLimits(cfg Config) *Limits {
 		regTimes:        make(map[string][]time.Time),
 		pubTimes:        make(map[string][]time.Time),
 		pendingUpgrades: make(map[string]int),
+		authTimes:       make(map[string][]time.Time),
 	}
+}
+
+// AllowAuthAttempt reports whether a tunnel is still under its failed-login
+// budget for the current minute. Keyed by subdomain, not IP, so a distributed
+// guess is bounded too.
+func (l *Limits) AllowAuthAttempt(subdomain string) bool {
+	max := l.cfg.MaxAuthFailuresPerTunnelPerMinute
+	if max <= 0 {
+		return true
+	}
+	l.authMu.Lock()
+	defer l.authMu.Unlock()
+	return len(l.recentLocked(l.authTimes, subdomain, time.Now().Add(-time.Minute))) < max
+}
+
+// RecordAuthFailure counts a rejected credential against the tunnel.
+func (l *Limits) RecordAuthFailure(subdomain string) {
+	if l.cfg.MaxAuthFailuresPerTunnelPerMinute <= 0 {
+		return
+	}
+	l.authMu.Lock()
+	defer l.authMu.Unlock()
+	now := time.Now()
+	cutoff := now.Add(-time.Minute)
+	l.authTimes[subdomain] = append(l.recentLocked(l.authTimes, subdomain, cutoff), now)
+	l.pruneRateStore(l.authTimes, cutoff)
+}
+
+// recentLocked drops entries at or before cutoff and stores what is left.
+// The caller holds the store's mutex.
+func (l *Limits) recentLocked(store map[string][]time.Time, key string, cutoff time.Time) []time.Time {
+	times := store[key]
+	filtered := times[:0]
+	for _, t := range times {
+		if t.After(cutoff) {
+			filtered = append(filtered, t)
+		}
+	}
+	if len(filtered) == 0 {
+		delete(store, key)
+	} else {
+		store[key] = filtered
+	}
+	return filtered
 }
 
 func (l *Limits) IsIPBlocked(ip string) bool {

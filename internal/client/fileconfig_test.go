@@ -13,12 +13,14 @@ func TestResolveConfigPrecedence(t *testing.T) {
 		Host:      "127.0.0.1",
 		Subdomain: "from-file",
 		Token:     "file-token",
+		Auth:      "file:pass",
 		Verbose:   &verbose,
 	}
 	t.Setenv("OPENHOLE_SERVER_URL", "wss://env.example/tunnel")
 	t.Setenv("OPENHOLE_TOKEN", "env-token")
+	t.Setenv("OPENHOLE_AUTH", "env:pass")
 
-	cfg := ResolveConfig(file, 3000, "localhost", "cli-sub", "wss://flag.example/tunnel", "flag-token", false, true)
+	cfg := ResolveConfig(file, 3000, "localhost", "cli-sub", "wss://flag.example/tunnel", "flag-token", "flag:pass", false, true)
 	if cfg.ServerURL != "wss://flag.example/tunnel" {
 		t.Fatalf("server: %q", cfg.ServerURL)
 	}
@@ -31,16 +33,22 @@ func TestResolveConfigPrecedence(t *testing.T) {
 	if cfg.Token != "flag-token" {
 		t.Fatalf("token: %q", cfg.Token)
 	}
+	if cfg.BasicAuth != "flag:pass" {
+		t.Fatalf("auth: %q", cfg.BasicAuth)
+	}
 	if cfg.Verbose {
 		t.Fatal("expected verbose false when flag set")
 	}
 
-	cfg = ResolveConfig(file, 3000, "", "", "", "", false, false)
+	cfg = ResolveConfig(file, 3000, "", "", "", "", "", false, false)
 	if cfg.ServerURL != "wss://env.example/tunnel" {
 		t.Fatalf("server from env: %q", cfg.ServerURL)
 	}
 	if cfg.Token != "env-token" {
 		t.Fatalf("token from env: %q", cfg.Token)
+	}
+	if cfg.BasicAuth != "env:pass" {
+		t.Fatalf("auth from env: %q", cfg.BasicAuth)
 	}
 	if !cfg.Verbose {
 		t.Fatal("expected verbose from file")
@@ -48,12 +56,16 @@ func TestResolveConfigPrecedence(t *testing.T) {
 
 	t.Setenv("OPENHOLE_SERVER_URL", "")
 	t.Setenv("OPENHOLE_TOKEN", "")
-	cfg = ResolveConfig(file, 3000, "", "", "", "", false, false)
+	t.Setenv("OPENHOLE_AUTH", "")
+	cfg = ResolveConfig(file, 3000, "", "", "", "", "", false, false)
 	if cfg.ServerURL != "wss://file.example/tunnel" {
 		t.Fatalf("server from file: %q", cfg.ServerURL)
 	}
 	if cfg.Token != "file-token" {
 		t.Fatalf("token from file: %q", cfg.Token)
+	}
+	if cfg.BasicAuth != "file:pass" {
+		t.Fatalf("auth from file: %q", cfg.BasicAuth)
 	}
 }
 
@@ -69,14 +81,14 @@ func TestLoadFileConfigMissing(t *testing.T) {
 func TestLoadFileConfig(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "config.yaml")
-	if err := os.WriteFile(path, []byte("server: wss://x/tunnel\nhost: app\n"), 0o600); err != nil {
+	if err := os.WriteFile(path, []byte("server: wss://x/tunnel\nhost: app\nauth: u:p\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	cfg, err := LoadFileConfig(path)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cfg.Server != "wss://x/tunnel" || cfg.Host != "app" {
+	if cfg.Server != "wss://x/tunnel" || cfg.Host != "app" || cfg.Auth != "u:p" {
 		t.Fatalf("unexpected: %+v", cfg)
 	}
 }

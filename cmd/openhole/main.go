@@ -13,8 +13,8 @@ import (
 )
 
 func main() {
-	var host, subdomain, serverURL, token, configPath string
-	var verbose bool
+	var host, subdomain, serverURL, token, auth, configPath string
+	var verbose, noAuth bool
 	var verboseSet bool
 
 	root := &cobra.Command{
@@ -43,9 +43,20 @@ func main() {
 			if len(ports) > 1 && subdomain != "" {
 				return fmt.Errorf("--subdomain only applies when exposing a single port")
 			}
-			base := client.ResolveConfig(fileCfg, ports[0], host, subdomain, serverURL, token, verbose, verboseSet)
+			if noAuth && auth != "" {
+				return fmt.Errorf("--auth and --no-auth are mutually exclusive")
+			}
+			base := client.ResolveConfig(fileCfg, ports[0], host, subdomain, serverURL, token, auth, verbose, verboseSet)
+			if noAuth {
+				base.BasicAuth = ""
+			}
 			if err := shared.ValidateHost(base.Host); err != nil {
 				return fmt.Errorf("invalid --host: use a hostname without a port (e.g. localhost)")
+			}
+			if base.BasicAuth != "" {
+				if _, _, err := shared.ParseBasicAuthCredentials(base.BasicAuth); err != nil {
+					return fmt.Errorf("invalid --auth: use user:pass")
+				}
 			}
 			if verbose {
 				for _, port := range ports {
@@ -65,6 +76,8 @@ func main() {
 	root.Flags().StringVar(&subdomain, "subdomain", "", "Requested subdomain on ophl.link")
 	root.Flags().StringVar(&serverURL, "server", "", "Tunnel server WebSocket URL")
 	root.Flags().StringVar(&token, "token", "", "Registration token (or set OPENHOLE_TOKEN)")
+	root.Flags().StringVar(&auth, "auth", "", "Public URL Basic Auth user:pass (or set OPENHOLE_AUTH)")
+	root.Flags().BoolVar(&noAuth, "no-auth", false, "Expose without Basic Auth even if config.yaml or OPENHOLE_AUTH sets one")
 	root.Flags().StringVar(&configPath, "config", "", "Config file path (default: ~/.config/openhole/config.yaml)")
 	root.Flags().BoolVar(&verbose, "verbose", false, "Enable verbose logs")
 	root.Flags().Lookup("verbose").NoOptDefVal = "true"

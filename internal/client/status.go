@@ -23,6 +23,9 @@ func PrintStatus() error {
 			fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "URL:"), shared.Paint(shared.AnsiCyan, s.PublicURL))
 			fmt.Printf("  %s http://%s:%d\n", shared.Paint(shared.AnsiDim, "Local:"), s.Host, s.Port)
 			fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "Server:"), s.ServerURL)
+			if s.AuthUser != "" {
+				fmt.Printf("  %s basic (user %s)\n", shared.Paint(shared.AnsiDim, "Auth:"), s.AuthUser)
+			}
 			fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "Uptime:"), formatDuration(uptime))
 			fmt.Println()
 		}

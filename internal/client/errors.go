@@ -1,10 +1,24 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	neturl "net/url"
 	"strings"
 )
+
+// errServerNoBasicAuth is returned when --auth was requested but the server did
+// not confirm it. Running on would expose the app while the terminal says
+// otherwise, so the client stops instead of reconnecting.
+var errServerNoBasicAuth = errors.New("this server does not support --auth; upgrade openhole-server or run without --auth")
+
+// checkBasicAuthAck fails closed on servers that ignore the basic_auth field.
+func checkBasicAuthAck(requested string, acked bool) error {
+	if requested != "" && !acked {
+		return errServerNoBasicAuth
+	}
+	return nil
+}
 
 func validateServerURL(raw string) error {
 	lower := strings.ToLower(strings.TrimSpace(raw))
@@ -26,6 +40,9 @@ func validateServerURL(raw string) error {
 func isReconnectable(err error) bool {
 	if err == nil {
 		return true
+	}
+	if errors.Is(err, errServerNoBasicAuth) {
+		return false
 	}
 	msg := strings.ToLower(err.Error())
 	switch {

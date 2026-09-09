@@ -6,5 +6,6 @@ type Config struct {
 	Subdomain string
 	ServerURL string
 	Token     string
+	BasicAuth string // "user:pass" for public URL Basic Auth
 	Verbose   bool
 }

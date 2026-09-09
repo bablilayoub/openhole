@@ -102,6 +102,7 @@ func (c *Client) runSession(done <-chan struct{}) error {
 		RequestedSubdomain: c.cfg.Subdomain,
 		ReclaimToken:       reclaimToken,
 		AuthToken:          c.cfg.Token,
+		BasicAuth:          c.cfg.BasicAuth,
 		LocalPort:          c.cfg.Port,
 		LocalHost:          c.cfg.Host,
 		Version:            shared.Version,
@@ -125,6 +126,13 @@ func (c *Client) runSession(done <-chan struct{}) error {
 	if err != nil {
 		return err
 	}
+	if err := checkBasicAuthAck(c.cfg.BasicAuth, regd.BasicAuth); err != nil {
+		return err
+	}
+	authUser := ""
+	if c.cfg.BasicAuth != "" {
+		authUser, _, _ = shared.ParseBasicAuthCredentials(c.cfg.BasicAuth)
+	}
 
 	if regd.ReclaimToken != "" && c.cfg.Subdomain != "" {
 		want := strings.ToLower(strings.TrimSpace(c.cfg.Subdomain))
@@ -135,9 +143,14 @@ func (c *Client) runSession(done <-chan struct{}) error {
 
 	if c.reconnects == 0 {
 		warn := fmt.Sprintf(
-			"⚠  This exposes http://%s to the internet. Anyone with the URL can access it.",
+			"⚠  This exposes http://%s to the internet.",
 			net.JoinHostPort(c.cfg.Host, strconv.Itoa(c.cfg.Port)),
 		)
+		if c.cfg.BasicAuth == "" {
+			warn += " Anyone with the URL can access it."
+		} else {
+			warn += " Public URL requires Basic Auth."
+		}
 		fmt.Fprintf(os.Stderr, "\n%s\n\n", shared.PaintErr(shared.AnsiYellow, warn))
 		fmt.Printf("%s\n\n%s\n",
 			shared.Paint(shared.AnsiBold, "OpenHole "+shared.Version),
@@ -165,13 +178,21 @@ func (c *Client) runSession(done <-chan struct{}) error {
 		Host:      c.cfg.Host,
 		Port:      c.cfg.Port,
 		ServerURL: c.cfg.ServerURL,
+		AuthUser:  authUser,
 		StartedAt: startedAt,
 	})
 	fmt.Printf("%s %s\n", shared.Paint(shared.AnsiDim, "→"), shared.Paint(shared.AnsiCyan, regd.PublicURL))
-	fmt.Printf("%s %s\n\n",
+	fmt.Printf("%s %s\n",
 		shared.Paint(shared.AnsiDim, "→"),
 		shared.Paint(shared.AnsiDim, fmt.Sprintf("forwarding to http://%s:%d", c.cfg.Host, c.cfg.Port)),
 	)
+	if authUser != "" {
+		fmt.Printf("%s %s\n",
+			shared.Paint(shared.AnsiDim, "→"),
+			shared.Paint(shared.AnsiDim, fmt.Sprintf("Basic Auth required (user: %s)", authUser)),
+		)
+	}
+	fmt.Println()
 	if c.reconnects == 0 {
 		fmt.Println(shared.Paint(shared.AnsiDim, "Requests:"))
 	}

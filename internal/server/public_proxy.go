@@ -31,6 +31,26 @@ func (s *Server) handlePublicProxy(w http.ResponseWriter, r *http.Request, subdo
 		return
 	}
 
+	if tunnel.BasicAuth != nil {
+		host := subdomain + "." + s.cfg.PublicTunnelDomain
+		if !s.limits.AllowAuthAttempt(subdomain) {
+			s.log.Warn("basic auth locked", "host", host, "ip", ip)
+			http.Error(w, "too many failed logins", http.StatusTooManyRequests)
+			return
+		}
+		if !tunnel.BasicAuth.Match(r) {
+			s.limits.RecordAuthFailure(subdomain)
+			s.log.Info("public request",
+				"host", host,
+				"method", r.Method,
+				"path", requestPath(r),
+				"status", http.StatusUnauthorized,
+			)
+			shared.RequireBasicAuth(w)
+			return
+		}
+	}
+
 	if shared.IsWebSocketUpgrade(r) {
 		s.handleWebSocketProxy(w, r, tunnel, subdomain)
 		return
@@ -52,13 +72,19 @@ func (s *Server) handlePublicProxy(w http.ResponseWriter, r *http.Request, subdo
 		return
 	}
 
+	headers := shared.SanitizeIncomingHTTPHeaders(r.Header)
+	if tunnel.BasicAuth != nil {
+		// The edge consumed the credentials; the app must not see them.
+		shared.StripAuthorization(headers)
+	}
+
 	reqMsg := protocol.RequestMessage{
 		Type:       protocol.TypeRequest,
 		RequestID:  uuid.NewString(),
 		Method:     r.Method,
 		Path:       path,
 		Query:      r.URL.RawQuery,
-		Headers:    shared.SanitizeIncomingHTTPHeaders(r.Header),
+		Headers:    headers,
 		BodyBase64: base64.StdEncoding.EncodeToString(body),
 	}
 

@@ -10,7 +10,7 @@ openhole 3000
 https://blue-fox.ophl.link  →  http://localhost:3000
 ```
 
-**Current version:** v0.2.1 · **[Full documentation](docs/README.md)** · **[openhole.dev/docs](https://openhole.dev/docs)**
+**Current version:** v0.3.0 · **[Full documentation](docs/README.md)** · **[openhole.dev/docs](https://openhole.dev/docs)**
 
 ---
 
@@ -24,6 +24,7 @@ https://blue-fox.ophl.link  →  http://localhost:3000
 | Named subdomains | `--subdomain myapp` with reclaim tokens |
 | Config file | `~/.config/openhole/config.yaml` |
 | Registration tokens | `--token` for self-hosted servers |
+| Public URL Basic Auth | `--auth user:pass` (v0.3.0+) |
 | Request logs | `openhole logs -f --json` |
 | Cross-platform | macOS, Linux, Windows (amd64 + arm64) |
 | Self-hosting | Docker Compose + Caddy + wildcard TLS |
@@ -73,6 +74,7 @@ openhole 3000                              # random subdomain
 openhole 3000 --subdomain myapp            # stable URL
 openhole 3000 8080                         # multiple ports
 openhole 3000 --token secret               # protected server
+openhole 3000 --auth demo:secret           # Basic Auth on public URL
 openhole status                            # active tunnels
 openhole logs -f                           # follow request log
 openhole update                            # self-update
@@ -124,7 +126,7 @@ Full guide: [docs/self-hosting.md](docs/self-hosting.md)
 ```bash
 go test -race -count=1 ./...
 ./scripts/build.sh
-./scripts/release.sh v0.2.1
+./scripts/release.sh v0.3.0
 ```
 
 Website:

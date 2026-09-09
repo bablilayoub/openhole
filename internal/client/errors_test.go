@@ -45,3 +45,19 @@ func TestIsReconnectable(t *testing.T) {
 type testError string
 
 func (e testError) Error() string { return string(e) }
+
+func TestBasicAuthAckFailsClosed(t *testing.T) {
+	if err := checkBasicAuthAck("", false); err != nil {
+		t.Fatalf("no auth requested: %v", err)
+	}
+	if err := checkBasicAuthAck("demo:secret", true); err != nil {
+		t.Fatalf("acked: %v", err)
+	}
+	err := checkBasicAuthAck("demo:secret", false)
+	if err == nil {
+		t.Fatal("server that ignores basic_auth must be rejected")
+	}
+	if isReconnectable(err) {
+		t.Fatal("must not reconnect into an open tunnel")
+	}
+}

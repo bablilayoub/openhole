@@ -20,6 +20,7 @@ type RegisterMessage struct {
 	RequestedSubdomain string `json:"requested_subdomain,omitempty"`
 	ReclaimToken       string `json:"reclaim_token,omitempty"`
 	AuthToken          string `json:"auth_token,omitempty"`
+	BasicAuth          string `json:"basic_auth,omitempty"` // "user:pass" for public URL protection
 	LocalPort          int    `json:"local_port"`
 	LocalHost          string `json:"local_host"`
 	Version            string `json:"version"`
@@ -31,6 +32,9 @@ type RegisteredMessage struct {
 	Subdomain    string `json:"subdomain"`
 	PublicURL    string `json:"public_url"`
 	ReclaimToken string `json:"reclaim_token,omitempty"`
+	// BasicAuth confirms the server enforces the credentials sent in register.
+	// Clients that asked for auth must refuse to run when this is false.
+	BasicAuth bool `json:"basic_auth,omitempty"`
 }
 
 type RequestMessage struct {
