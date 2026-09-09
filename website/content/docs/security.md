@@ -35,6 +35,16 @@
 | Client concurrency | 25 concurrent local HTTP requests per tunnel |
 | Protocol validation | Message size, header count, CRLF limits |
 
+## Public URL Basic Auth
+
+Protect a tunnel without creating accounts:
+
+```bash
+openhole 3000 --auth demo:secret
+```
+
+Browsers receive a standard Basic Auth challenge. Credentials are verified by the tunnel server and stripped before forwarding to localhost.
+
 ## Registration tokens
 
 For self-hosted servers, set `REGISTRATION_TOKENS` to require a shared secret at registration time. This does not add per-request auth — it only controls who can open a tunnel.

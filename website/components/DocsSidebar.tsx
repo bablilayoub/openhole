@@ -1,34 +1,42 @@
 import Link from "next/link";
-import { docPages } from "@/lib/docs";
+import { docGroups, docPages } from "@/lib/docs";
+import { cn } from "@/lib/utils";
 
+function itemClass(active: boolean) {
+  return cn(
+    "block rounded-md px-2.5 py-1.5 text-sm whitespace-nowrap transition-colors",
+    active ? "bg-surface-2 font-medium text-ink" : "text-muted hover:bg-surface-2/60 hover:text-ink"
+  );
+}
+
+/** Grouped page list. Vertical on desktop, a scrolling row of chips on small screens. */
 export function DocsSidebar({ activeSlug }: { activeSlug?: string }) {
   return (
-    <nav className="space-y-1">
-      <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
-        Documentation
-      </p>
-      <Link
-        href="/docs"
-        className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
-          !activeSlug
-            ? "bg-white/5 font-medium text-white"
-            : "text-neutral-400 hover:bg-white/[0.03] hover:text-white"
-        }`}
-      >
+    <nav
+      aria-label="Documentation"
+      className="-mx-5 flex gap-1 overflow-x-auto px-5 pb-2 sm:-mx-8 sm:px-8 lg:mx-0 lg:block lg:space-y-6 lg:overflow-visible lg:px-0 lg:pb-0"
+    >
+      <Link href="/docs" className={itemClass(!activeSlug)}>
         Overview
       </Link>
-      {docPages.map((page) => (
-        <Link
-          key={page.slug}
-          href={`/docs/${page.slug}`}
-          className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
-            activeSlug === page.slug
-              ? "bg-white/5 font-medium text-white"
-              : "text-neutral-400 hover:bg-white/[0.03] hover:text-white"
-          }`}
-        >
-          {page.title}
-        </Link>
+      {docGroups.map((group) => (
+        <div key={group} className="contents lg:block">
+          <p className="hidden px-2.5 pb-1.5 text-2xs font-medium tracking-wide text-faint uppercase lg:block">
+            {group}
+          </p>
+          {docPages
+            .filter((p) => p.group === group)
+            .map((page) => (
+              <Link
+                key={page.slug}
+                href={`/docs/${page.slug}`}
+                aria-current={activeSlug === page.slug ? "page" : undefined}
+                className={itemClass(activeSlug === page.slug)}
+              >
+                {page.title}
+              </Link>
+            ))}
+        </div>
       ))}
     </nav>
   );

@@ -26,6 +26,9 @@ subdomain: myapp
 # Registration token for protected servers
 token: your-secret
 
+# Public URL Basic Auth
+auth: demo:secret
+
 # Verbose stderr output
 verbose: false
 ```
@@ -51,6 +54,7 @@ See `packaging/config.example.yaml` in the repository.
 | `--subdomain` | random | Requested subdomain |
 | `--server` | `wss://tunnel.openhole.dev/tunnel` | Tunnel server URL |
 | `--token` | — | Registration token |
+| `--auth` | — | Public URL Basic Auth (`user:pass`) |
 | `--config` | `~/.config/openhole/config.yaml` | Config file path |
 | `--verbose` | `false` | Debug logging |
 
@@ -62,6 +66,7 @@ See `packaging/config.example.yaml` in the repository.
 |----------|-------------|
 | `OPENHOLE_SERVER_URL` | WebSocket URL of tunnel server |
 | `OPENHOLE_TOKEN` | Registration token |
+| `OPENHOLE_AUTH` | Public URL Basic Auth (`user:pass`) |
 | `OPENHOLE_CONFIG_DIR` | Config directory (default: `~/.config/openhole`) |
 | `OPENHOLE_SKIP_UPDATE_CHECK` | `1` disables daily update notification |
 | `OPENHOLE_INSTALL_URL` | Custom install script URL (shown in update errors) |

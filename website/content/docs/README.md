@@ -7,7 +7,7 @@ openhole 3000
 # → https://blue-fox.ophl.link  →  http://localhost:3000
 ```
 
-**Current version:** v0.2.1
+**Current version:** v0.3.0
 
 ---
 
@@ -37,6 +37,7 @@ openhole 3000
 | **Named subdomains** | `--subdomain myapp` with reclaim tokens across reconnects |
 | **Config file** | `~/.config/openhole/config.yaml` for defaults (v0.2.1+) |
 | **Registration tokens** | Optional `--token` / `REGISTRATION_TOKENS` for self-hosted servers |
+| **Public URL Basic Auth** | `--auth user:pass` protects the tunnel without accounts (v0.3.0+) |
 | **Request logs** | `openhole logs -f` with `--json` for scripting |
 | **Cross-platform** | macOS, Linux, Windows (amd64 + arm64) |
 | **Self-update** | `openhole update` downloads verified releases |
@@ -54,6 +55,7 @@ openhole 3000 8080                    # multiple ports
 
 # Self-hosted server
 openhole 3000 --server wss://tunnel.example.com/tunnel --token secret
+openhole 3000 --auth demo:secret      # protect public URL
 
 # Config & status
 openhole status

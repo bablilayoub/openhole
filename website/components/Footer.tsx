@@ -1,119 +1,53 @@
-import { type ReactNode } from "react";
 import Link from "next/link";
-import { githubRepo } from "@/lib/site";
-import { HashLink } from "./HashLink";
-import { Logo } from "./Logo";
-
-const siteLinks = [
-  { section: "features" as const, label: "Features" },
-  { section: "compare" as const, label: "Compare" },
-  { section: "install" as const, label: "Install" },
-];
-
-const resourceLinks = [
-  { href: "/docs", label: "Documentation" },
-  { href: githubRepo, label: "GitHub", external: true },
-  { href: "/terms", label: "Terms" },
-  {
-    href: "/docs/self-hosting",
-    label: "Self-host",
-  },
-];
-
-const linkClass =
-  "text-sm text-neutral-400 transition-colors hover:text-white";
-
-function FooterLink({
-  href,
-  label,
-  external,
-}: {
-  href: string;
-  label: string;
-  external?: boolean;
-}) {
-  if (external || href.startsWith("http")) {
-    return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={linkClass}
-      >
-        {label}
-      </a>
-    );
-  }
-
-  return (
-    <Link href={href} className={linkClass}>
-      {label}
-    </Link>
-  );
-}
-
-function LinkGroup({
-  title,
-  children,
-}: {
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <div>
-      <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-600">
-        {title}
-      </p>
-      <nav className="flex flex-col gap-2.5">{children}</nav>
-    </div>
-  );
-}
+import { Logo } from "@/components/Logo";
+import { footerGroups } from "@/lib/content";
+import { cliVersion } from "@/lib/site";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[0.06]">
-      <div className="page-container py-14 sm:py-16">
-        <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
-          <div className="max-w-sm">
-            <Logo iconClassName="h-9 w-9 sm:h-10 sm:w-10" />
-            <p className="mt-4 text-sm leading-relaxed text-neutral-500">
-              Expose localhost over HTTPS in one command. No accounts, no
-              dashboard.
-            </p>
-          </div>
-
-          <div className="flex gap-12 sm:gap-16">
-            <LinkGroup title="Site">
-              {siteLinks.map((link) => (
-                <HashLink key={link.label} section={link.section} className={linkClass}>
-                  {link.label}
-                </HashLink>
-              ))}
-            </LinkGroup>
-
-            <LinkGroup title="Resources">
-              {resourceLinks.map((link) => (
-                <FooterLink key={link.label} {...link} />
-              ))}
-            </LinkGroup>
-          </div>
+    <footer className="border-t border-line">
+      <div className="page-container grid gap-10 py-14 lg:grid-cols-12 lg:gap-10">
+        <div className="lg:col-span-3">
+          <Logo iconClassName="h-6 w-6" />
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
+            Localhost over HTTPS. One command, no account. MIT licensed.
+          </p>
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-white/[0.06] pt-8 text-sm text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            Built by{" "}
-            <a
-              href="https://abablil.me"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-neutral-300 transition-colors hover:text-white"
-            >
-              Ayoub Bablil
-            </a>
-          </p>
-          <p className="font-mono text-xs text-neutral-600">
-            MIT · © {new Date().getFullYear()}
-          </p>
+        <div className="grid gap-8 sm:grid-cols-3 lg:col-span-9">
+          {footerGroups.map((group) => (
+            <div key={group.title}>
+              <p className="eyebrow">{group.title}</p>
+              <ul className="mt-4 space-y-2">
+                {group.links.map((link) => (
+                  <li key={link.label}>
+                    {link.external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link-muted text-sm"
+                      >
+                        {link.label}
+                        <span aria-hidden className="ml-0.5">↗</span>
+                      </a>
+                    ) : (
+                      <Link href={link.href} className="link-muted text-sm">
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="border-t border-line">
+        <div className="page-container flex flex-col gap-2 py-5 font-mono text-2xs tracking-wide text-muted uppercase sm:flex-row sm:items-center sm:justify-between">
+          <span>© {new Date().getFullYear()} OpenHole</span>
+          <span>v{cliVersion} · MIT</span>
         </div>
       </div>
     </footer>

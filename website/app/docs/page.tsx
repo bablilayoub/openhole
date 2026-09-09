@@ -1,48 +1,59 @@
 import Link from "next/link";
-import { Nav } from "@/components/Nav";
-import { Footer } from "@/components/Footer";
-import { DocsSidebar } from "@/components/DocsSidebar";
+import { ArrowUpRight } from "lucide-react";
 import { DocsGitHubLink, DocsMarkdown } from "@/components/DocsMarkdown";
-import { getDocIndexContent } from "@/lib/docs";
+import { DocsShell } from "@/components/DocsShell";
+import { docGroups, docPages, getDocHeadings, getDocIndexContent } from "@/lib/docs";
 
 export const metadata = {
-  title: "Documentation — OpenHole",
+  title: "Documentation",
   description:
     "OpenHole docs: install, CLI usage, WebSocket passthrough, config file, self-hosting, and more.",
 };
 
 export default function DocsIndexPage() {
   const content = getDocIndexContent();
+  const headings = getDocHeadings(content);
 
   return (
-    <>
-      <Nav />
-      <main className="min-h-[80vh] pb-24 pt-28 sm:pt-36">
-        <div className="page-container">
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Link
-              href="/"
-              className="text-sm text-neutral-500 transition-colors hover:text-white"
-            >
-              ← Back to home
-            </Link>
-            <DocsGitHubLink />
-          </div>
+    <DocsShell headings={headings} actions={<DocsGitHubLink />}>
+      <h1 className="text-[2.25rem] leading-[1.1] font-medium tracking-[-0.03em] sm:text-[2.75rem]">
+        Documentation
+      </h1>
+      <p className="mt-4 max-w-xl text-md leading-relaxed text-muted">
+        Everything the CLI does, how to run your own edge, and what the public
+        service will and will not do.
+      </p>
 
-          <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
-            <aside className="lg:w-56 lg:shrink-0">
-              <div className="lg:sticky lg:top-28">
-                <DocsSidebar />
-              </div>
-            </aside>
+      <div className="mt-10 space-y-8">
+        {docGroups.map((group) => (
+          <section key={group}>
+            <p className="mb-3 text-2xs font-medium tracking-wide text-faint uppercase">{group}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {docPages
+                .filter((p) => p.group === group)
+                .map((page) => (
+                  <Link
+                    key={page.slug}
+                    href={`/docs/${page.slug}`}
+                    className="card group flex flex-col p-5"
+                  >
+                    <span className="flex items-center justify-between gap-3">
+                      <span className="text-base font-medium">{page.title}</span>
+                      <ArrowUpRight className="size-4 text-faint transition-colors group-hover:text-ink" />
+                    </span>
+                    <span className="mt-1.5 text-sm leading-relaxed text-muted">
+                      {page.description}
+                    </span>
+                  </Link>
+                ))}
+            </div>
+          </section>
+        ))}
+      </div>
 
-            <article className="docs-content min-w-0 flex-1 max-w-3xl">
-              <DocsMarkdown content={content} />
-            </article>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </>
+      <div className="mt-14 border-t border-line pt-10 [&>h1]:hidden">
+        <DocsMarkdown content={content} />
+      </div>
+    </DocsShell>
   );
 }

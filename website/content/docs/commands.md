@@ -30,6 +30,7 @@ openhole 3000 --subdomain myapp --verbose
 | `--subdomain` | random | Requested subdomain (single port only) |
 | `--server` | see [Configuration](configuration.md) | Tunnel server WebSocket URL |
 | `--token` | — | Registration token for protected servers |
+| `--auth` | — | Public URL Basic Auth (`user:pass`) |
 | `--config` | `~/.config/openhole/config.yaml` | Config file path |
 | `--verbose` | `false` | Debug output on stderr |
 
@@ -118,6 +119,7 @@ Checks `/usr/local/bin`, `~/.local/bin`, Go bin directory, and `PATH`.
 |----------|-------------|
 | `OPENHOLE_SERVER_URL` | Default tunnel server WebSocket URL |
 | `OPENHOLE_TOKEN` | Registration token |
+| `OPENHOLE_AUTH` | Public URL Basic Auth (`user:pass`) |
 | `OPENHOLE_CONFIG_DIR` | Override `~/.config/openhole` |
 | `OPENHOLE_SKIP_UPDATE_CHECK` | Set to `1` to disable update hints |
 | `OPENHOLE_INSTALL_URL` | Override install script URL for update errors |

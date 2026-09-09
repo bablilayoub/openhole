@@ -1,132 +1,59 @@
-"use client";
+import Link from "next/link";
+import { Radio } from "lucide-react";
+import { AuthFragment, HmrFragment, SubdomainFragment } from "@/components/fragments";
+import { Reveal } from "@/components/Reveal";
+import { Glow } from "@/components/ui/Glow";
+import { SectionHeader } from "@/components/SectionHeader";
+import { features, type FeatureFragment } from "@/lib/content";
 
-import { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-import { Section, SectionHeader } from "./Section";
-
-gsap.registerPlugin(useGSAP, ScrollTrigger);
-
-const features: {
-  badge: string;
-  title: string;
-  description: string;
-  highlight?: boolean;
-}[] = [
-  {
-    badge: "FREE",
-    title: "No accounts required",
-    description: "We don't want your email. Download the binary and start tunneling immediately. No signup flow, no API keys.",
-  },
-  {
-    badge: "TLS",
-    title: "HTTPS by default",
-    description: "Every tunnel gets a secure, trusted TLS certificate automatically via Caddy and Cloudflare DNS-01.",
-  },
-  {
-    badge: "URL",
-    title: "Custom subdomains",
-    description: "Pass --subdomain for a stable URL. A reclaim token keeps the name across reconnects, even from a new network.",
-  },
-  {
-    badge: "NEW",
-    title: "WebSocket passthrough",
-    description: "Next.js HMR, Vite live reload, Socket.io, and other WebSocket upgrades relay through the tunnel. Shipped in v0.2.0.",
-    highlight: true,
-  },
-  {
-    badge: "LOG",
-    title: "Live request logging",
-    description: "See exactly what's hitting your local server. Method, path, status code, and latency printed right in your terminal.",
-  },
-  {
-    badge: "CLI",
-    title: "Single Go binary",
-    description: "Written in Go for blazing fast startup times and minimal memory footprint. No runtime dependencies.",
-  },
-  {
-    badge: "OSS",
-    title: "100% Self-hostable",
-    description: "The entire stack is open source. Deploy your own edge server with our provided Docker Compose setup.",
-  },
-];
+const fragment: Record<FeatureFragment, React.ComponentType> = {
+  hmr: HmrFragment,
+  auth: AuthFragment,
+  subdomain: SubdomainFragment,
+};
 
 export function Features() {
-  const root = useRef<HTMLDivElement>(null);
-
-  useGSAP(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
-
-    const cards = root.current?.querySelectorAll(".feature-card");
-    if (!cards || cards.length === 0) return;
-
-    gsap.fromTo(
-      cards,
-      { y: 30, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power2.out",
-        clearProps: "transform",
-        scrollTrigger: {
-          trigger: root.current,
-          start: "top 85%",
-          once: true,
-        },
-      }
-    );
-  }, { scope: root });
-
   return (
-    <Section id="features" border>
-      <div ref={root}>
-        <SectionHeader
-          eyebrow="Features"
-          title={
-            <>
-              Everything you need.
-              <br />
-              Nothing you don&apos;t.
-            </>
-          }
-          description="HTTPS hits ophl.link, relays over WebSocket to your CLI, then localhost. Anyone with the URL can access your tunnel — use it carefully."
-        />
+    <section id="features" className="py-24 sm:py-32">
+      <div className="page-container">
+        <Reveal>
+          <SectionHeader
+            icon={Radio}
+            label="Tunnels"
+            title="Made for the hour before you ship."
+            description="The three things you reach for when the demo is in ten minutes and the webhook has to land on your laptop."
+          />
+        </Reveal>
 
-        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className={`feature-card card-base p-6 transition-all duration-200 hover:-translate-y-0.5 sm:p-8 ${
-                feature.highlight ? "feature-card-highlight" : ""
-              }`}
-            >
-              <span
-                className={
-                  feature.highlight
-                    ? "badge-new mb-4"
-                    : "badge-mono mb-4"
-                }
-              >
-                {feature.badge}
-              </span>
-              <h3 className="mb-3 text-lg font-semibold text-white">{feature.title}</h3>
-              <p className="text-sm leading-relaxed text-neutral-400 sm:text-base">
-                {feature.description}
-              </p>
-            </div>
-          ))}
+        <div className="mt-14 grid gap-4 md:grid-cols-3">
+          {features.map((feature, i) => {
+            const Fragment = fragment[feature.id];
+            return (
+              <Reveal key={feature.id} delay={i * 0.08} className="min-w-0">
+                <Link href={feature.href} className="card group flex h-full flex-col">
+                  <div className="relative h-56 overflow-hidden border-b border-line bg-surface-2/40">
+                    <Glow
+                      className="inset-0 z-0 opacity-70"
+                      gradient="radial-gradient(24rem 12rem at 50% 0%, var(--glow), transparent 70%)"
+                    />
+                    <Fragment />
+                  </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="text-base font-medium">{feature.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted">
+                      {feature.description}
+                    </p>
+                    <code className="mt-5 block truncate font-mono text-xs text-faint transition-colors group-hover:text-muted">
+                      <span>$ </span>
+                      {feature.command}
+                    </code>
+                  </div>
+                </Link>
+              </Reveal>
+            );
+          })}
         </div>
-
-        <p className="mt-10 max-w-3xl text-sm leading-relaxed text-neutral-500">
-          <span className="font-medium text-neutral-400">Limitations:</span> 10 MB body limit per HTTP
-          request, and random subdomains change on reconnect unless you use{" "}
-          <code className="font-mono text-neutral-300">--subdomain</code>.
-        </p>
       </div>
-    </Section>
+    </section>
   );
 }

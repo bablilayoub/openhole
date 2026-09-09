@@ -1,3 +1,5 @@
+import version from "./version.json";
+
 const DEFAULT_SITE_URL = "https://openhole.dev";
 
 export function getSiteUrl(): string {
@@ -12,7 +14,7 @@ export const githubRepo = "https://github.com/bablilayoub/openhole";
 
 export const githubReleases = `${githubRepo}/releases`;
 
-export const cliVersion = "0.2.1";
+export const cliVersion: string = version.version;
 
 export function isGitHubReferrer(referrer: string): boolean {
   if (!referrer) return false;

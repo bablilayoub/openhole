@@ -1,5 +1,5 @@
-/** Fixed nav height + top padding — keep in sync with scroll-margin-top in globals.css */
-export const NAV_SCROLL_OFFSET = 88;
+/** Fixed nav (4rem) + breathing room — matches `scroll-margin-top` in globals.css */
+export const NAV_SCROLL_OFFSET = 80;
 
 export function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;

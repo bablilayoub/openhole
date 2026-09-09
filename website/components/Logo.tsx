@@ -8,11 +8,13 @@ import { scrollToTop } from "@/lib/scroll";
 type LogoProps = {
   iconClassName?: string;
   className?: string;
+  inverted?: boolean;
 };
 
 export function Logo({
-  iconClassName = "h-10 w-10 sm:h-11 sm:w-11",
+  iconClassName = "h-7 w-7",
   className = "",
+  inverted = false,
 }: LogoProps) {
   const pathname = usePathname();
 
@@ -26,14 +28,18 @@ export function Logo({
     <Link
       href="/"
       onClick={handleClick}
-      className={`flex items-center gap-3 font-semibold tracking-tight text-white transition-opacity hover:opacity-90 ${className}`}
+      className={`flex items-center gap-2.5 text-base font-semibold tracking-tight transition-opacity hover:opacity-70 ${
+        inverted ? "text-white" : "text-ink"
+      } ${className}`}
     >
       <Image
         src="/icon-transparent.png"
         alt=""
-        width={44}
-        height={44}
-        className={`shrink-0 ${iconClassName}`}
+        width={28}
+        height={28}
+        className={`shrink-0 ${
+          inverted ? "brightness-0 invert" : "brightness-0 dark:invert"
+        } ${iconClassName}`}
         priority
       />
       <span>OpenHole</span>

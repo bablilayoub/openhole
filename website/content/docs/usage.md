@@ -62,6 +62,19 @@ export OPENHOLE_TOKEN=your-secret
 openhole 3000
 ```
 
+## Public URL Basic Auth
+
+Protect the public tunnel URL with HTTP Basic Auth (browser login prompt). No OpenHole account required.
+
+```bash
+openhole 3000 --auth demo:secret
+# or
+export OPENHOLE_AUTH=demo:secret
+openhole 3000
+```
+
+Visitors to `https://….ophl.link` must enter the username and password. Credentials are checked at the edge and are **not** forwarded to your local app.
+
 ## Config file
 
 Save defaults in `~/.config/openhole/config.yaml`:
@@ -71,6 +84,7 @@ server: wss://tunnel.myteam.dev/tunnel
 host: localhost
 subdomain: myapp
 token: your-secret
+auth: demo:secret
 verbose: false
 ```
 

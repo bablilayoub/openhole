@@ -1,9 +1,10 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
-import { WhatsNew } from "@/components/WhatsNew";
+import { WorksWith } from "@/components/WorksWith";
 import { Features } from "@/components/Features";
-import { Compare } from "@/components/Compare";
+import { Operate } from "@/components/Operate";
 import { Install } from "@/components/Install";
+import { CTA } from "@/components/CTA";
 import { Footer } from "@/components/Footer";
 import { StarModal } from "@/components/StarModal";
 
@@ -13,10 +14,11 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
-        <WhatsNew />
+        <WorksWith />
         <Features />
-        <Compare />
+        <Operate />
         <Install />
+        <CTA />
       </main>
       <Footer />
       <StarModal />

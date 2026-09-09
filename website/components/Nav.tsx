@@ -1,65 +1,53 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { HashLink } from "./HashLink";
-import { Logo } from "./Logo";
+import { usePathname } from "next/navigation";
+import { HashLink } from "@/components/HashLink";
+import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { buttonClasses } from "@/components/ui/Button";
+import { githubRepo } from "@/lib/site";
+import { cn } from "@/lib/utils";
 
 export function Nav() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const pathname = usePathname();
+  const onDocs = pathname.startsWith("/docs");
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "border-b border-white/[0.06] bg-black/80 backdrop-blur-md"
-          : "border-b border-transparent bg-transparent"
-      }`}
-    >
-      <div className="page-container flex h-16 items-center justify-between">
-        <Logo iconClassName="h-8 w-8 sm:h-9 sm:w-9" className="text-base sm:text-lg" />
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-void/70 backdrop-blur-xl">
+      <div className="page-container grid h-16 grid-cols-[1fr_auto_1fr] items-center">
+        <Logo iconClassName="h-6 w-6" />
 
-        <nav className="flex items-center gap-4 sm:gap-6">
+        <nav className="hidden items-center gap-1 md:flex">
+          <HashLink section="features" className={buttonClasses("ghost", "sm")}>
+            Features
+          </HashLink>
+          <HashLink section="install" className={buttonClasses("ghost", "sm")}>
+            Install
+          </HashLink>
           <Link
             href="/docs"
-            className="hidden text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:block"
+            aria-current={onDocs ? "page" : undefined}
+            className={buttonClasses("ghost", "sm", cn(onDocs && "text-ink"))}
           >
             Docs
           </Link>
-          <HashLink
-            section="features"
-            className="hidden text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:block"
-          >
-            Features
-          </HashLink>
-          <HashLink
-            section="compare"
-            className="hidden text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:block"
-          >
-            Compare
-          </HashLink>
           <a
-            href="https://github.com/bablilayoub/openhole"
+            href={githubRepo}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden text-sm font-medium text-neutral-400 transition-colors hover:text-white sm:block"
+            className={buttonClasses("ghost", "sm")}
           >
             GitHub
           </a>
-          <HashLink
-            section="install"
-            className="inline-flex h-8 items-center justify-center rounded-full bg-white px-4 text-sm font-medium text-black transition-colors hover:bg-neutral-200"
-          >
+        </nav>
+
+        <div className="flex items-center justify-end gap-2">
+          <ThemeToggle />
+          <HashLink section="install" className={buttonClasses("primary", "sm")}>
             Install
           </HashLink>
-        </nav>
+        </div>
       </div>
     </header>
   );

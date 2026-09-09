@@ -39,7 +39,7 @@ openhole 3000
 You will see:
 
 ```text
-OpenHole v0.2.1
+OpenHole v0.3.0
 
 ✓ Tunnel ready
 → https://blue-fox.ophl.link

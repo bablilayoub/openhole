@@ -1,6 +1,9 @@
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
+import { ArrowUpRight } from "lucide-react";
+import { buttonClasses } from "@/components/ui/Button";
 import { githubRepo } from "@/lib/site";
 
 type DocsMarkdownProps = {
@@ -21,28 +24,38 @@ function resolveHref(href: string | undefined, basePath: string): string | undef
   return href;
 }
 
+const linkClass =
+  "font-medium text-ink underline decoration-line underline-offset-4 transition-colors hover:decoration-ink";
+
 export function DocsMarkdown({ content, basePath = "/docs" }: DocsMarkdownProps) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeSlug]}
       components={{
         h1: ({ children }) => (
-          <h1 className="mb-6 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h1 className="mb-4 text-[2.25rem] leading-[1.1] font-medium tracking-[-0.03em] text-ink sm:text-[2.75rem]">
             {children}
           </h1>
         ),
-        h2: ({ children }) => (
-          <h2 className="docs-heading mt-12 mb-4 text-2xl font-semibold tracking-tight text-white">
+        h2: ({ children, id }) => (
+          <h2
+            id={id}
+            className="docs-heading group mt-14 mb-4 text-2xl font-medium tracking-[-0.02em] text-ink"
+          >
             {children}
           </h2>
         ),
-        h3: ({ children }) => (
-          <h3 className="docs-heading mt-8 mb-3 text-lg font-semibold text-white">
+        h3: ({ children, id }) => (
+          <h3
+            id={id}
+            className="docs-heading mt-9 mb-3 text-lg font-medium tracking-[-0.01em] text-ink"
+          >
             {children}
           </h3>
         ),
         p: ({ children }) => (
-          <p className="mb-4 text-base leading-relaxed text-neutral-400">{children}</p>
+          <p className="mb-4 text-base leading-relaxed text-muted">{children}</p>
         ),
         a: ({ href, children }) => {
           const resolved = resolveHref(href, basePath);
@@ -53,62 +66,61 @@ export function DocsMarkdown({ content, basePath = "/docs" }: DocsMarkdownProps)
                 href={resolved}
                 target={resolved?.startsWith("http") ? "_blank" : undefined}
                 rel={resolved?.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="font-medium text-white underline decoration-white/20 underline-offset-4 transition-colors hover:text-cyan hover:decoration-cyan/40"
+                className={linkClass}
               >
                 {children}
               </a>
             );
           }
           return (
-            <Link
-              href={resolved || "#"}
-              className="font-medium text-white underline decoration-white/20 underline-offset-4 transition-colors hover:text-cyan hover:decoration-cyan/40"
-            >
+            <Link href={resolved || "#"} className={linkClass}>
               {children}
             </Link>
           );
         },
         ul: ({ children }) => (
-          <ul className="mb-4 list-disc space-y-2 pl-6 text-neutral-400">{children}</ul>
+          <ul className="mb-4 list-disc space-y-1.5 pl-5 text-base text-muted marker:text-faint">
+            {children}
+          </ul>
         ),
         ol: ({ children }) => (
-          <ol className="mb-4 list-decimal space-y-2 pl-6 text-neutral-400">{children}</ol>
+          <ol className="mb-4 list-decimal space-y-1.5 pl-5 text-base text-muted marker:text-faint">
+            {children}
+          </ol>
         ),
         li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-        strong: ({ children }) => <strong className="font-semibold text-neutral-200">{children}</strong>,
+        strong: ({ children }) => <strong className="font-medium text-ink">{children}</strong>,
         code: ({ className, children }) => {
           const isBlock = className?.includes("language-");
-          if (isBlock) {
-            return <code className={className}>{children}</code>;
-          }
+          if (isBlock) return <code className={className}>{children}</code>;
           return (
-            <code className="rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-sm text-cyan">
+            <code className="rounded-md border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.85em] text-ink">
               {children}
             </code>
           );
         },
         pre: ({ children }) => (
-          <pre className="docs-pre mb-6 overflow-x-auto rounded-xl border border-white/[0.06] bg-void p-4 font-mono text-sm leading-relaxed text-neutral-300">
+          <pre className="docs-pre window mb-6 overflow-x-auto bg-terminal p-4 font-mono text-sm leading-relaxed text-terminal-fg">
             {children}
           </pre>
         ),
         table: ({ children }) => (
-          <div className="docs-table-wrap mb-6 overflow-x-auto rounded-xl border border-white/[0.06]">
+          <div className="docs-table-wrap mb-6 overflow-x-auto rounded-xl border border-line">
             <table className="w-full min-w-[32rem] text-left text-sm">{children}</table>
           </div>
         ),
-        thead: ({ children }) => <thead className="border-b border-white/[0.06] bg-surface">{children}</thead>,
+        thead: ({ children }) => <thead className="bg-surface-2/60">{children}</thead>,
         th: ({ children }) => (
-          <th className="px-4 py-3 font-mono text-xs uppercase tracking-wider text-neutral-500">
-            {children}
-          </th>
+          <th className="px-4 py-2.5 text-xs font-medium text-muted">{children}</th>
         ),
         td: ({ children }) => (
-          <td className="border-t border-white/[0.04] px-4 py-3 text-neutral-400">{children}</td>
+          <td className="border-t border-line px-4 py-3 align-top text-muted [&_code]:whitespace-nowrap">{children}</td>
         ),
-        hr: () => <hr className="my-10 border-white/[0.06]" />,
+        hr: () => <hr className="my-10 border-line" />,
         blockquote: ({ children }) => (
-          <blockquote className="mb-4 border-l-2 border-cyan/40 pl-4 text-neutral-400">{children}</blockquote>
+          <blockquote className="mb-4 rounded-r-lg border-l-2 border-accent/60 bg-surface py-3 pr-4 pl-4 text-muted [&>p]:mb-0">
+            {children}
+          </blockquote>
         ),
       }}
     >
@@ -124,9 +136,10 @@ export function DocsGitHubLink({ slug }: { slug?: string }) {
       href={`${githubRepo}/blob/main/docs/${file}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-sm text-neutral-500 transition-colors hover:text-white"
+      className={buttonClasses("ghost", "sm", "-mr-3")}
     >
       Edit on GitHub
+      <ArrowUpRight className="size-3.5" />
     </a>
   );
 }

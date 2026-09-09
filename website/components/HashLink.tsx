@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 import { type MouseEvent, type ReactNode } from "react";
 import { hashHref, scrollToSection } from "@/lib/scroll";
 
-type SectionHash = "features" | "compare" | "install";
+export type SectionId = "features" | "install" | "selfhost";
 
 type HashLinkProps = {
-  section: SectionHash;
+  section: SectionId;
   className?: string;
   children: ReactNode;
 };

@@ -1,11 +1,21 @@
 import Link from "next/link";
-import { Nav } from "@/components/Nav";
+import { Check, ShieldAlert, X } from "lucide-react";
 import { Footer } from "@/components/Footer";
+import { Nav } from "@/components/Nav";
+import { Button } from "@/components/ui/Button";
+import type { LucideIcon } from "lucide-react";
 
 export const metadata = {
-  title: "Terms — OpenHole",
+  title: "Terms",
   description: "Acceptable use policy for OpenHole tunnels. Report abuse at abuse@openhole.dev.",
 };
+
+const allowed = [
+  "Local development and debugging",
+  "Testing webhooks and API integrations",
+  "Demos and stakeholder previews",
+  "Sharing work-in-progress with collaborators",
+];
 
 const prohibited = [
   "Phishing pages or credential harvesting",
@@ -16,13 +26,6 @@ const prohibited = [
   "Attacks against third parties through tunneled traffic",
 ];
 
-const allowed = [
-  "Local development and debugging",
-  "Testing webhooks and API integrations",
-  "Demos and stakeholder previews",
-  "Sharing work-in-progress with collaborators",
-];
-
 const enforcement = [
   "Reserved subdomains are blocked at registration",
   "Per-IP rate limits on registration and requests",
@@ -30,35 +33,25 @@ const enforcement = [
   "Repeat abuse may result in IP blocks",
 ];
 
-function PolicyCard({
+function PolicyList({
   title,
   items,
-  variant = "default",
+  icon: Icon,
+  tone,
 }: {
   title: string;
   items: string[];
-  variant?: "default" | "danger";
+  icon: LucideIcon;
+  tone: "live" | "warn" | "muted";
 }) {
+  const iconTone = { live: "text-live", warn: "text-warn", muted: "text-muted" }[tone];
   return (
-    <div
-      className={`rounded-2xl border p-6 sm:p-7 ${
-        variant === "danger"
-          ? "border-red-500/20 bg-red-500/[0.03]"
-          : "border-white/[0.08] bg-surface"
-      }`}
-    >
-      <h2 className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500">
-        {title}
-      </h2>
-      <ul className="space-y-3">
+    <div className="card p-6">
+      <h2 className="text-sm font-medium">{title}</h2>
+      <ul className="mt-4 space-y-2.5">
         {items.map((item) => (
-          <li key={item} className="flex gap-3 text-sm leading-relaxed text-neutral-400 sm:text-base">
-            <span
-              className={`mt-2 h-1 w-1 shrink-0 rounded-full ${
-                variant === "danger" ? "bg-red-400/80" : "bg-neutral-600"
-              }`}
-              aria-hidden
-            />
+          <li key={item} className="flex gap-2.5 text-sm leading-relaxed text-muted">
+            <Icon className={`mt-1 size-3.5 shrink-0 ${iconTone}`} aria-hidden />
             {item}
           </li>
         ))}
@@ -71,76 +64,52 @@ export default function TermsPage() {
   return (
     <>
       <Nav />
-      <main className="min-h-[80vh] pb-24 pt-28 sm:pt-36">
+      <main className="min-h-[80vh] pt-32 pb-24 sm:pt-40">
         <div className="page-container">
-          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Link
-              href="/"
-              className="text-sm text-neutral-500 transition-colors hover:text-white"
-            >
-              ← Back to home
-            </Link>
-            <p className="font-mono text-xs text-neutral-600">Last updated June 2026</p>
-          </div>
-
           <div className="mx-auto max-w-3xl">
-            <header className="mb-12 border-b border-white/[0.06] pb-10">
-              <p className="text-accent mb-3 font-mono text-[11px] uppercase tracking-[0.2em] opacity-80">
-                Legal
-              </p>
-              <h1 className="mb-4 text-4xl font-bold tracking-tight text-white sm:text-5xl">
-                Acceptable Use Policy
-              </h1>
-              <p className="max-w-2xl text-lg leading-relaxed text-neutral-400">
-                OpenHole is a developer tool for exposing local applications during development,
-                testing, and demonstrations. By using the public tunnel service, you agree to
-                these terms.
-              </p>
-            </header>
+            <p className="eyebrow">Legal · Last updated June 2026</p>
+            <h1 className="mt-4 text-[2.25rem] leading-[1.1] font-medium tracking-[-0.03em] sm:text-[2.75rem]">
+              Acceptable use
+            </h1>
+            <p className="mt-5 max-w-2xl text-md leading-relaxed text-muted">
+              OpenHole is a developer tool for exposing local applications during
+              development, testing and demos. By using the public tunnel service you agree
+              to these terms.
+            </p>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">
+              A tunnel creates a public HTTPS URL that forwards to your machine. Anyone
+              with the link can reach what you expose. Use it the way you would use a
+              staging server.
+            </p>
 
-            <div className="mb-8 space-y-4 text-base leading-relaxed text-neutral-400">
+            <div className="mt-10 grid gap-4 sm:grid-cols-2">
+              <PolicyList title="Permitted" items={allowed} icon={Check} tone="live" />
+              <PolicyList title="Prohibited" items={prohibited} icon={X} tone="warn" />
+            </div>
+            <div className="mt-4">
+              <PolicyList title="Enforcement" items={enforcement} icon={ShieldAlert} tone="muted" />
+            </div>
+
+            <div className="card mt-4 p-6">
+              <h2 className="text-sm font-medium">Report abuse</h2>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
+                Seen phishing, malware or other abuse on an OpenHole tunnel? Send the tunnel
+                URL and anything else relevant.
+              </p>
+              <Button href="mailto:abuse@openhole.dev" size="sm" className="mt-4">
+                abuse@openhole.dev
+              </Button>
+            </div>
+
+            <div className="mt-10 flex flex-col gap-3 border-t border-line pt-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
               <p>
-                Tunnels create a public HTTPS URL that forwards to your machine. Anyone with the
-                link can access what you expose. Use OpenHole responsibly and only for purposes
-                you would accept on a staging server.
-              </p>
-            </div>
-
-            <div className="mb-8 grid gap-4 sm:grid-cols-2">
-              <PolicyCard title="Permitted use" items={allowed} />
-              <PolicyCard title="Prohibited use" items={prohibited} variant="danger" />
-            </div>
-
-            <PolicyCard title="Enforcement" items={enforcement} />
-
-            <div className="card-base mt-10 overflow-hidden">
-              <div className="border-b border-white/[0.06] bg-white/[0.02] px-6 py-4 sm:px-7">
-                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500">
-                  Report abuse
-                </p>
-              </div>
-              <div className="space-y-4 px-6 py-6 sm:px-7">
-                <p className="text-base leading-relaxed text-neutral-400">
-                  If you encounter phishing, malware, or other abuse on an OpenHole tunnel, please
-                  report it. Include the tunnel URL and any relevant details.
-                </p>
-                <a
-                  href="mailto:abuse@openhole.dev"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
-                >
-                  abuse@openhole.dev
-                </a>
-              </div>
-            </div>
-
-            <div className="mt-12 flex flex-col gap-4 border-t border-white/[0.06] pt-8 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-neutral-500">
-                See also{" "}
-                <Link href="/docs/security" className="text-neutral-300 transition-colors hover:text-white">
-                  Security documentation
+                See also the{" "}
+                <Link href="/docs/security" className="link">
+                  security documentation
                 </Link>
+                .
               </p>
-              <p className="font-mono text-xs text-neutral-600">MIT License · OpenHole</p>
+              <p className="font-mono text-xs">MIT License · OpenHole</p>
             </div>
           </div>
         </div>
