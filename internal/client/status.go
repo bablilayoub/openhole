@@ -20,13 +20,13 @@ func PrintStatus() error {
 		for _, s := range active {
 			uptime := time.Since(s.StartedAt).Round(time.Second)
 			fmt.Println(shared.Paint(shared.AnsiGreen, fmt.Sprintf("Tunnel running (pid %d, port %d)", s.PID, s.Port)))
-			fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "URL:"), shared.Paint(shared.AnsiCyan, s.PublicURL))
-			fmt.Printf("  %s http://%s:%d\n", shared.Paint(shared.AnsiDim, "Local:"), s.Host, s.Port)
-			fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "Server:"), s.ServerURL)
+			fmt.Printf("  %s %s\n", label("URL:"), shared.Paint(shared.AnsiCyan, s.PublicURL))
+			fmt.Printf("  %s http://%s:%d\n", label("Local:"), s.Host, s.Port)
+			fmt.Printf("  %s %s\n", label("Server:"), s.ServerURL)
 			if s.AuthUser != "" {
-				fmt.Printf("  %s basic (user %s)\n", shared.Paint(shared.AnsiDim, "Auth:"), s.AuthUser)
+				fmt.Printf("  %s basic (user %s)\n", label("Auth:"), s.AuthUser)
 			}
-			fmt.Printf("  %s %s\n", shared.Paint(shared.AnsiDim, "Uptime:"), formatDuration(uptime))
+			fmt.Printf("  %s %s\n", label("Uptime:"), formatDuration(uptime))
 			fmt.Println()
 		}
 	} else {
@@ -46,6 +46,11 @@ func PrintStatus() error {
 	}
 
 	return nil
+}
+
+// label pads a field name so values line up; padding is applied before colouring.
+func label(name string) string {
+	return shared.Paint(shared.AnsiDim, fmt.Sprintf("%-7s", name))
 }
 
 func formatDuration(d time.Duration) string {
