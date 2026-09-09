@@ -35,6 +35,3 @@ deployments/caddy_data/
 # Test artifacts
 *.test
 coverage.out
-
-# Local editor tooling
-.claude/launch.json
