@@ -44,9 +44,9 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Oversized wordmark, clipped by the rule below it. */}
-      <div className="page-container mt-20 overflow-hidden sm:mt-28" aria-hidden>
-        <p className="pointer-events-none -mb-[0.14em] font-medium text-[min(18.5vw,17.5rem)] leading-[0.85] tracking-[-0.05em] whitespace-nowrap text-ink/[0.05] select-none">
+      {/* Oversized wordmark. Baseline sits on the rule; only the descender dips under it. */}
+      <div className="page-container mt-16 overflow-hidden sm:mt-24" aria-hidden>
+        <p className="pointer-events-none -mb-[0.05em] font-medium text-[min(18.5vw,17.5rem)] leading-none tracking-[-0.05em] whitespace-nowrap text-ink/[0.05] select-none">
           openhole
         </p>
       </div>
