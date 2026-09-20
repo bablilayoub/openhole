@@ -6,11 +6,11 @@
   "architecture": {
     "64bit": {
       "url": "https://github.com/bablilayoub/openhole/releases/download/v0.3.0/openhole-windows-amd64.exe",
-      "hash": "REPLACE_ON_RELEASE"
+      "hash": "98aad3709b1a4a511f720846479d19d509d79d542630e7f569e8c1128ae6223f"
     },
     "arm64": {
       "url": "https://github.com/bablilayoub/openhole/releases/download/v0.3.0/openhole-windows-arm64.exe",
-      "hash": "REPLACE_ON_RELEASE"
+      "hash": "2ba534668161694214463fe171d6b5454b9f5f691ba29a32b8d24f831eee40df"
     }
   },
   "bin": "openhole.exe",

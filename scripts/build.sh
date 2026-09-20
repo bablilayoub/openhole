@@ -17,9 +17,9 @@ if [ "$GOOS" = "windows" ]; then
 fi
 
 echo "Building openhole CLI (${GOOS}/${GOARCH}) v${VERSION}..."
-CGO_ENABLED=0 go build -ldflags="${LDFLAGS}" -o "dist/openhole-${GOOS}-${GOARCH}${SUFFIX}" ./cmd/openhole
+CGO_ENABLED=0 go build -trimpath -ldflags="${LDFLAGS}" -o "dist/openhole-${GOOS}-${GOARCH}${SUFFIX}" ./cmd/openhole
 
 echo "Building openhole-server (${GOOS}/${GOARCH}) v${VERSION}..."
-CGO_ENABLED=0 go build -ldflags="${LDFLAGS}" -o "dist/openhole-server-${GOOS}-${GOARCH}${SUFFIX}" ./cmd/openhole-server
+CGO_ENABLED=0 go build -trimpath -ldflags="${LDFLAGS}" -o "dist/openhole-server-${GOOS}-${GOARCH}${SUFFIX}" ./cmd/openhole-server
 
 echo "Done. Binaries in dist/"

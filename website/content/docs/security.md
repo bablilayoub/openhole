@@ -45,6 +45,11 @@ openhole 3000 --auth demo:secret
 
 Browsers receive a standard Basic Auth challenge. Credentials are verified by the tunnel server and stripped before forwarding to localhost.
 
+- Credentials are stored on the server as SHA-256 hashes and compared in constant time.
+- Failed logins are capped per tunnel (`MAX_AUTH_FAILURES_PER_TUNNEL_PER_MINUTE`, default 30); over budget the URL answers `429` until the window passes.
+- A server that predates this feature cannot enforce it. The client checks the server's acknowledgement and exits instead of running unprotected.
+- `--auth user:pass` is visible to other users of the machine via `ps`. Prefer `OPENHOLE_AUTH` or the config file there.
+
 ## Registration tokens
 
 For self-hosted servers, set `REGISTRATION_TOKENS` to require a shared secret at registration time. This does not add per-request auth — it only controls who can open a tunnel.

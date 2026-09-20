@@ -31,6 +31,7 @@ openhole 3000 --subdomain myapp --verbose
 | `--server` | see [Configuration](configuration.md) | Tunnel server WebSocket URL |
 | `--token` | — | Registration token for protected servers |
 | `--auth` | — | Public URL Basic Auth (`user:pass`) |
+| `--no-auth` | `false` | Expose without Basic Auth even if `config.yaml` or `OPENHOLE_AUTH` sets one |
 | `--config` | `~/.config/openhole/config.yaml` | Config file path |
 | `--verbose` | `false` | Debug output on stderr |
 

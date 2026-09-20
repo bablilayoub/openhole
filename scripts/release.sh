@@ -29,28 +29,10 @@ else
 fi
 cd "$ROOT"
 
-# Fill the Homebrew formula and Scoop manifest from checksums.txt so they are
-# installable as committed, not templates.
-sha_for() { awk -v f="openhole-$1" '$2 == f { print $1 }' dist/checksums.txt; }
-rewrite() { local tmp; tmp="$(mktemp)"; awk "$1" "$2" > "$tmp" && mv "$tmp" "$2"; }
-
-rewrite "
-  /^  version \"/ { sub(/\"[^\"]*\"/, \"\\\"${VERSION}\\\"\") }
-  /url .*darwin-amd64/ { cur = \"$(sha_for darwin-amd64)\" }
-  /url .*darwin-arm64/ { cur = \"$(sha_for darwin-arm64)\" }
-  /url .*linux-amd64/  { cur = \"$(sha_for linux-amd64)\" }
-  /url .*linux-arm64/  { cur = \"$(sha_for linux-arm64)\" }
-  /sha256 \"/ && cur != \"\" { sub(/sha256 \"[^\"]*\"/, \"sha256 \\\"\" cur \"\\\"\"); cur = \"\" }
-  { print }
-" packaging/homebrew/openhole.rb
-
-rewrite "
-  /\"version\":/ { sub(/\"[0-9][^\"]*\"/, \"\\\"${VERSION}\\\"\") }
-  /\"url\": .*v[0-9][^\"]*\/openhole-windows-amd64/ { sub(/v[0-9][^\/]*\//, \"v${VERSION}/\"); cur = \"$(sha_for windows-amd64.exe)\" }
-  /\"url\": .*v[0-9][^\"]*\/openhole-windows-arm64/ { sub(/v[0-9][^\/]*\//, \"v${VERSION}/\"); cur = \"$(sha_for windows-arm64.exe)\" }
-  /\"hash\":/ && cur != \"\" { sub(/\"hash\": \"[^\"]*\"/, \"\\\"hash\\\": \\\"\" cur \"\\\"\"); cur = \"\" }
-  { print }
-" packaging/scoop/openhole.json
+# Hashes of *this* build. The published release is built by CI; after the
+# release workflow finishes, run ./scripts/sync-packaging.sh vX.Y.Z to pull the
+# published checksums before committing the packaging files.
+./scripts/sync-packaging.sh dist/checksums.txt
 
 echo ""
 echo "Release artifacts in dist/:"
@@ -63,4 +45,5 @@ echo "Tag and push release on GitHub:"
 echo "  git tag ${VERSION} && git push origin ${VERSION}"
 echo "  gh release create ${VERSION} dist/openhole-* dist/checksums.txt --title ${VERSION}"
 echo ""
-echo "packaging/homebrew/openhole.rb and packaging/scoop/openhole.json now carry the v${VERSION} hashes — commit them."
+echo "After the release workflow publishes assets:"
+echo "  ./scripts/sync-packaging.sh v${VERSION}   # packaging hashes from the published checksums, then commit"
