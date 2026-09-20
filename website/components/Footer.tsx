@@ -44,9 +44,10 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Oversized wordmark. Baseline sits on the rule; only the descender dips under it. */}
-      <div className="page-container mt-16 overflow-hidden sm:mt-24" aria-hidden>
-        <p className="pointer-events-none -mb-[0.05em] font-medium text-[min(18.5vw,17.5rem)] leading-none tracking-[-0.05em] whitespace-nowrap text-ink/[0.05] select-none">
+      {/* Oversized wordmark. leading 0.78 puts the ascenders flush with the block's
+          top edge; the bottom margin leaves the same gap under the descender. */}
+      <div className="page-container mt-8 sm:mt-10" aria-hidden>
+        <p className="pointer-events-none mb-[calc(0.22em+2rem)] font-medium text-[min(18.5vw,17.5rem)] leading-[0.78] tracking-[-0.05em] whitespace-nowrap text-ink/[0.05] select-none sm:mb-[calc(0.22em+2.5rem)]">
           openhole
         </p>
       </div>
