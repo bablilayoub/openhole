@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { footerGroups } from "@/lib/content";
-import { cliVersion } from "@/lib/site";
+import { author, cliVersion } from "@/lib/site";
 
 export function Footer() {
   return (
     <footer className="border-t border-line">
-      <div className="page-container grid gap-10 py-14 lg:grid-cols-12 lg:gap-10">
+      <div className="page-container grid gap-10 pt-14 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-3">
           <Logo iconClassName="h-6 w-6" />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
@@ -44,10 +44,29 @@ export function Footer() {
         </div>
       </div>
 
+      {/* Oversized wordmark, clipped by the rule below it. */}
+      <div className="page-container mt-20 overflow-hidden sm:mt-28" aria-hidden>
+        <p className="pointer-events-none -mb-[0.14em] font-medium text-[min(18.5vw,17.5rem)] leading-[0.85] tracking-[-0.05em] whitespace-nowrap text-ink/[0.05] select-none">
+          openhole
+        </p>
+      </div>
+
       <div className="border-t border-line">
-        <div className="page-container flex flex-col gap-2 py-5 font-mono text-2xs tracking-wide text-muted uppercase sm:flex-row sm:items-center sm:justify-between">
-          <span>© {new Date().getFullYear()} OpenHole</span>
-          <span>v{cliVersion} · MIT</span>
+        <div className="page-container flex flex-col gap-2 py-5 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            © {new Date().getFullYear()} OpenHole · MIT · v{cliVersion}
+          </span>
+          <span>
+            Built by{" "}
+            <a
+              href={author.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-ink transition-colors hover:text-accent"
+            >
+              {author.name}
+            </a>
+          </span>
         </div>
       </div>
     </footer>

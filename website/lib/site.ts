@@ -14,6 +14,8 @@ export const githubRepo = "https://github.com/bablilayoub/openhole";
 
 export const githubReleases = `${githubRepo}/releases`;
 
+export const author = { name: "Ayoub Bablil", url: "https://abablil.me" };
+
 export const cliVersion: string = version.version;
 
 export function isGitHubReferrer(referrer: string): boolean {
