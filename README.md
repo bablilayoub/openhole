@@ -80,7 +80,7 @@ That is the whole product. The URL works until you press <kbd>Ctrl</kbd>+<kbd>C<
 |---|---|
 | Script (macOS / Linux) | `curl -fsSL https://openhole.dev/install.sh \| sh` |
 | Script (Windows) | `irm https://openhole.dev/install.ps1 \| iex` |
-| Pinned version | `OPENHOLE_VERSION=v0.3.0 curl -fsSL https://openhole.dev/install.sh \| sh` |
+| Pinned version | `OPENHOLE_VERSION=v0.3.1 curl -fsSL https://openhole.dev/install.sh \| sh` |
 | Go | `go install github.com/bablilayoub/openhole/cmd/openhole@latest` |
 | Homebrew | `brew install ./packaging/homebrew/openhole.rb` |
 | Scoop | `scoop install ./packaging/scoop/openhole.json` |
@@ -108,7 +108,7 @@ Status and logs work from a second terminal while the tunnel runs:
 
 ```text
 $ openhole status
-openhole v0.3.0
+openhole v0.3.1
 
 Tunnel running (pid 74613, port 5173)
   URL:    https://swift-path-2549.ophl.link
@@ -229,7 +229,7 @@ Also on the web: [openhole.dev/docs](https://openhole.dev/docs).
 go test -race -count=1 ./...     # tests
 go vet ./... && gofmt -l .        # what CI runs
 ./scripts/build.sh                # dist/openhole-<os>-<arch> for the current platform
-./scripts/release.sh v0.3.0       # all platforms + checksums, fills packaging hashes
+./scripts/release.sh v0.3.1       # all platforms + checksums, fills packaging hashes
 ```
 
 Website (Next.js):

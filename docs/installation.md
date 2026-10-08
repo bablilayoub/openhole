@@ -15,7 +15,7 @@ curl -fsSL https://openhole.dev/install.sh | sh
 Pin a version:
 
 ```bash
-OPENHOLE_VERSION=v0.3.0 curl -fsSL https://openhole.dev/install.sh | sh
+OPENHOLE_VERSION=v0.3.1 curl -fsSL https://openhole.dev/install.sh | sh
 ```
 
 Custom install directory:
@@ -35,7 +35,7 @@ Installs to `%LOCALAPPDATA%\Programs\openhole\openhole.exe` and adds it to your 
 Pin a version:
 
 ```powershell
-$env:OPENHOLE_VERSION='v0.3.0'; irm https://openhole.dev/install.ps1 | iex
+$env:OPENHOLE_VERSION='v0.3.1'; irm https://openhole.dev/install.ps1 | iex
 ```
 
 ## Package managers

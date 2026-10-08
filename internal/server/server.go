@@ -31,11 +31,7 @@ func (s *Server) Handler() http.Handler {
 func (s *Server) handleRequest(w http.ResponseWriter, r *http.Request) {
 	subdomain, isTunnelEndpoint, isTunnelDomain := s.parseTunnelHost(r)
 
-	if r.URL.Path == "/health" {
-		if !isTunnelEndpoint {
-			http.NotFound(w, r)
-			return
-		}
+	if isTunnelEndpoint && r.URL.Path == "/health" {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 		return

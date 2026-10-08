@@ -60,6 +60,7 @@ func newGateServer(t *testing.T, auth *shared.BasicAuth) (*Server, <-chan map[st
 	t.Helper()
 	cfg := Config{
 		PublicTunnelDomain:                "ophl.test",
+		TunnelEndpointHost:                "tunnel.ophl.test",
 		MaxBodyBytes:                      1 << 20,
 		RequestTimeoutSeconds:             5,
 		MaxPublicRequestsPerIPPerMinute:   1000,
@@ -82,6 +83,38 @@ func newGateServer(t *testing.T, auth *shared.BasicAuth) (*Server, <-chan map[st
 	}
 	go s.tunnelReadLoop(tunnel)
 	return s, seen
+}
+
+func TestHandlerRoutesHealthByHost(t *testing.T) {
+	s, seen := newGateServer(t, nil)
+
+	t.Run("server health endpoint", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "http://tunnel.ophl.test/health", nil)
+		rec := httptest.NewRecorder()
+		s.Handler().ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusOK {
+			t.Fatalf("server health: status %d body %q", rec.Code, rec.Body.String())
+		}
+		if got := strings.TrimSpace(rec.Body.String()); got != `{"status":"ok"}` {
+			t.Fatalf("server health body = %q", got)
+		}
+	})
+
+	t.Run("public tunnel health endpoint", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "http://blue-fox.ophl.test/health", nil)
+		rec := httptest.NewRecorder()
+		s.Handler().ServeHTTP(rec, req)
+
+		if rec.Code != http.StatusOK {
+			t.Fatalf("public tunnel health: status %d body %q", rec.Code, rec.Body.String())
+		}
+		select {
+		case <-seen:
+		default:
+			t.Fatal("public /health request was not forwarded to the tunnel")
+		}
+	})
 }
 
 func TestPublicProxyBasicAuthGate(t *testing.T) {
